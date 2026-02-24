@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zodify"
+version = "0.0.1"
+description = "Zod-inspired dict validation for Python. Zero deps. One file."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Jun Young Sohn", email = "junyoung.eddie@gmail.com"},
+]
+keywords = ["validation", "schema", "dict", "zod", "type-checking", "env", "config"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/junyoung2015/zodify"
+Repository = "https://github.com/junyoung2015/zodify"
+Issues = "https://github.com/junyoung2015/zodify/issues"
