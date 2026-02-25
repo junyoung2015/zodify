@@ -2,17 +2,27 @@
 
 import os
 
-__version__ = "0.0.1"
-__all__ = ["__version__", "count_in_list", "validate", "env"]
+__version__ = "0.1.0"
+__all__ = ["__version__", "validate", "env", "Optional"]
 
 _MISSING = object()
 _BOOL_TRUE = {"true", "1", "yes"}
 _BOOL_FALSE = {"false", "0", "no"}
 
 
-def count_in_list(lst: list, item: any) -> int:
-    """Count the number of occurrences of item in lst."""
-    return lst.count(item)
+class Optional:
+    """Marker for optional schema keys with an optional default."""
+
+    __slots__ = ("type", "default")
+
+    def __init__(self, type, default=_MISSING):
+        self.type = type
+        self.default = default
+
+    def __repr__(self):
+        if self.default is _MISSING:
+            return f"Optional({self.type!r})"
+        return f"Optional({self.type!r}, {self.default!r})"
 
 
 def _coerce_value(value, target, key):
@@ -56,68 +66,133 @@ def _coerce_value(value, target, key):
     if target is int:
         try:
             return int(value)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as e:
             raise ValueError(
                 f"{key}: cannot coerce '{value}' to int"
-            )
+            ) from e
     if target is float:
         try:
             return float(value)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as e:
             raise ValueError(
                 f"{key}: cannot coerce '{value}' to float"
-            )
+            ) from e
     raise ValueError(
         f"{key}: cannot coerce to {target.__name__}"
     )
 
 
-def validate(schema: dict, data: dict,
-             coerce: bool = False) -> dict:
+def _check_value(value, expected, key, coerce, errors):
+    """Validate one value against one schema entry.
+
+    Returns validated value on success, _MISSING on direct
+    failure (appending to shared errors list).
+    """
+    if isinstance(expected, dict):
+        if type(value) is not dict:
+            errors.append(
+                f"{key}: expected dict, "
+                f"got {type(value).__name__}"
+            )
+            return _MISSING
+        return _validate(expected, value, coerce,
+                         key + ".", errors)
+    # Note: isinstance() accepts list/dict subclasses as schema
+    # values, while type(value) is list/dict rejects subclasses
+    # as data values. This asymmetry is intentional (F-5).
+    if isinstance(expected, list) and len(expected) == 1:
+        if type(value) is not list:
+            errors.append(
+                f"{key}: expected list, "
+                f"got {type(value).__name__}"
+            )
+            return _MISSING
+        result = []
+        for i, item in enumerate(value):
+            checked = _check_value(
+                item, expected[0],
+                f"{key}[{i}]", coerce, errors,
+            )
+            if checked is not _MISSING:
+                result.append(checked)
+        return result
+    if isinstance(expected, list):
+        raise TypeError(
+            f"invalid schema value for key '{key}': "
+            f"list schema must contain exactly one "
+            f"element type, got {len(expected)}"
+        )
+    if type(expected) is type:
+        if type(value) is expected:
+            return value
+        if coerce:
+            try:
+                return _coerce_value(value, expected, key)
+            except ValueError as e:
+                errors.append(str(e))
+                return _MISSING
+        errors.append(
+            f"{key}: expected {expected.__name__}, "
+            f"got {type(value).__name__}"
+        )
+        return _MISSING
+    raise TypeError(
+        f"invalid schema value for key '{key}': "
+        f"{expected!r}"
+    )
+
+
+def _validate(schema, data, coerce, prefix, errors):
+    """Iterate schema keys, handle Optional/missing, delegate
+    to _check_value. Returns result dict only."""
+    result = {}
+    for key, expected in schema.items():
+        if isinstance(expected, Optional):
+            exp = expected.type
+            default = expected.default
+        else:
+            exp = expected
+            default = _MISSING
+        full_key = f"{prefix}{key}"
+        if key not in data:
+            if default is not _MISSING:
+                result[key] = default
+            elif isinstance(expected, Optional):
+                pass  # no default, key absent from result
+            else:
+                errors.append(
+                    f"{full_key}: missing required key"
+                )
+            continue
+        checked = _check_value(
+            data[key], exp, full_key, coerce, errors,
+        )
+        if checked is not _MISSING:
+            result[key] = checked
+    return result
+
+
+def validate(schema, data, coerce=False):
     """Validate a dict against a type schema.
 
     Args:
-        schema: Dict mapping keys to expected types
-                (str, int, float, bool, list, dict).
+        schema: Dict mapping keys to expected types.
         data: The dict to validate.
-        coerce: If True, attempt to cast string values to the
-                target type. Coercion ONLY applies to str inputs.
+        coerce: If True, cast string values to target types.
 
     Returns:
-        A new dict containing only the schema-declared keys
-        with their (possibly coerced) values. Extra keys in
-        data are stripped.
+        A new dict with only schema-declared keys.
 
     Raises:
         TypeError: If schema or data is not a dict.
-        ValueError: If any key fails validation. Message
-                    contains ALL errors separated by newlines.
+        ValueError: If any key fails validation.
     """
     if type(schema) is not dict:
         raise TypeError("schema must be a dict")
     if type(data) is not dict:
         raise TypeError("data must be a dict")
     errors = []
-    result = {}
-    for key, expected in schema.items():
-        if key not in data:
-            errors.append(f"{key}: missing required key")
-            continue
-        value = data[key]
-        if type(value) is expected:
-            result[key] = value
-        elif coerce:
-            try:
-                result[key] = _coerce_value(
-                    value, expected, key
-                )
-            except ValueError as e:
-                errors.append(str(e))
-        else:
-            errors.append(
-                f"{key}: expected {expected.__name__}, "
-                f"got {type(value).__name__}"
-            )
+    result = _validate(schema, data, coerce, "", errors)
     if errors:
         raise ValueError("\n".join(errors))
     return result
@@ -149,12 +224,3 @@ def env(name: str, cast: type, default=_MISSING):
             f"{name}: missing required env var"
         )
     return _coerce_value(value, cast, name)
-
-
-def main():
-    """Entry point for zodify module."""
-    pass
-
-
-if __name__ == "__main__":
-    main()
