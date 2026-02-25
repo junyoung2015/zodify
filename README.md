@@ -45,7 +45,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | Philosophy      | Minimalist   | Full Zod port    | Full Zod port    | Full ORM       |
 | API style       | Plain dicts  | Chained builders | Chained builders | Classes        |
 | Dependencies    | **0**        | 2                | 0                | Many           |
-| Code size       | **<200 LOC** | 1,000s+ LOC      | 1,000s+ LOC      | Large          |
+| Code size       | **<250 LOC** | 1,000s+ LOC      | 1,000s+ LOC      | Large          |
 | Learning curve  | **Zero**     | Must learn DSL   | Must learn DSL   | Must learn DSL |
 | Env var support | **Built-in** | No               | No               | Partial        |
 
@@ -110,6 +110,91 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 
 ---
 
+### Nested Dict Validation
+
+Your schema can contain nested dicts — validation recurses automatically.
+
+```python
+schema = {"db": {"host": str, "port": int}}
+
+validate(schema, {"db": {"host": "localhost", "port": 5432}})
+# → {"db": {"host": "localhost", "port": 5432}}
+
+validate(schema, {"db": {"host": "localhost", "port": "bad"}})
+# ValueError: db.port: expected int, got str
+```
+
+Errors use dot-notation paths: `db.host`, `a.b.c`, etc.
+
+---
+
+### Optional Keys
+
+Use `Optional` to mark keys that can be missing. Provide a default, or omit it to exclude the key from results.
+
+```python
+from zodify import validate, Optional
+
+schema = {
+    "host": str,
+    "port": Optional(int, 8080),     # default 8080
+    "debug": Optional(bool),          # absent if missing
+}
+
+validate(schema, {"host": "localhost"})
+# → {"host": "localhost", "port": 8080}
+```
+
+> **Note:** `Optional` shadows `typing.Optional`. If you use both in the same file, alias it: `from zodify import Optional as Opt` or use `zodify.Optional(...)`.
+
+---
+
+### List Element Validation
+
+Use a single-element list as the schema value to validate every element in the list.
+
+```python
+validate({"tags": [str]}, {"tags": ["python", "config"]})
+# → {"tags": ["python", "config"]}
+
+validate({"tags": [str]}, {"tags": ["ok", 42]})
+# ValueError: tags[1]: expected str, got int
+```
+
+List of dicts works too:
+
+```python
+validate(
+    {"users": [{"name": str, "age": int}]},
+    {"users": [{"name": "Alice", "age": 30}]},
+)
+```
+
+---
+
+### Combined Example
+
+All features compose naturally:
+
+```python
+from zodify import validate, Optional
+
+schema = {
+    "db": {"host": str, "port": Optional(int, 5432)},
+    "tags": [str],
+    "debug": Optional(bool, False),
+}
+
+validate(schema, {
+    "db": {"host": "localhost"},
+    "tags": ["prod"],
+})
+# → {"db": {"host": "localhost", "port": 5432},
+#    "tags": ["prod"], "debug": False}
+```
+
+---
+
 ### `env()` — Typed Environment Variables
 
 Read and type-cast environment variables with a single call.
@@ -132,24 +217,20 @@ secret = env("SECRET_KEY", str)  # raises ValueError if missing
 
 ---
 
-```python
-from zodify import count_in_list
-
-count_in_list(["a", "b", "a", "c"], "a")  # → 2
-```
-
----
-
 ## Roadmap
 
-zodify is in **alpha** (v0.0.1). The API surface is small and may evolve.
+zodify is in **alpha** (v0.1.0). The API surface is small and may evolve.
+
+**Shipped in v0.1.0:**
+
+- [x] Nested schema validation
+- [x] Optional keys with defaults
+- [x] List element validation
 
 **Near-term:**
 
-- [ ] Nested schema validation
-- [ ] Optional / nullable fields
 - [ ] Custom validator functions
-- [ ] List item validation
+- [ ] Chained builder API
 
 **Exploring:**
 
@@ -157,7 +238,6 @@ zodify is in **alpha** (v0.0.1). The API surface is small and may evolve.
 - [ ] JSON Schema export
 - [ ] Framework integrations (FastAPI, Django)
 - [ ] Async validation support
-- [ ] Chained builder API
 
 ---
 
