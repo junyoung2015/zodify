@@ -24,6 +24,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.urls]
 Homepage = "https://github.com/junyoung2015/zodify"
 Repository = "https://github.com/junyoung2015/zodify"
