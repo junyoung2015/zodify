@@ -217,6 +217,29 @@ secret = env("SECRET_KEY", str)  # raises ValueError if missing
 
 ---
 
+## Release Process
+
+Release automation is tag-driven:
+
+- Pushing a tag that matches `v*` triggers `.github/workflows/publish.yml`.
+- The workflow runs tests, builds distributions, publishes to PyPI, and creates a GitHub Release.
+- GitHub Release notes are sourced from the matching section in `CHANGELOG.md` (for example, `## [v0.1.0]`).
+
+Run local preflight before tagging:
+
+```bash
+./scripts/release_preflight.sh
+```
+
+If preflight passes, push the version tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+---
+
 ## Roadmap
 
 zodify is in **alpha** (v0.1.0). The API surface is small and may evolve.
