@@ -26,6 +26,9 @@ jobs:
           pip install pytest
           pip install -e .
 
+      - name: Extract release notes from changelog
+        run: ./scripts/extract_changelog_section.sh "${GITHUB_REF_NAME}" CHANGELOG.md RELEASE_NOTES.md
+
       - name: Run tests
         run: pytest tests/ -v
 
@@ -41,7 +44,7 @@ jobs:
         if: always() && steps.build.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md
           files: |
             dist/*.tar.gz
             dist/*.whl
