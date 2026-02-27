@@ -40,6 +40,9 @@ capture("missing_single", lambda: validate({"a": int}, {}))
 capture("missing_nested", lambda: validate({"db": {"host": str}}, {"db": {}}))
 capture("missing_multiple", lambda: validate({"a": int, "b": str}, {}))
 
+# --- Unknown key errors ---
+capture("unknown_key", lambda: validate({"a": int}, {"a": 1, "extra": 2}))
+
 # --- Nested dict errors ---
 capture("nested_not_dict", lambda: validate({"db": {"host": str}}, {"db": "notadict"}))
 capture("nested_type_mismatch", lambda: validate({"db": {"port": int}}, {"db": {"port": "bad"}}))
@@ -74,6 +77,9 @@ capture("multi_errors", lambda: validate(
 # --- Optional with wrong type ---
 capture("optional_wrong_type", lambda: validate({"port": Optional(int)}, {"port": "abc"}))
 capture("optional_coerce_fail", lambda: validate({"port": Optional(int)}, {"port": "abc"}, coerce=True))
+
+# --- Custom validation failure ---
+capture("callable_fail", lambda: validate({"port": lambda v: 1 <= v <= 65535}, {"port": 99999}))
 
 # --- Set/tuple type mismatch ---
 capture("set_mismatch", lambda: validate({"tags": set}, {"tags": [1, 2]}))
