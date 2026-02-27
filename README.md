@@ -45,7 +45,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | Philosophy      | Minimalist   | Full Zod port    | Full Zod port    | Full ORM       |
 | API style       | Plain dicts  | Chained builders | Chained builders | Classes        |
 | Dependencies    | **0**        | 2                | 0                | Many           |
-| Code size       | **<250 LOC** | 1,000s+ LOC      | 1,000s+ LOC      | Large          |
+| Code size       | **~250 LOC** | 1,000s+ LOC      | 1,000s+ LOC      | Large          |
 | Learning curve  | **Zero**     | Must learn DSL   | Must learn DSL   | Must learn DSL |
 | Env var support | **Built-in** | No               | No               | Partial        |
 
@@ -95,18 +95,35 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 
 **Parameters:**
 
-| Param    | Type   | Default | Description                                           |
-| -------- | ------ | ------- | ----------------------------------------------------- |
-| `schema` | `dict` | —       | Mapping of keys to expected types (`str`, `int`, ...) |
-| `data`   | `dict` | —       | The dict to validate                                  |
-| `coerce` | `bool` | `False` | Cast string values to the target type when possible   |
+| Param          | Type   | Default  | Description                                           |
+| -------------- | ------ | -------- | ----------------------------------------------------- |
+| `schema`       | `dict` | —        | Mapping of keys to expected types (`str`, `int`, ...) |
+| `data`         | `dict` | —        | The dict to validate                                  |
+| `coerce`       | `bool` | `False`  | Cast string values to the target type when possible   |
+| `max_depth`    | `int`  | `32`     | Maximum nesting depth to prevent stack overflow       |
+| `unknown_keys` | `str`  | `"reject"` | How to handle extra keys: `"reject"` or `"strip"`   |
 
 **Behavior:**
 
-- Extra keys in `data` are silently stripped — only schema-declared keys are returned.
+- Extra keys in `data` are rejected by default (`unknown_keys="reject"`).
+- Use `unknown_keys="strip"` to silently drop extra keys and return only schema-declared keys.
 - Missing keys raise `ValueError`.
 - When `coerce=True`, only `str` inputs are coerced (non-string mismatches still error).
 - Bool coercion accepts: `true/false`, `1/0`, `yes/no` (case-insensitive).
+
+```python
+# Default: reject unknown keys
+validate({"name": str}, {"name": "kai", "age": 25})
+# ValueError: age: unknown key
+
+# Opt-in: strip unknown keys
+validate(
+    {"name": str},
+    {"name": "kai", "age": 25},
+    unknown_keys="strip",
+)
+# -> {"name": "kai"}
+```
 
 ---
 
