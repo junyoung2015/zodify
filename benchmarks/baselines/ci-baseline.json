@@ -1,0 +1,14 @@
+{
+  "import": {
+    "median_ms": 0.1534,
+    "threshold_ms": 5.0
+  },
+  "validate": {
+    "median_ms": 0.0057,
+    "threshold_ms": 1.0
+  },
+  "env": {
+    "overhead_ms": 0.0002,
+    "threshold_ms": 0.1
+  }
+}
