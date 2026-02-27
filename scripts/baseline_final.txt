@@ -9,6 +9,7 @@
 [missing_nested] db.host: missing required key
 [missing_multiple] a: missing required key
 b: missing required key
+[unknown_key] extra: unknown key
 [nested_not_dict] db: expected dict, got str
 [nested_type_mismatch] db.port: expected int, got str
 [nested_deep_3] a.b.c: expected int, got str
@@ -31,4 +32,5 @@ db.port: expected int, got str
 tags[1]: expected str, got int
 [optional_wrong_type] port: expected int, got str
 [optional_coerce_fail] port: cannot coerce 'abc' to int
+[callable_fail] port: custom validation failed
 [set_mismatch] tags: expected set, got list
