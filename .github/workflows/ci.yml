@@ -34,3 +34,57 @@ jobs:
 
       - name: Test with pytest
         run: pytest tests/ -v --cov=zodify --cov-report=term-missing
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install zodify
+        run: pip install -e .
+
+      - name: Run benchmarks
+        id: run_bench
+        continue-on-error: true
+        run: |
+          mkdir -p benchmarks/out
+          set +e
+          bench_fail=0
+
+          echo "=== Import Time ==="
+          python benchmarks/bench_import.py --json benchmarks/out/import.json
+          import_rc=$?
+          [ "$import_rc" -ne 0 ] && bench_fail=1
+          echo ""
+          echo "=== Validate Speed ==="
+          python benchmarks/bench_validate.py --json benchmarks/out/validate.json
+          validate_rc=$?
+          [ "$validate_rc" -ne 0 ] && bench_fail=1
+          echo ""
+          echo "=== Env Overhead ==="
+          python benchmarks/bench_env.py --json benchmarks/out/env.json
+          env_rc=$?
+          [ "$env_rc" -ne 0 ] && bench_fail=1
+
+          echo "Benchmark exit codes: import=${import_rc} validate=${validate_rc} env=${env_rc}"
+          if [ "$bench_fail" -ne 0 ]; then
+            echo "One or more benchmark scripts failed; continuing because benchmark job is non-gating."
+            exit 1
+          fi
+
+      - name: Compare vs baseline
+        if: always()
+        continue-on-error: true
+        run: python benchmarks/compare.py --baseline benchmarks/baselines/ci-baseline.json --current benchmarks/out --summary benchmarks/out/summary.md
+
+      - name: Upload benchmark artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmarks/out
