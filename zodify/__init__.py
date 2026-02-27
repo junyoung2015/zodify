@@ -1,9 +1,8 @@
 """zodify - Zod-inspired dict validation for Python."""
 
 import os
-import types  # noqa: F401 — will be used later (types.UnionType)
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["__version__", "validate", "env", "Optional"]
 
 _MISSING = object()
@@ -83,12 +82,14 @@ def _coerce_value(value, target, key):
     )
 
 
-def _check_value(value, expected, key, coerce, errors, depth):
+def _check_value(value, expected, key, coerce, errors, depth,
+                 unknown_keys):
     """Validate one value against one schema entry.
 
     Returns validated value on success, _MISSING on direct
     failure (appending to shared errors list).
-    Passes depth-1 to nested _validate calls for dict recursion.
+    Passes unknown_keys through to nested _validate and
+    recursive _check_value calls.
     """
     if isinstance(expected, dict):
         if type(value) is not dict:
@@ -96,10 +97,7 @@ def _check_value(value, expected, key, coerce, errors, depth):
                            "dict", type(value).__name__))
             return _MISSING
         return _validate(expected, value, coerce,
-                         key + ".", errors, depth - 1)
-    # Note: isinstance() accepts list/dict subclasses as schema
-    # values, while type(value) is list/dict rejects subclasses
-    # as data values. This asymmetry is intentional (F-5).
+                         key + ".", errors, depth - 1, unknown_keys)
     if isinstance(expected, list) and len(expected) == 1:
         if type(value) is not list:
             errors.append((key, f"expected list, got {type(value).__name__}",
@@ -108,7 +106,7 @@ def _check_value(value, expected, key, coerce, errors, depth):
         result = []
         for i, item in enumerate(value):
             checked = _check_value(item, expected[0], f"{key}[{i}]",
-                                   coerce, errors, depth)
+                                   coerce, errors, depth, unknown_keys)
             if checked is not _MISSING:
                 result.append(checked)
         return result
@@ -125,9 +123,7 @@ def _check_value(value, expected, key, coerce, errors, depth):
             try:
                 return _coerce_value(value, expected, key)
             except ValueError as e:
-                msg = str(e)
-                prefix = f"{key}: "
-                msg = msg[len(prefix):] if msg.startswith(prefix) else msg
+                msg = str(e).removeprefix(f"{key}: ")
                 errors.append((key, msg, expected.__name__,
                                type(value).__name__))
                 return _MISSING
@@ -135,17 +131,25 @@ def _check_value(value, expected, key, coerce, errors, depth):
             key, f"expected {expected.__name__}, got {type(value).__name__}",
             expected.__name__, type(value).__name__))
         return _MISSING
+    if callable(expected):
+        try:
+            if expected(value): return value
+        except Exception: pass
+        errors.append((key, "custom validation failed", "callable", "failed"))
+        return _MISSING
     raise TypeError(
         f"invalid schema value for key '{key}': "
         f"{expected!r}"
     )
 
 
-def _validate(schema, data, coerce, prefix, errors, depth):
+def _validate(schema, data, coerce, prefix, errors, depth,
+              unknown_keys):
     """Iterate schema keys, handle Optional/missing, delegate
     to _check_value. Returns result dict only.
     If depth <= 0, appends a depth-exceeded error and returns
-    immediately."""
+    immediately.
+    Checks for unknown keys in data when unknown_keys="reject"."""
     result = {}
     if depth <= 0:
         errors.append((prefix.rstrip("."),
@@ -173,13 +177,20 @@ def _validate(schema, data, coerce, prefix, errors, depth):
             continue
         checked = _check_value(
             data[key], exp, full_key, coerce, errors, depth,
+            unknown_keys,
         )
         if checked is not _MISSING:
             result[key] = checked
+    if unknown_keys == "reject":
+        for key in data:
+            if key not in schema:
+                errors.append((f"{prefix}{key}", "unknown key",
+                               "known", "unknown"))
     return result
 
 
-def validate(schema, data, *, coerce=False, max_depth=32):
+def validate(schema, data, *, coerce=False, max_depth=32,
+             unknown_keys="reject"):
     """Validate a dict against a type schema.
 
     Args:
@@ -187,6 +198,8 @@ def validate(schema, data, *, coerce=False, max_depth=32):
         data: The dict to validate.
         coerce: If True, cast string values to target types.
         max_depth: Maximum nesting depth (default 32).
+        unknown_keys: How to handle extra keys ("reject" or
+                      "strip"). Default "reject".
 
     Returns:
         A new dict with only schema-declared keys.
@@ -199,8 +212,13 @@ def validate(schema, data, *, coerce=False, max_depth=32):
         raise TypeError("schema must be a dict")
     if type(data) is not dict:
         raise TypeError("data must be a dict")
+    if unknown_keys not in ("reject", "strip"):
+        raise ValueError("unknown_keys must be 'reject' or 'strip'")
     errors = []
-    result = _validate(schema, data, coerce, "", errors, max_depth)
+    result = _validate(
+        schema, data, coerce, "", errors, max_depth,
+        unknown_keys,
+    )
     if errors:
         raise ValueError("\n".join(
             f"{path}: {msg}" for path, msg, _, _ in errors
