@@ -7,7 +7,7 @@ from zodify import validate, Optional, __version__
 # --- __version__ ---
 
 def test_version():
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.2.0"
 
 
 # --- validate: basic types ---
@@ -41,7 +41,9 @@ def test_validate_coercion():
 
 
 def test_validate_extra_keys_stripped():
-    assert validate({"a": int}, {"a": 1, "b": 2}) == {"a": 1}
+    assert validate(
+        {"a": int}, {"a": 1, "b": 2}, unknown_keys="strip"
+    ) == {"a": 1}
 
 
 def test_validate_bool_int_trap():
@@ -83,7 +85,7 @@ def test_validate_bool_coercion_case_insensitive():
 
 
 def test_validate_empty_schema():
-    assert validate({}, {"a": 1}) == {}
+    assert validate({}, {"a": 1}, unknown_keys="strip") == {}
     assert validate({}, {}) == {}
 
 
@@ -257,6 +259,7 @@ def test_nested_dict_extra_keys_stripped():
     result = validate(
         {"db": {"host": str}},
         {"db": {"host": "x", "extra": 1}},
+        unknown_keys="strip",
     )
     assert result == {"db": {"host": "x"}}
     assert "extra" not in result["db"]
@@ -268,7 +271,9 @@ def test_bare_dict_type_backward_compat():
 
 
 def test_nested_dict_empty_schema():
-    result = validate({"db": {}}, {"db": {"a": 1}})
+    result = validate(
+        {"db": {}}, {"db": {"a": 1}}, unknown_keys="strip"
+    )
     assert result == {"db": {}}
 
 
