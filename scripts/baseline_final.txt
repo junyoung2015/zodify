@@ -1,0 +1,34 @@
+[int_got_str] a: expected int, got str
+[str_got_int] a: expected str, got int
+[bool_got_int] a: expected bool, got int
+[float_got_str] a: expected float, got str
+[int_got_bool] count: expected int, got bool
+[int_got_none] a: expected int, got NoneType
+[str_got_none] a: expected str, got NoneType
+[missing_single] a: missing required key
+[missing_nested] db.host: missing required key
+[missing_multiple] a: missing required key
+b: missing required key
+[nested_not_dict] db: expected dict, got str
+[nested_type_mismatch] db.port: expected int, got str
+[nested_deep_3] a.b.c: expected int, got str
+[nested_none] db: expected dict, got NoneType
+[list_not_list] tags: expected list, got str
+[list_elem_mismatch] tags[1]: expected str, got int
+[list_none] tags: expected list, got NoneType
+[list_of_dicts_err] users[0].name: expected str, got int
+[list_of_lists_err] m[0][1]: expected int, got str
+[coerce_int_fail] x: cannot coerce 'abc' to int
+[coerce_float_fail] x: cannot coerce 'abc' to float
+[coerce_bool_fail] x: cannot coerce 'maybe' to bool
+[coerce_empty_int] x: cannot coerce empty string to int
+[coerce_empty_float] x: cannot coerce empty string to float
+[coerce_empty_bool] x: cannot coerce empty string to bool
+[coerce_bool_non_str] x: expected int, got bool
+[list_coerce_fail] n[0]: cannot coerce 'bad' to float
+[multi_errors] name: missing required key
+db.port: expected int, got str
+tags[1]: expected str, got int
+[optional_wrong_type] port: expected int, got str
+[optional_coerce_fail] port: cannot coerce 'abc' to int
+[set_mismatch] tags: expected set, got list
