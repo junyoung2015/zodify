@@ -7,6 +7,23 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-02-27
+
+### Added
+
+- `max_depth` parameter on `validate()` with default of 32 to prevent stack overflow from deeply nested data.
+- Custom validator functions: use any callable (lambda or function) as a schema value for value-level validation beyond type checking.
+- `unknown_keys` parameter on `validate()` with default `"reject"` to control handling of extra keys in data. Use `"strip"` for previous silent-ignore behavior.
+- Performance benchmark scripts (`benchmarks/`) for compliance verification: import time, validate speed, env overhead.
+
+### Changed
+
+- Internal error representation refactored from format strings to structured 4-tuples `(path, message, expected, got)` for future structured error support.
+- `validate()` parameters after `data` are now keyword-only (enforced via `*`).
+- `test_env.py` extracted from `test_zodify.py` for cleaner test organization.
+- Unknown keys in data are now rejected by default. Use `unknown_keys="strip"` to restore v0.1.0 behavior.
+- CI pipeline now includes benchmark reporting on Python 3.12 (non-gating).
+
 ## [v0.1.0] - 2026-02-25
 
 ### Added
