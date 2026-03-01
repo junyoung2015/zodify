@@ -1,9 +1,10 @@
 """zodify - Zod-inspired dict validation for Python."""
 
 import os
+import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__: str = "0.2.1"
+__version__: str = "0.3.0"
 __all__ = ["__version__", "validate", "env", "Optional"]
 
 _MISSING: object = object()
@@ -87,6 +88,47 @@ def _coerce_value(value: Any, target: type, key: str) -> Any:
     )
 
 
+def _check_list(value: Any, expected: list[Any], key: str, coerce: bool,
+                errors: list[tuple[str, str, str, str]], depth: int,
+                unknown_keys: UnknownKeysMode) -> Any:
+    """Validate each element in a list against the expected type"""
+    if type(value) is not list:
+        errors.append((key, f"expected list, got {type(value).__name__}",
+                       "list", type(value).__name__))
+        return _MISSING
+    result: list[Any] = []
+    for i, item in enumerate(value):
+        checked = _check_value(item, expected[0], f"{key}[{i}]",
+                               coerce, errors, depth, unknown_keys)
+        if checked is not _MISSING:
+            result.append(checked)
+    return result
+
+
+def _check_type(value: Any, expected: type, key: str, coerce: bool,
+                errors: list[tuple[str, str, str, str]]) -> Any:
+    """Check a value against an expected type with optional coercion"""
+    if type(value) is expected:
+        return value
+    if coerce:
+        try:
+            return _coerce_value(value, expected, key)
+        except ValueError:
+            if type(value) is not str:
+                msg = f"expected {expected.__name__}, got {type(value).__name__}"
+            elif not value:
+                msg = f"cannot coerce empty string to {expected.__name__}"
+            else:
+                msg = f"cannot coerce '{value}' to {expected.__name__}"
+            errors.append((key, msg, expected.__name__,
+                           type(value).__name__))
+            return _MISSING
+    errors.append((
+        key, f"expected {expected.__name__}, got {type(value).__name__}",
+        expected.__name__, type(value).__name__))
+    return _MISSING
+
+
 def _check_value(value: Any, expected: Any, key: str, coerce: bool,
                  errors: list[tuple[str, str, str, str]], depth: int,
                  unknown_keys: UnknownKeysMode) -> Any:
@@ -99,43 +141,29 @@ def _check_value(value: Any, expected: Any, key: str, coerce: bool,
         return _validate(expected, value, coerce,
                          key + ".", errors, depth - 1, unknown_keys)
     if isinstance(expected, list) and len(expected) == 1:
-        if type(value) is not list:
-            errors.append((key, f"expected list, got {type(value).__name__}",
-                           "list", type(value).__name__))
-            return _MISSING
-        result = []
-        for i, item in enumerate(value):
-            checked = _check_value(item, expected[0], f"{key}[{i}]",
-                                   coerce, errors, depth, unknown_keys)
-            if checked is not _MISSING:
-                result.append(checked)
-        return result
+        return _check_list(value, expected, key, coerce, errors, depth, unknown_keys)
     if isinstance(expected, list):
         raise TypeError(
             f"invalid schema value for key '{key}': "
             f"list schema must contain exactly one "
             f"element type, got {len(expected)}"
         )
-    if type(expected) is type:
-        if type(value) is expected:
-            return value
+    if isinstance(expected, types.UnionType):
+        for t in expected.__args__:
+            if type(value) is t and (not coerce or t is not str):
+                return value
         if coerce:
-            try:
-                return _coerce_value(value, expected, key)
-            except ValueError:
-                if type(value) is not str:
-                    msg = f"expected {expected.__name__}, got {type(value).__name__}"
-                elif not value:
-                    msg = f"cannot coerce empty string to {expected.__name__}"
-                else:
-                    msg = f"cannot coerce '{value}' to {expected.__name__}"
-                errors.append((key, msg, expected.__name__,
-                               type(value).__name__))
-                return _MISSING
-        errors.append((
-            key, f"expected {expected.__name__}, got {type(value).__name__}",
-            expected.__name__, type(value).__name__))
+            for t in expected.__args__:
+                try:
+                    return _coerce_value(value, t, key)
+                except ValueError:
+                    pass
+        type_names = " | ".join(t.__name__ for t in expected.__args__)
+        errors.append((key, f"expected {type_names}, got {type(value).__name__}",
+                       type_names, type(value).__name__))
         return _MISSING
+    if type(expected) is type:
+        return _check_type(value, expected, key, coerce, errors)
     if callable(expected):
         try:
             if expected(value):
