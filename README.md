@@ -95,20 +95,20 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 
 **Parameters:**
 
-| Param          | Type   | Default  | Description                                           |
-| -------------- | ------ | -------- | ----------------------------------------------------- |
-| `schema`       | `dict` | —        | Mapping of keys to expected types (`str`, `int`, ...) |
-| `data`         | `dict` | —        | The dict to validate                                  |
-| `coerce`       | `bool` | `False`  | Cast string values to the target type when possible   |
-| `max_depth`    | `int`  | `32`     | Maximum nesting depth to prevent stack overflow       |
-| `unknown_keys` | `str`  | `"reject"` | How to handle extra keys: `"reject"` or `"strip"`   |
+| Param          | Type   | Default    | Description                                           |
+| -------------- | ------ | ---------- | ----------------------------------------------------- |
+| `schema`       | `dict` | —          | Mapping of keys to expected types (`str`, `int`, ...) |
+| `data`         | `dict` | —          | The dict to validate                                  |
+| `coerce`       | `bool` | `False`    | Cast string values to the target type when possible   |
+| `max_depth`    | `int`  | `32`       | Maximum nesting depth to prevent stack overflow       |
+| `unknown_keys` | `str`  | `"reject"` | How to handle extra keys: `"reject"` or `"strip"`     |
 
 **Behavior:**
 
 - Extra keys in `data` are rejected by default (`unknown_keys="reject"`).
 - Use `unknown_keys="strip"` to silently drop extra keys and return only schema-declared keys.
 - Missing keys raise `ValueError`.
-- When `coerce=True`, only `str` inputs are coerced (non-string mismatches still error).
+- When `coerce=True`, only `str` inputs are coerced to `int`, `float`, or `bool` (non-string mismatches still error). For `str` targets, any value is accepted via Python's `str()` builtin.
 - Bool coercion accepts: `true/false`, `1/0`, `yes/no` (case-insensitive).
 
 ```python
