@@ -22,6 +22,11 @@ and this project uses [Semantic Versioning](https://semver.org/).
 - Internal function docstrings (`_coerce_value`, `_check_value`, `_validate`) trimmed to one-line per architecture pattern.
 - flake8 CI step changed to report-only (`--exit-zero`) — type checkers now handle correctness gating.
 
+### Known Limitations
+
+- `Optional` default values are **not type-checked**. `Optional(int, "text")` will use the string default without validation. Verify your defaults match the expected type.
+- When `coerce=True` with target type `str`, any value is accepted via Python's `str()` builtin (e.g., `str(None)` becomes `"None"`). Non-string targets require string input for coercion.
+
 ## [v0.2.0] - 2026-02-27
 
 ### Added
