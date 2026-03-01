@@ -7,6 +7,21 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.2.1] - 2026-03-01
+
+### Added
+
+- PEP 561 `py.typed` marker file for type checker recognition.
+- Inline type annotations on all public and internal symbols.
+- `@overload` signatures for `env()` enabling IDE type inference (e.g., `env("PORT", int)` infers `int`).
+- Google-style docstrings with usage examples on all public API symbols (`validate`, `env`, `Optional`).
+- mypy (strict mode) and pyright CI gates as merge-blocking checks.
+
+### Changed
+
+- Internal function docstrings (`_coerce_value`, `_check_value`, `_validate`) trimmed to one-line per architecture pattern.
+- flake8 CI step changed to report-only (`--exit-zero`) — type checkers now handle correctness gating.
+
 ## [v0.2.0] - 2026-02-27
 
 ### Added
