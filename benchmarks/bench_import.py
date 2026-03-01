@@ -1,4 +1,4 @@
-"""Benchmark: zodify import time (median < 5ms)."""
+"""Benchmark: zodify import time (median target < 5ms)."""
 
 import json
 import os
@@ -14,11 +14,15 @@ THRESHOLD_SEC = 0.005
 
 
 def usage():
-    return "Usage: bench_import.py [--json <output-path>]"
+    return (
+        "Usage: bench_import.py [--json <output-path>] "
+        "[--enforce-threshold]"
+    )
 
 
 def parse_json_arg(argv):
     json_path = None
+    enforce_threshold = False
     i = 0
     while i < len(argv):
         arg = argv[i]
@@ -30,8 +34,12 @@ def parse_json_arg(argv):
             json_path = argv[i + 1]
             i += 2
             continue
+        if arg == "--enforce-threshold":
+            enforce_threshold = True
+            i += 1
+            continue
         raise ValueError(f"Unknown argument: {arg}")
-    return json_path
+    return json_path, enforce_threshold
 
 
 def runtime_label():
@@ -70,7 +78,7 @@ def measure_import():
 
 def main():
     try:
-        json_path = parse_json_arg(sys.argv[1:])
+        json_path, enforce_threshold = parse_json_arg(sys.argv[1:])
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         print(usage(), file=sys.stderr)
@@ -95,7 +103,7 @@ def main():
     print(f"  Min:    {min(times) * 1000:.3f} ms")
     print(f"  Max:    {max(times) * 1000:.3f} ms")
     print(f"  Threshold: {THRESHOLD_SEC * 1000:.3f} ms")
-    print(f"  Result: {result}")
+    print(f"  Result: {result} (informational unless --enforce-threshold)")
 
     if json_path:
         data = {
@@ -109,6 +117,8 @@ def main():
             "result": result,
         }
         write_json(json_path, data)
+    if enforce_threshold and result == "FAIL":
+        return 1
     return 0
 
 
