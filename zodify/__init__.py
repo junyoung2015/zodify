@@ -1,47 +1,52 @@
 """zodify - Zod-inspired dict validation for Python."""
 
 import os
+from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__ = "0.2.0"
+__version__: str = "0.2.1"
 __all__ = ["__version__", "validate", "env", "Optional"]
 
-_MISSING = object()
+_MISSING: object = object()
 _BOOL_TRUE = {"true", "1", "yes"}
 _BOOL_FALSE = {"false", "0", "no"}
+UnknownKeysMode = Literal["reject", "strip"]
+_DictValueT = TypeVar("_DictValueT")
+_SchemaValueT = TypeVar("_SchemaValueT")
+_EnvCastT = TypeVar("_EnvCastT", str, int, float, bool)
 
 
 class Optional:
-    """Marker for optional schema keys with an optional default."""
+    """Mark a schema key as optional with an optional default
 
+    Args:
+        type: The expected type for the value when present.
+        default: Default value if key is absent from data.
+                 If omitted, absent keys are excluded from
+                 the result.
+
+    Example:
+        >>> from zodify import validate, Optional
+        >>> schema = {"name": str, "role": Optional(str, "user")}
+        >>> validate(schema, {"name": "Alice"})
+        {'name': 'Alice', 'role': 'user'}
+    """
+
+    type: Any
+    default: Any
     __slots__ = ("type", "default")
 
-    def __init__(self, type, default=_MISSING):
+    def __init__(self, type: Any, default: Any = _MISSING) -> None:
         self.type = type
         self.default = default
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.default is _MISSING:
             return f"Optional({self.type!r})"
         return f"Optional({self.type!r}, {self.default!r})"
 
 
-def _coerce_value(value, target, key):
-    """Coerce a value to the target type.
-
-    Coercion to non-str targets only applies when value is a str.
-    Any value can be coerced to str via str().
-
-    Args:
-        value: The value to coerce.
-        target: The target type (str, int, float, bool).
-        key: The key name for error messages.
-
-    Returns:
-        The coerced value.
-
-    Raises:
-        ValueError: If coercion fails.
-    """
+def _coerce_value(value: Any, target: type, key: str) -> Any:
+    """Coerce a value to the target type"""
     if target is str:
         return str(value)
     if type(value) is not str:
@@ -82,15 +87,10 @@ def _coerce_value(value, target, key):
     )
 
 
-def _check_value(value, expected, key, coerce, errors, depth,
-                 unknown_keys):
-    """Validate one value against one schema entry.
-
-    Returns validated value on success, _MISSING on direct
-    failure (appending to shared errors list).
-    Passes unknown_keys through to nested _validate and
-    recursive _check_value calls.
-    """
+def _check_value(value: Any, expected: Any, key: str, coerce: bool,
+                 errors: list[tuple[str, str, str, str]], depth: int,
+                 unknown_keys: UnknownKeysMode) -> Any:
+    """Validate one value against one schema entry"""
     if isinstance(expected, dict):
         if type(value) is not dict:
             errors.append((key, f"expected dict, got {type(value).__name__}",
@@ -122,8 +122,13 @@ def _check_value(value, expected, key, coerce, errors, depth,
         if coerce:
             try:
                 return _coerce_value(value, expected, key)
-            except ValueError as e:
-                msg = str(e).removeprefix(f"{key}: ")
+            except ValueError:
+                if type(value) is not str:
+                    msg = f"expected {expected.__name__}, got {type(value).__name__}"
+                elif not value:
+                    msg = f"cannot coerce empty string to {expected.__name__}"
+                else:
+                    msg = f"cannot coerce '{value}' to {expected.__name__}"
                 errors.append((key, msg, expected.__name__,
                                type(value).__name__))
                 return _MISSING
@@ -133,8 +138,16 @@ def _check_value(value, expected, key, coerce, errors, depth,
         return _MISSING
     if callable(expected):
         try:
-            if expected(value): return value
-        except Exception: pass
+            if expected(value):
+                return value
+        except Exception as exc:
+            errors.append((
+                key,
+                f"custom validation failed ({type(exc).__name__}: {exc})",
+                "callable",
+                "failed",
+            ))
+            return _MISSING
         errors.append((key, "custom validation failed", "callable", "failed"))
         return _MISSING
     raise TypeError(
@@ -143,14 +156,11 @@ def _check_value(value, expected, key, coerce, errors, depth,
     )
 
 
-def _validate(schema, data, coerce, prefix, errors, depth,
-              unknown_keys):
-    """Iterate schema keys, handle Optional/missing, delegate
-    to _check_value. Returns result dict only.
-    If depth <= 0, appends a depth-exceeded error and returns
-    immediately.
-    Checks for unknown keys in data when unknown_keys="reject"."""
-    result = {}
+def _validate(schema: dict[str, Any], data: dict[str, Any], coerce: bool,
+              prefix: str, errors: list[tuple[str, str, str, str]], depth: int,
+              unknown_keys: UnknownKeysMode) -> dict[str, Any]:
+    """Iterate schema keys and validate each value"""
+    result: dict[str, Any] = {}
     if depth <= 0:
         errors.append((prefix.rstrip("."),
                        "max depth exceeded",
@@ -189,9 +199,45 @@ def _validate(schema, data, coerce, prefix, errors, depth,
     return result
 
 
-def validate(schema, data, *, coerce=False, max_depth=32,
-             unknown_keys="reject"):
-    """Validate a dict against a type schema.
+@overload
+def validate(
+    schema: dict[str, type[_SchemaValueT]],
+    data: dict[str, Any],
+    *,
+    coerce: bool = False,
+    max_depth: int = 32,
+    unknown_keys: Literal["reject"] = "reject",
+) -> dict[str, _SchemaValueT]:
+    ...
+
+
+@overload
+def validate(
+    schema: dict[str, Any],
+    data: dict[str, _DictValueT],
+    *,
+    coerce: bool = False,
+    max_depth: int = 32,
+    unknown_keys: Literal["reject"] = "reject",
+) -> dict[str, _DictValueT]:
+    ...
+
+
+@overload
+def validate(
+    schema: dict[str, Any],
+    data: dict[str, Any],
+    *,
+    coerce: bool = False,
+    max_depth: int = 32,
+    unknown_keys: Literal["strip"],
+) -> dict[str, Any]:
+    ...
+
+
+def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = False,
+             max_depth: int = 32, unknown_keys: UnknownKeysMode = "reject") -> dict[str, Any]:
+    """Validate a dict against a type schema
 
     Args:
         schema: Dict mapping keys to expected types.
@@ -205,8 +251,15 @@ def validate(schema, data, *, coerce=False, max_depth=32,
         A new dict with only schema-declared keys.
 
     Raises:
-        TypeError: If schema or data is not a dict.
-        ValueError: If any key fails validation.
+        TypeError: If schema or data is not a dict, or
+                   if schema contains invalid values.
+        ValueError: If any key fails validation or
+                    unknown_keys is not "reject" or "strip".
+
+    Example:
+        >>> from zodify import validate
+        >>> validate({"name": str, "age": int}, {"name": "Alice", "age": 30})
+        {'name': 'Alice', 'age': 30}
     """
     if type(schema) is not dict:
         raise TypeError("schema must be a dict")
@@ -214,7 +267,7 @@ def validate(schema, data, *, coerce=False, max_depth=32,
         raise TypeError("data must be a dict")
     if unknown_keys not in ("reject", "strip"):
         raise ValueError("unknown_keys must be 'reject' or 'strip'")
-    errors = []
+    errors: list[tuple[str, str, str, str]] = []
     result = _validate(
         schema, data, coerce, "", errors, max_depth,
         unknown_keys,
@@ -226,8 +279,18 @@ def validate(schema, data, *, coerce=False, max_depth=32,
     return result
 
 
-def env(name: str, cast: type, default=_MISSING):
-    """Read and type-cast an environment variable.
+@overload
+def env(name: str, cast: type[_EnvCastT]) -> _EnvCastT:
+    ...
+
+
+@overload
+def env(name: str, cast: type[_EnvCastT], default: _EnvCastT) -> _EnvCastT:
+    ...
+
+
+def env(name: str, cast: type[_EnvCastT], default: object = _MISSING) -> _EnvCastT:
+    """Read and type-cast an environment variable
 
     Args:
         name: The environment variable name.
@@ -243,12 +306,19 @@ def env(name: str, cast: type, default=_MISSING):
         ValueError: If the env var is missing (with no
                     default) or cannot be cast to the
                     target type.
+
+    Example:
+        >>> import os; os.environ["PORT"] = "8080"
+        >>> from zodify import env
+        >>> env("PORT", int)
+        8080
+        >>> del os.environ["PORT"]
     """
     value = os.environ.get(name)
     if value is None:
         if default is not _MISSING:
-            return default
+            return typing_cast(_EnvCastT, default)
         raise ValueError(
             f"{name}: missing required env var"
         )
-    return _coerce_value(value, cast, name)
+    return typing_cast(_EnvCastT, _coerce_value(value, cast, name))
