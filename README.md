@@ -251,25 +251,32 @@ Run local preflight before tagging:
 If preflight passes, push the version tag:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.1
+git push origin v0.2.1
 ```
 
 ---
 
 ## Roadmap
 
-zodify is in **alpha** (v0.1.0). The API surface is small and may evolve.
+zodify is in **alpha** (v0.2.1). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
 
-**Shipped in v0.1.0:**
+**Shipped:**
 
-- [x] Nested schema validation
+- [x] Nested schema validation with dot-path errors
 - [x] Optional keys with defaults
-- [x] List element validation
+- [x] List element validation (including list-of-dicts)
+- [x] Custom validator functions
+- [x] `unknown_keys` parameter (`"reject"` / `"strip"`)
+- [x] `max_depth` recursion depth limit
+- [x] Performance benchmark infrastructure
+- [x] PEP 561 `py.typed` marker & inline type annotations
+- [x] `@overload` signatures for `env()` (IDE type inference)
+- [x] Google-style docstrings on all public API symbols
+- [x] mypy (strict) & pyright CI gates
 
 **Near-term:**
 
-- [ ] Custom validator functions
 - [ ] Chained builder API
 
 **Exploring:**
