@@ -7,7 +7,18 @@ from zodify import validate, Optional, __version__
 # --- __version__ ---
 
 def test_version():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.2.1"
+
+
+# --- PEP 561: py.typed marker ---
+
+def test_py_typed_marker_exists():
+    """PEP 561: py.typed marker must exist and be empty."""
+    from pathlib import Path
+    import zodify
+    marker = Path(zodify.__file__).parent / "py.typed"
+    assert marker.exists(), "py.typed marker file missing from package"
+    assert marker.stat().st_size == 0, "py.typed must be empty per PEP 561"
 
 
 # --- validate: basic types ---
