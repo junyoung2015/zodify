@@ -7,6 +7,17 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-03-02
+
+### Added
+
+- Union type support: `str | int` runtime schema syntax for validating values against multiple types.
+- Union coercion with left-to-right priority: when `coerce=True`, union members are tried in declaration order — first exact match (non-str types), then coercion attempts. First success wins.
+
+### Known Limitations
+
+- `str` catch-all in union coercion: when `str` is a union member and `coerce=True`, any value that fails earlier union members will fall through to `str()` coercion (e.g., `int | str` with `True` produces `"True"`). Place `str` last in unions to use it as a fallback.
+
 ## [v0.2.1] - 2026-03-01
 
 ### Added
