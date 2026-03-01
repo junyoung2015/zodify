@@ -127,6 +127,48 @@ validate(
 
 ---
 
+### Union Types
+
+Use Python's `str | int` syntax to accept multiple types for a single key.
+
+```python
+schema = {"value": str | int}
+
+validate(schema, {"value": "hello"})  # → {"value": "hello"}
+validate(schema, {"value": 42})       # → {"value": 42}
+
+validate(schema, {"value": 3.14})
+# ValueError: value: expected str | int, got float
+```
+
+Types are checked left-to-right. With `coerce=True`, type order controls coercion priority:
+
+```python
+# str first → "42" stays as string (str coercion matches first)
+validate({"value": str | int}, {"value": "42"}, coerce=True)
+# → {"value": "42"}
+
+# int first → "42" coerced to int (int coercion matches first)
+validate({"value": int | str}, {"value": "42"}, coerce=True)
+# → {"value": 42}
+```
+
+Union types compose with lists, nested dicts, and `Optional`:
+
+```python
+validate({"items": [int | str]}, {"items": ["42"]}, coerce=True)
+# → {"items": [42]}
+
+validate({"config": {"v": int | str}}, {"config": {"v": "42"}}, coerce=True)
+# → {"config": {"v": 42}}
+```
+
+> **Note:** When `str` is a union member and `coerce=True`, `str` acts as a catch-all fallback — any value that fails earlier union members will coerce via `str()` (e.g., `int | str` with `True` produces `"True"`). Place `str` last in unions to use it as a deliberate fallback, or first to prefer string preservation.
+
+> Requires Python 3.10+ (for `X | Y` union syntax).
+
+---
+
 ### Nested Dict Validation
 
 Your schema can contain nested dicts — validation recurses automatically.
@@ -251,15 +293,15 @@ Run local preflight before tagging:
 If preflight passes, push the version tag:
 
 ```bash
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 ---
 
 ## Roadmap
 
-zodify is in **alpha** (v0.2.1). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
+zodify is in **alpha** (v0.3.0). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
 
 **Shipped:**
 
@@ -274,6 +316,7 @@ zodify is in **alpha** (v0.2.1). The API surface is small and may evolve. See [`
 - [x] `@overload` signatures for `env()` (IDE type inference)
 - [x] Google-style docstrings on all public API symbols
 - [x] mypy (strict) & pyright CI gates
+- [x] Union type schemas (`str | int` syntax) with left-to-right coercion priority
 
 **Near-term:**
 
