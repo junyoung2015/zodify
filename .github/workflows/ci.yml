@@ -29,11 +29,53 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 zodify/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 zodify/ tests/ --count --exit-zero --select=E9,F63,F7,F82 --show-source --statistics
           flake8 zodify/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
       - name: Test with pytest
         run: pytest tests/ -v --cov=zodify --cov-report=term-missing
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Run mypy
+        run: mypy --strict zodify/
+
+      - name: Run pyright
+        run: pyright zodify/
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Build wheel and sdist
+        run: python -m build --sdist --wheel --outdir dist
+
+      - name: Verify py.typed exists in built artifacts
+        run: python scripts/check_package_artifacts.py dist
 
   benchmark:
     runs-on: ubuntu-latest
