@@ -226,11 +226,11 @@ secret = env("SECRET_KEY", str)  # raises ValueError if missing
 
 **Parameters:**
 
-| Param     | Type   | Default  | Description                                     |
-| --------- | ------ | -------- | ----------------------------------------------- |
-| `name`    | `str`  | —        | Environment variable name                       |
-| `cast`    | `type` | —        | Target type (`str`, `int`, `float`, `bool`)     |
-| `default` | any    | _(none)_ | Fallback if the var is unset. Not type-checked. |
+| Param     | Type   | Default  | Description                                                                                       |
+| --------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| `name`    | `str`  | —        | Environment variable name                                                                         |
+| `cast`    | `type` | —        | Target type (`str`, `int`, `float`, `bool`)                                                       |
+| `default` | any    | _(none)_ | Fallback if the var is unset. **Not type-checked** — ensure your default matches the `cast` type. |
 
 ---
 
