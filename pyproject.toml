@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=69.0,<81.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "zodify"
-version = "0.2.0"
+version = "0.2.1"
 description = "Zod-inspired dict validation for Python. Zero deps. One file."
 readme = "README.md"
 license = "MIT"
@@ -25,9 +25,24 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = [
+    "build",
+    "flake8",
+    "mypy",
+    "pyright",
+    "pytest",
+    "pytest-cov",
+]
 
 [project.urls]
 Homepage = "https://github.com/junyoung2015/zodify"
 Repository = "https://github.com/junyoung2015/zodify"
 Issues = "https://github.com/junyoung2015/zodify/issues"
+
+[tool.setuptools.package-data]
+zodify = ["py.typed"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["zodify"]
