@@ -204,9 +204,18 @@ def test_validate_callable_error_tuple_contract_fields():
     assert len(errors) == 1
     path, msg, expected, got = errors[0]
     assert path == "port"
-    assert msg == "custom validation failed"
+    assert msg.startswith("custom validation failed")
     assert expected == "callable"
     assert got == "failed"
+
+
+def test_validate_callable_error_includes_exception_detail():
+    """Raised validator exceptions should preserve useful detail."""
+    def raises(v):
+        raise RuntimeError(f"boom {v}")
+
+    with pytest.raises(ValueError, match="RuntimeError: boom 3"):
+        validate({"x": raises}, {"x": 3})
 
 
 # --- P1 Fix: Wrong-arity callables ---
