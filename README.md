@@ -102,6 +102,7 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 | `coerce`       | `bool` | `False`    | Cast string values to the target type when possible   |
 | `max_depth`    | `int`  | `32`       | Maximum nesting depth to prevent stack overflow       |
 | `unknown_keys` | `str`  | `"reject"` | How to handle extra keys: `"reject"` or `"strip"`     |
+| `error_mode`   | `str`  | `"text"`   | Error output format: `"text"` or `"structured"`       |
 
 **Behavior:**
 
@@ -123,6 +124,39 @@ validate(
     unknown_keys="strip",
 )
 # -> {"name": "kai"}
+```
+
+---
+
+### Structured Errors
+
+By default, validation failures raise `ValueError` with human-readable messages. Use `error_mode="structured"` to get machine-readable `ValidationError` exceptions with an `.issues` list - ideal for API error responses.
+
+```python
+from zodify import validate, ValidationError
+
+try:
+    validate(
+        {"port": int, "host": str},
+        {"port": "abc", "host": 42},
+        error_mode="structured",
+    )
+except ValidationError as e:
+    print(e.issues)
+    # [
+    #   {"path": "port", "message": "expected int, got str", "expected": "int", "got": "str"},
+    #   {"path": "host", "message": "expected str, got int", "expected": "str", "got": "int"},
+    # ]
+```
+
+`ValidationError` subclasses `ValueError`, so existing `except ValueError` handlers still work. Each issue dict has four keys: `path`, `message`, `expected`, and `got`.
+
+```python
+# Works with all error types: type mismatch, missing key, coercion failure,
+# custom validator failure, depth exceeded, unknown key, and union mismatch.
+
+# Combine with other parameters freely:
+validate(schema, data, coerce=True, unknown_keys="strip", error_mode="structured")
 ```
 
 ---
@@ -293,15 +327,15 @@ Run local preflight before tagging:
 If preflight passes, push the version tag:
 
 ```bash
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.4.0
+git push origin v0.4.0
 ```
 
 ---
 
 ## Roadmap
 
-zodify is in **alpha** (v0.3.0). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
+zodify is in **alpha** (v0.4.0). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
 
 **Shipped:**
 
@@ -317,6 +351,8 @@ zodify is in **alpha** (v0.3.0). The API surface is small and may evolve. See [`
 - [x] Google-style docstrings on all public API symbols
 - [x] mypy (strict) & pyright CI gates
 - [x] Union type schemas (`str | int` syntax) with left-to-right coercion priority
+- [x] `ValidationError` exception with `.issues` for machine-readable errors
+- [x] `error_mode="structured"` parameter on `validate()`
 
 **Near-term:**
 
