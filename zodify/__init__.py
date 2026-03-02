@@ -4,16 +4,47 @@ import os
 import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__: str = "0.3.0"
-__all__ = ["__version__", "validate", "env", "Optional"]
+__version__: str = "0.4.0"
+__all__ = ["__version__", "validate", "env", "Optional", "ValidationError"]
 
 _MISSING: object = object()
 _BOOL_TRUE = {"true", "1", "yes"}
 _BOOL_FALSE = {"false", "0", "no"}
 UnknownKeysMode = Literal["reject", "strip"]
+ErrorMode = Literal["text", "structured"]
 _DictValueT = TypeVar("_DictValueT")
 _SchemaValueT = TypeVar("_SchemaValueT")
 _EnvCastT = TypeVar("_EnvCastT", str, int, float, bool)
+
+
+class ValidationError(ValueError):
+    """Validation error with machine-readable issues list
+
+    Args:
+        issues: List of issue dicts, each with keys
+                ``path``, ``message``, ``expected``, ``got``.
+                Dicts **must** contain at least ``path`` and
+                ``message``; a ``KeyError`` is raised otherwise.
+
+    Example:
+        >>> from zodify import ValidationError
+        >>> e = ValidationError([{"path": "db.port", "message": "expected int, got str", "expected": "int", "got": "str"}])
+        >>> str(e)
+        'db.port: expected int, got str'
+    """
+
+    issues: list[dict[str, str]]
+    __slots__ = ("issues",)
+
+    def __init__(self, issues: list[dict[str, str]]) -> None:
+        self.issues = [dict(d) for d in issues]
+        super().__init__("\n".join(
+            f"{d['path']}: {d['message']}" for d in self.issues
+        ))
+
+    def __reduce__(self) -> tuple[object, tuple[list[dict[str, str]]]]:
+        # Keep structured issues intact for copy/deepcopy/pickle.
+        return (self.__class__, (self.issues,))
 
 
 class Optional:
@@ -235,6 +266,7 @@ def validate(
     coerce: bool = False,
     max_depth: int = 32,
     unknown_keys: Literal["reject"] = "reject",
+    error_mode: ErrorMode = "text",
 ) -> dict[str, _SchemaValueT]:
     ...
 
@@ -247,6 +279,7 @@ def validate(
     coerce: bool = False,
     max_depth: int = 32,
     unknown_keys: Literal["reject"] = "reject",
+    error_mode: ErrorMode = "text",
 ) -> dict[str, _DictValueT]:
     ...
 
@@ -259,12 +292,14 @@ def validate(
     coerce: bool = False,
     max_depth: int = 32,
     unknown_keys: Literal["strip"],
+    error_mode: ErrorMode = "text",
 ) -> dict[str, Any]:
     ...
 
 
 def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = False,
-             max_depth: int = 32, unknown_keys: UnknownKeysMode = "reject") -> dict[str, Any]:
+             max_depth: int = 32, unknown_keys: UnknownKeysMode = "reject",
+             error_mode: ErrorMode = "text") -> dict[str, Any]:
     """Validate a dict against a type schema
 
     Args:
@@ -274,6 +309,11 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
         max_depth: Maximum nesting depth (default 32).
         unknown_keys: How to handle extra keys ("reject" or
                       "strip"). Default "reject".
+        error_mode: Error output format. ``"text"`` raises
+                    ``ValueError`` with human-readable strings
+                    (default). ``"structured"`` raises
+                    ``ValidationError`` with ``.issues`` list
+                    of dicts.
 
     Returns:
         A new dict with only schema-declared keys.
@@ -281,8 +321,11 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
     Raises:
         TypeError: If schema or data is not a dict, or
                    if schema contains invalid values.
-        ValueError: If any key fails validation or
-                    unknown_keys is not "reject" or "strip".
+        ValueError: If any key fails validation (text mode),
+                    or if unknown_keys / error_mode is invalid.
+        ValidationError: If any key fails validation
+                         (structured mode). Subclass of
+                         ValueError.
 
     Example:
         >>> from zodify import validate
@@ -295,12 +338,19 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
         raise TypeError("data must be a dict")
     if unknown_keys not in ("reject", "strip"):
         raise ValueError("unknown_keys must be 'reject' or 'strip'")
+    if error_mode not in ("text", "structured"):
+        raise ValueError("error_mode must be 'text' or 'structured'")
     errors: list[tuple[str, str, str, str]] = []
     result = _validate(
         schema, data, coerce, "", errors, max_depth,
         unknown_keys,
     )
     if errors:
+        if error_mode == "structured":
+            raise ValidationError([
+                {"path": p, "message": m, "expected": e, "got": g}
+                for p, m, e, g in errors
+            ])
         raise ValueError("\n".join(
             f"{path}: {msg}" for path, msg, _, _ in errors
         ))
