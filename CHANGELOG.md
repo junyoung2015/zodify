@@ -7,6 +7,15 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.0] - 2026-03-02
+
+### Added
+
+- `ValidationError` exception class: subclasses `ValueError` with `.issues` attribute containing structured `list[dict]` of validation failures. Each issue dict has `path`, `message`, `expected`, and `got` keys.
+- `error_mode` parameter on `validate()`: `error_mode="structured"` raises `ValidationError` with machine-readable `.issues`; default `error_mode="text"` preserves existing `ValueError` string behavior.
+- Structured error output covers all error types including union mismatch (`str | int`), coercion failure, custom validator failure, depth exceeded, and unknown key errors.
+- copy/deepcopy/pickle support for `ValidationError` via `__reduce__`.
+
 ## [v0.3.0] - 2026-03-02
 
 ### Added
