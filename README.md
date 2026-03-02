@@ -44,8 +44,8 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | --------------- | ------------ | ---------------- | ---------------- | -------------- |
 | Philosophy      | Minimalist   | Full Zod port    | Full Zod port    | Full ORM       |
 | API style       | Plain dicts  | Chained builders | Chained builders | Classes        |
-| Dependencies    | **0**        | 2                | 0                | Many           |
-| Code size       | **~250 LOC** | 1,000s+ LOC      | 1,000s+ LOC      | Large          |
+| Dependencies    | **0**        | 2                | 0                | 4              |
+| Code size       | **~400 LOC** | ~1,900 LOC       | ~1,400 LOC       | ~32,000 LOC    |
 | Learning curve  | **Zero**     | Must learn DSL   | Must learn DSL   | Must learn DSL |
 | Env var support | **Built-in** | No               | No               | Partial        |
 
