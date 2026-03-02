@@ -25,7 +25,7 @@ def _get_check_value_if_conditions() -> list[str]:
     return [ast.unparse(stmt.test) for stmt in func.body if isinstance(stmt, ast.If)]
 
 
-# --- Basic union matching (AC: #1, #2, #5) ---
+# --- Basic union matching ---
 
 
 def test_validate_union_str_matches_first_type() -> None:
@@ -46,7 +46,7 @@ def test_validate_union_bool_matches_bool_type() -> None:
     assert result == {"value": True}
 
 
-# --- Union mismatch (AC: #3, #8) ---
+# --- Union mismatch ---
 
 
 def test_validate_union_mismatch_error() -> None:
@@ -69,7 +69,7 @@ def test_validate_union_error_tuple_contract_fields() -> None:
     assert errors == [("value", "expected str | int, got float", "str | int", "float")]
 
 
-# --- Three-or-more types (AC: #6) ---
+# --- Three-or-more types ---
 
 
 def test_validate_union_three_types_match() -> None:
@@ -84,7 +84,7 @@ def test_validate_union_three_types_mismatch() -> None:
         validate({"value": str | int | float}, {"value": True})
 
 
-# --- Args order (AC: #5) ---
+# --- Args order ---
 
 
 def test_validate_union_first_exact_match_wins() -> None:
@@ -118,7 +118,7 @@ def test_validate_union_dispatch_position_regression() -> None:
     ]
 
 
-# --- Union + Optional (AC: #7) ---
+# --- Union + Optional ---
 
 
 def test_validate_union_with_optional_default_applied() -> None:
@@ -133,7 +133,7 @@ def test_validate_union_with_optional_present_validates() -> None:
     assert result == {"value": "hello"}
 
 
-# --- Union in list (AC: #9) ---
+# --- Union in list ---
 
 
 def test_validate_union_in_list_valid_items() -> None:
@@ -181,7 +181,7 @@ def test_validate_union_coerce_int_float_abc_raises() -> None:
         validate({"value": int | float}, {"value": "abc"}, coerce=True)
 
 
-# --- Two-pass behavior test (AC: 4) ---
+# --- Two-pass behavior test ---
 
 
 def test_validate_union_coerce_exact_match_before_coercion() -> None:
@@ -191,7 +191,7 @@ def test_validate_union_coerce_exact_match_before_coercion() -> None:
     assert type(result["value"]) is int
 
 
-# --- Union coercion tuple contract (AC: 3, 5) ---
+# --- Union coercion tuple contract ---
 
 
 def test_validate_union_coerce_miss_tuple_contract() -> None:
@@ -201,7 +201,7 @@ def test_validate_union_coerce_miss_tuple_contract() -> None:
     assert errors == [("value", "expected int | float, got str", "int | float", "str")]
 
 
-# --- Known limitation: str catch-all coercion (AC: 5) ---
+# --- Known limitation: str catch-all coercion ---
 
 
 def test_validate_union_coerce_int_str_bool_falls_through_to_str() -> None:
