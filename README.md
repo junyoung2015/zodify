@@ -44,6 +44,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | --------------- | ------------ | ---------------- | ---------------- | -------------- |
 | Philosophy      | Minimalist   | Full Zod port    | Full Zod port    | Full ORM       |
 | API style       | Plain dicts  | Chained builders | Chained builders | Classes        |
+| Schema composition | Plain dict reuse | Requires schema DSL/builders | Requires schema DSL/builders | Requires model classes |
 | Dependencies    | **0**        | 2                | 0                | 4              |
 | Code size       | **~400 LOC** | ~1,900 LOC       | ~1,400 LOC       | ~32,000 LOC    |
 | Learning curve  | **Zero**     | Must learn DSL   | Must learn DSL   | Must learn DSL |
@@ -221,6 +222,42 @@ Errors use dot-notation paths: `db.host`, `a.b.c`, etc.
 
 ---
 
+### Schema Composition
+
+schemas are data, not DSL - they compose like dicts because they are dicts
+
+```python
+from zodify import validate
+
+db_schema = {"host": str, "port": int}
+credentials_schema = {"username": str, "password": str}
+flag_schema = {"beta": bool | str}
+
+service_schema = {
+    "name": str,
+    "db": db_schema,
+    "credentials": credentials_schema,
+    "flags": {
+        "signup_flow": flag_schema,
+    },
+}
+
+validate(
+    service_schema,
+    {
+        "name": "api",
+        "db": {"host": "localhost", "port": 5432},
+        "credentials": {"username": "svc", "password": "secret"},
+        "flags": {"signup_flow": {"beta": "true"}},
+    },
+    coerce=True,
+)
+```
+
+For the full runnable version, see [`examples/nested_schemas.py`](examples/nested_schemas.py).
+
+---
+
 ### Optional Keys
 
 Use `Optional` to mark keys that can be missing. Provide a default, or omit it to exclude the key from results.
@@ -327,17 +364,17 @@ Run local preflight before tagging:
 If preflight passes, push the version tag:
 
 ```bash
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.4.1
+git push origin v0.4.1
 ```
 
 ---
 
 ## Roadmap
 
-zodify is in **alpha** (v0.4.0). The API surface is small and may evolve. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
+zodify is in **alpha** (v0.4.1). The API surface is small and may evolve. All pre-1.0 APIs are provisional per semver. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
 
-**Shipped:**
+**Shipped (v0.1.0-v0.4.1):**
 
 - [x] Nested schema validation with dot-path errors
 - [x] Optional keys with defaults
@@ -353,17 +390,22 @@ zodify is in **alpha** (v0.4.0). The API surface is small and may evolve. See [`
 - [x] Union type schemas (`str | int` syntax) with left-to-right coercion priority
 - [x] `ValidationError` exception with `.issues` for machine-readable errors
 - [x] `error_mode="structured"` parameter on `validate()`
+- [x] Runnable example scripts in `examples/` (`basic_validation.py`, `nested_schemas.py`, `custom_validators.py`, `union_types.py`, `env_config.py`, `structured_errors.py`)
+- [x] README schema composition documentation with plain dict reuse patterns
 
-**Near-term:**
+**Planned:**
 
-- [ ] Chained builder API
+| Version | Theme |
+|---------|-------|
+| v0.5.0 | `Validator` class with configurable defaults |
+| v0.6.0 | Class-based schema syntax (`Schema` base class) |
+| v0.7.0 | `.env` file loading (`load_env()`) |
+| v0.8.0 | JSON Schema export (`to_json_schema()`) |
+| v1.0.0 | API freeze, documentation site at zodify.dev |
 
-**Exploring:**
+**Post-v1.0 (exploring):**
 
-- [ ] `.env` file loading
-- [ ] JSON Schema export
-- [ ] Framework integrations (FastAPI, Django)
-- [ ] Async validation support
+- [ ] Framework integrations as extension packages (`zodify-fastapi`, etc.)
 
 ---
 
