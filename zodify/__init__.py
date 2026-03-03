@@ -4,7 +4,7 @@ import os
 import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__: str = "0.4.0"
+__version__: str = "0.4.1"
 __all__ = ["__version__", "validate", "env", "Optional", "ValidationError"]
 
 _MISSING: object = object()
