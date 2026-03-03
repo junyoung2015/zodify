@@ -7,6 +7,17 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.1] - 2026-03-04
+
+### Added
+
+- Added six runnable example scripts in `examples/`: `basic_validation.py`, `nested_schemas.py`, `custom_validators.py`, `union_types.py`, `env_config.py`, and `structured_errors.py`.
+- Added `tests/test_examples.py` smoke coverage for required example presence, runnable entrypoints, expected-output verification, and runtime API usage checks.
+- Added public API export parity assertion to keep `__version__` included in `zodify.__all__`.
+- Added package-boundary verification policy for examples (wheel excludes runtime examples; source distribution may include them for documentation visibility).
+- Added README `Schema Composition` section showing plain-dict schema reuse, nested composition, nested union member usage, and a runnable reference to `examples/nested_schemas.py`.
+- Added README consistency updates: `Schema composition` comparison-table row, roadmap status aligned to `v0.4.1`, and release tagging example updated to `git tag v0.4.1`.
+
 ## [v0.4.0] - 2026-03-02
 
 ### Added
