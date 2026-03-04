@@ -32,6 +32,7 @@ dev = [
     "pyright",
     "pytest",
     "pytest-cov",
+    "setuptools>=69.0,<81.0",
 ]
 
 [project.urls]
