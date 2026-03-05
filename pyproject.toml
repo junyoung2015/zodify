@@ -36,9 +36,12 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/junyoung2015/zodify"
+Homepage = "https://zodify.dev"
+Documentation = "https://zodify.dev"
 Repository = "https://github.com/junyoung2015/zodify"
+Changelog = "https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md"
 Issues = "https://github.com/junyoung2015/zodify/issues"
+Funding = "https://github.com/sponsors/junyoung2015"
 
 [tool.setuptools.package-data]
 zodify = ["py.typed"]
