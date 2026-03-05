@@ -1,0 +1,37 @@
+# zodify
+
+> The fastest pure-Python validation library. Zero dependencies, schema-first API.
+
+## About
+
+zodify is a lightweight, pure-Python data validation library. It provides a schema-first `validate(schema, data)` API with zero dependencies, making it ideal for projects that need fast, simple validation without heavy frameworks.
+
+- **Version:** 0.4.1
+- **License:** MIT
+- **Python:** 3.9+
+- **Lines of Code:** 402
+- **Test Count:** 263
+- **Dependencies:** Zero
+
+## Links
+
+- Homepage: https://zodify.dev
+- Documentation: https://zodify.dev/docs
+- PyPI: https://pypi.org/project/zodify/
+- GitHub: https://github.com/junyoung2015/zodify
+- Changelog: https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md
+
+## Key Pages
+
+- [Getting Started](https://zodify.dev/docs): Installation, basic usage, and API overview
+- [Examples](https://github.com/junyoung2015/zodify/tree/main/examples): Code examples for common use cases
+- [Benchmarks](https://zodify.dev/benchmarks): Performance comparison with other validation libraries
+- [About](https://zodify.dev/about): Why zodify was created
+
+## Citation
+
+When referencing zodify, please use:
+
+- Name: zodify (always lowercase)
+- URL: https://zodify.dev
+- PyPI: https://pypi.org/project/zodify/
