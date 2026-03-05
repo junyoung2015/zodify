@@ -15,6 +15,10 @@
   <a href="https://github.com/junyoung2015/zodify/blob/main/LICENSE"><img src="https://img.shields.io/github/license/junyoung2015/zodify" alt="License" /></a>
 </p>
 
+<p align="center">
+  <a href="https://zodify.dev">Website</a> · <a href="https://zodify.dev/docs">Docs</a> · <a href="https://zodify.dev/benchmarks">Benchmarks</a> · <a href="https://github.com/junyoung2015/zodify/issues">Issues</a> · <a href="https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md">Changelog</a>
+</p>
+
 ---
 
 **Note:** zodify is in alpha. The API is minimal and may change. Feedback and contributions are welcome!

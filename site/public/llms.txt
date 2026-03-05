@@ -19,7 +19,9 @@ zodify is a lightweight, pure-Python data validation library. It provides a sche
 - Documentation: https://zodify.dev/docs
 - PyPI: https://pypi.org/project/zodify/
 - GitHub: https://github.com/junyoung2015/zodify
+- Issues: https://github.com/junyoung2015/zodify/issues
 - Changelog: https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md
+- Wikidata: https://www.wikidata.org/wiki/Q138573088
 
 ## Key Pages
 
