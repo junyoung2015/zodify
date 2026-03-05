@@ -46,6 +46,9 @@ Funding = "https://github.com/sponsors/junyoung2015"
 [tool.setuptools.package-data]
 zodify = ["py.typed"]
 
+[tool.setuptools.packages.find]
+include = ["zodify*"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = true
