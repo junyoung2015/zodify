@@ -33,6 +33,8 @@ const benchmarks = [
 ];
 
 const maxValue = 1300000;
+const BAR_AREA_PX = 320; // pixel height reserved for bars (within 360px row)
+const MIN_BAR_PX = 18; // visual floor so tiny values are still visible bars
 
 export function HomePage() {
   const [copied, setCopied] = useState(false);
@@ -333,54 +335,61 @@ export function HomePage() {
             </div>
 
             <div className='relative z-10 flex justify-around items-end h-[360px] pl-6 md:pl-12 gap-1 md:gap-6'>
-              {benchmarks.map((bench, index) => (
-                <div
-                  key={bench.name}
-                  className='flex flex-col items-center w-full max-w-[120px] group relative'
-                >
-                  {bench.name === "zodify" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1, duration: 0.5 }}
-                      className='absolute -top-12 bg-cyber-purple text-white text-xs font-bold px-3 py-1 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]'
-                    >
-                      Fastest pure-Python
-                    </motion.div>
-                  )}
-
+              {benchmarks.map((bench, index) => {
+                const barPx = Math.max(
+                  MIN_BAR_PX,
+                  Math.round((bench.value / maxValue) * BAR_AREA_PX)
+                );
+                return (
                   <div
-                    className={`text-xs font-mono ${bench.name === "zodify" ? "text-cyber-purple font-bold" : "text-cyber-text/50"} mb-2 opacity-0 group-hover:opacity-100 transition-opacity`}
-                  >
-                    {bench.ops} ops/sec
-                  </div>
-
-                  <motion.div
-                    initial={{ height: 0 }}
-                    whileInView={{
-                      height: `${(bench.value / maxValue) * 100}%`,
-                    }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: index * 0.15 }}
-                    className={`w-full ${bench.color} rounded-t-lg relative min-h-[4px] group-hover:brightness-110 transition-all shadow-lg`}
+                    key={bench.name}
+                    className='flex flex-col items-center justify-end w-full max-w-[120px] h-full group relative'
                   >
                     {bench.name === "zodify" && (
-                      <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity'></div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1, duration: 0.5 }}
+                        className='absolute -top-12 bg-cyber-purple text-white text-xs font-bold px-3 py-1 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]'
+                      >
+                        Fastest pure-Python
+                      </motion.div>
                     )}
-                  </motion.div>
 
-                  <div
-                    className={`mt-4 font-mono font-bold text-xs tracking-wider uppercase ${bench.name === "zodify" ? "text-white text-glow" : "text-cyber-text/50"}`}
-                  >
-                    {bench.name}
-                  </div>
-                  {bench.name === "pydantic v2" && (
-                    <div className='text-[9px] font-mono text-cyber-text/30 mt-1'>
-                      (Rust core)
+                    <div
+                      className={`text-xs font-mono ${bench.name === "zodify" ? "text-cyber-purple font-bold" : "text-cyber-text/50"} mb-2 opacity-0 group-hover:opacity-100 transition-opacity`}
+                    >
+                      {bench.ops} ops/sec
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    <motion.div
+                      initial={{ height: 0 }}
+                      whileInView={{ height: barPx }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, delay: index * 0.15 }}
+                      className={`w-full ${bench.color} rounded-t-lg relative group-hover:brightness-110 transition-all shadow-lg`}
+                    >
+                      {bench.name === "zodify" && (
+                        <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity'></div>
+                      )}
+                    </motion.div>
+
+                    {/* Fixed-height label area so all columns share the same baseline */}
+                    <div className='h-10 flex flex-col items-center justify-start'>
+                      <div
+                        className={`mt-4 font-mono font-bold text-xs tracking-wider uppercase ${bench.name === "zodify" ? "text-white text-glow" : "text-cyber-text/50"}`}
+                      >
+                        {bench.name}
+                      </div>
+                      {bench.name === "pydantic v2" && (
+                        <div className='text-[9px] font-mono text-cyber-text/30'>
+                          (Rust core)
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </motion.div>
