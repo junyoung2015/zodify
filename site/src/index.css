@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-cyber-bg: #030014;
+  --color-cyber-dark: #0a0520;
+  --color-cyber-purple: #a855f7;
+  --color-cyber-neon: #d946ef;
+  --color-cyber-blue: #3b82f6;
+  --color-cyber-text: #e2e8f0;
+  --color-cyber-glass: rgba(255, 255, 255, 0.03);
+  --color-cyber-border: rgba(168, 85, 247, 0.2);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .bg-cyber-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+  }
+
+  .box-glow {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+  }
+
+  .glass-panel {
+    @apply bg-cyber-glass backdrop-blur-md border border-cyber-border/30 shadow-[0_0_15px_rgba(168,85,247,0.1)];
+  }
+}
