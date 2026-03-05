@@ -42,16 +42,46 @@ export function DocsPage() {
           content='Documentation for zodify: installation, schemas, validation, type coercion, union types, custom validators, environment variables, and structured errors.'
         />
         <link rel='canonical' href='https://zodify.dev/docs' />
-        <script type='application/ld+json'>{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-            { "@type": "Question", "name": "How do I install zodify?", "acceptedAnswer": { "@type": "Answer", "text": "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax." } },
-            { "@type": "Question", "name": "Can zodify validate nested data structures?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Nest dicts inside your schema to validate deeply nested structures. Errors report the full dot-path (e.g., db.port: expected int, got str). Recursion depth is protected by default." } },
-            { "@type": "Question", "name": "Does zodify support type checking with mypy and pyright?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. zodify is PEP 561 compliant with a py.typed marker. It ships overloaded type signatures so mypy and pyright can infer return types. Both type checkers are merge-blocking CI gates in zodify's own test suite." } },
-            { "@type": "Question", "name": "How does zodify handle validation errors?", "acceptedAnswer": { "@type": "Answer", "text": "By default, validate() raises a ValueError with a human-readable message. Pass error_mode='structured' to get a ValidationError with programmatic access to each issue (path, message, expected, got). ValidationError is a subclass of ValueError." } }
-          ]
-        })}</script>
+        <script type='application/ld+json'>
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "How do I install zodify?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can zodify validate nested data structures?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. Nest dicts inside your schema to validate deeply nested structures. Errors report the full dot-path (e.g., db.port: expected int, got str). Recursion depth is protected by default.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does zodify support type checking with mypy and pyright?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. zodify is PEP 561 compliant with a py.typed marker. It ships overloaded type signatures so mypy and pyright can infer return types. Both type checkers are merge-blocking CI gates in zodify's own test suite.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How does zodify handle validation errors?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "By default, validate() raises a ValueError with a human-readable message. Pass error_mode='structured' to get a ValidationError with programmatic access to each issue (path, message, expected, got). ValidationError is a subclass of ValueError.",
+                },
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       {/* Sidebar */}
       <aside className='hidden md:block w-64 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-4'>
@@ -193,7 +223,9 @@ export function DocsPage() {
         <details className='md:hidden glass-panel rounded-xl border border-white/5 mb-8 group'>
           <summary className='px-4 py-3 cursor-pointer font-display font-bold text-white text-sm flex items-center justify-between list-none'>
             <span>On this page</span>
-            <span className='text-cyber-purple text-lg group-open:rotate-45 transition-transform'>+</span>
+            <span className='text-cyber-purple text-lg group-open:rotate-45 transition-transform'>
+              +
+            </span>
           </summary>
           <nav className='px-4 pb-4 grid grid-cols-2 gap-2 text-sm font-display'>
             {[
@@ -868,7 +900,9 @@ export function DocsPage() {
               >
                 <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
                   <span>{item.q}</span>
-                  <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>+</span>
+                  <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>
+                    +
+                  </span>
                 </summary>
                 <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
                   {item.a}

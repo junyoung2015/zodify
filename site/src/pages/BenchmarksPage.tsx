@@ -322,7 +322,9 @@ export function BenchmarksPage() {
                   <th className='px-3 md:px-6 py-3 font-medium'>Library</th>
                   <th className='px-3 md:px-6 py-3 font-medium'>Validation</th>
                   <th className='px-3 md:px-6 py-3 font-medium'>Import</th>
-                  <th className='px-3 md:px-6 py-3 font-medium'>Install Size</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>
+                    Install Size
+                  </th>
                   <th className='px-6 py-3 font-medium'>Dependencies</th>
                 </tr>
               </thead>

@@ -21,7 +21,11 @@ export function Navbar() {
   return (
     <header className='sticky top-0 z-50 border-b border-white/5 bg-cyber-dark/80 backdrop-blur-xl'>
       <div className='max-w-7xl mx-auto px-6 h-16 flex justify-between items-center'>
-        <Link to='/' className='flex items-center gap-2 group' onClick={() => setMobileOpen(false)}>
+        <Link
+          to='/'
+          className='flex items-center gap-2 group'
+          onClick={() => setMobileOpen(false)}
+        >
           <div className='relative'>
             <div className='absolute inset-0 bg-cyber-purple blur-md opacity-50 group-hover:opacity-100 transition-opacity duration-300'></div>
             <Zap className='w-6 h-6 text-white relative z-10 fill-white' />
@@ -69,7 +73,11 @@ export function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
-            {mobileOpen ? <X className='w-6 h-6' /> : <Menu className='w-6 h-6' />}
+            {mobileOpen ? (
+              <X className='w-6 h-6' />
+            ) : (
+              <Menu className='w-6 h-6' />
+            )}
           </button>
         </div>
       </div>
