@@ -43,6 +43,54 @@ export function HomePage() {
           content='Zero-dependency Python dict validation with 615K ops/sec, recursive schemas, type coercion, and first-class type-checker support. 402 LOC, 48KB installed.'
         />
         <link rel='canonical' href='https://zodify.dev/' />
+        <script type='application/ld+json'>
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What is zodify?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 402-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "When should I use zodify instead of Pydantic?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where a 7.8MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.3M ops/sec) but zodify is 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does zodify have any dependencies?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is a single file (402 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What Python versions does zodify support?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify requires Python 3.10 or higher. This is because it uses the native str | int union type syntax introduced in Python 3.10 (PEP 604).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Is zodify production-ready?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify is in alpha (v0.4.1). The API is stable for current features but may expand. It has 263 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+                },
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       {/* Hero Section */}
       <section className='pt-20 pb-12 px-6 flex flex-col items-center text-center'>
@@ -397,6 +445,55 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className='px-6 max-w-5xl mx-auto w-full'>
+        <div className='text-center mb-12'>
+          <h2 className='font-display font-bold text-3xl md:text-4xl text-white mb-4'>
+            Frequently Asked{" "}
+            <span className='text-cyber-purple'>Questions</span>
+          </h2>
+        </div>
+        <div className='space-y-4'>
+          {[
+            {
+              q: "What is zodify?",
+              a: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 402-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+            },
+            {
+              q: "When should I use zodify instead of Pydantic?",
+              a: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where a 7.8MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.3M ops/sec) but zodify is 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+            },
+            {
+              q: "Does zodify have any dependencies?",
+              a: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is a single file (402 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+            },
+            {
+              q: "What Python versions does zodify support?",
+              a: "zodify requires Python 3.10 or higher. This is because it uses the native str | int union type syntax introduced in Python 3.10 (PEP 604).",
+            },
+            {
+              q: "Is zodify production-ready?",
+              a: "zodify is in alpha (v0.4.1). The API is stable for current features but may expand. It has 263 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+            },
+          ].map((item, i) => (
+            <details
+              key={i}
+              className='glass-panel rounded-xl border border-white/5 hover:border-cyber-purple/30 transition-colors group'
+            >
+              <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
+                <span>{item.q}</span>
+                <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>
+                  +
+                </span>
+              </summary>
+              <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
+                {item.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className='py-20 px-6 text-center relative'>
         <div className='absolute inset-0 bg-cyber-purple/5 blur-3xl -z-10 rounded-full transform scale-75'></div>
@@ -429,6 +526,11 @@ export function HomePage() {
           </a>
         </div>
       </section>
+
+      {/* Last Updated */}
+      <div className='text-center text-xs font-mono text-cyber-text/30'>
+        Last updated: March 5, 2026
+      </div>
     </div>
   );
 }

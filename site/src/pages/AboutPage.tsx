@@ -11,6 +11,15 @@ export function AboutPage() {
           content='How a 20-line automation script turned into a published Python validation library - the story behind zodify and why it exists.'
         />
         <link rel='canonical' href='https://zodify.dev/about' />
+        <script type='application/ld+json'>{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "Who created zodify?", "acceptedAnswer": { "@type": "Answer", "text": "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases." } },
+            { "@type": "Question", "name": "Why was zodify created?", "acceptedAnswer": { "@type": "Answer", "text": "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data)." } },
+            { "@type": "Question", "name": "What are zodify's design constraints?", "acceptedAnswer": { "@type": "Answer", "text": "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines." } }
+          ]
+        })}</script>
       </Helmet>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -382,10 +391,53 @@ export function AboutPage() {
 
           <div className='w-full h-px bg-gradient-to-r from-transparent via-cyber-border to-transparent opacity-50'></div>
 
+          {/* FAQ */}
+          <section>
+            <h2 className='font-display font-bold text-2xl md:text-3xl text-white mb-6'>
+              FAQ
+            </h2>
+            <div className='space-y-4'>
+              {[
+                {
+                  q: "Who created zodify?",
+                  a: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases.",
+                },
+                {
+                  q: "Why was zodify created?",
+                  a: "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data).",
+                },
+                {
+                  q: "What are zodify's design constraints?",
+                  a: "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines.",
+                },
+              ].map((item, i) => (
+                <details
+                  key={i}
+                  className='glass-panel rounded-xl border border-white/5 hover:border-cyber-purple/30 transition-colors group'
+                >
+                  <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
+                    <span>{item.q}</span>
+                    <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>+</span>
+                  </summary>
+                  <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
+                    {item.a}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          <div className='w-full h-px bg-gradient-to-r from-transparent via-cyber-border to-transparent opacity-50'></div>
+
           {/* Attribution */}
           <p className='text-cyber-text/50 italic text-sm'>
             - Jun Young Sohn (jusohn)
           </p>
+
+          {/* Last Updated */}
+          <div className='text-center text-xs font-mono text-cyber-text/30'>
+            Last updated: March 5, 2026
+          </div>
         </div>
       </motion.div>
     </div>

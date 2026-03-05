@@ -95,6 +95,46 @@ export function BenchmarksPage() {
           content='Performance benchmarks comparing zodify against pydantic, voluptuous, schema, and cerberus. 615K ops/sec, 48KB installed, 4ms import time.'
         />
         <link rel='canonical' href='https://zodify.dev/benchmarks' />
+        <script type='application/ld+json'>
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Is zodify faster than Pydantic?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. Pydantic v2 uses a Rust-compiled core and achieves 1.3M ops/sec vs zodify's 615K ops/sec. However, zodify is the fastest pure-Python validation library - 2.1x faster than voluptuous, 14x faster than schema, and 61x faster than cerberus. zodify is also 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How were these benchmarks measured?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "All benchmarks use Python 3.10 on Apple Silicon (ARM64). Validation speed is measured with timeit.repeat (best of 5 runs, 100,000+ iterations per measurement) using a 3-key flat dict (str, int, bool). Import time uses subprocess isolation per library.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I reproduce these benchmarks?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. Clone the repo (git clone https://github.com/junyoung2015/zodify), install dev dependencies (pip install -e .[dev]), and run python benchmarks/bench_validate.py and python benchmarks/bench_import.py.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Why is zodify's import time so much faster?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify has zero dependencies and a single-file architecture (402 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms.",
+                },
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -114,6 +154,28 @@ export function BenchmarksPage() {
             Head-to-head performance comparison across five Python validation
             libraries. All numbers are reproducible from the source repo.
           </p>
+        </div>
+
+        {/* Stats Summary */}
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-12'>
+          {[
+            { label: "ZODIFY OPS/SEC", value: "615K" },
+            { label: "IMPORT TIME", value: "4.2ms" },
+            { label: "INSTALL SIZE", value: "48KB" },
+            { label: "DEPENDENCIES", value: "0" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className='glass-panel rounded-lg p-4 text-center'
+            >
+              <div className='text-[10px] font-mono text-cyber-text/40 uppercase tracking-widest mb-1'>
+                {stat.label}
+              </div>
+              <div className='font-mono font-bold text-white text-lg'>
+                {stat.value}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Validation Speed */}
@@ -389,7 +451,7 @@ export function BenchmarksPage() {
         </section>
 
         {/* Reproduce */}
-        <section>
+        <section className='mb-16'>
           <div className='flex items-center gap-3 mb-6'>
             <div className='w-10 h-10 rounded-lg bg-cyber-purple/10 flex items-center justify-center'>
               <Package className='w-5 h-5 text-cyber-purple' />
@@ -436,6 +498,63 @@ $ python benchmarks/bench_import.py`}
             <ExternalLink className='w-3.5 h-3.5' />
           </a>
         </section>
+
+        {/* FAQ */}
+        <section className='mb-12'>
+          <div className='flex items-center gap-3 mb-8'>
+            <div className='w-10 h-10 rounded-lg bg-cyber-purple/10 flex items-center justify-center'>
+              <FlaskConical className='w-5 h-5 text-cyber-purple' />
+            </div>
+            <div>
+              <h2 className='font-display font-bold text-2xl text-white'>
+                FAQ
+              </h2>
+              <p className='text-xs font-mono text-cyber-text/50'>
+                Common questions about these benchmarks
+              </p>
+            </div>
+          </div>
+          <div className='space-y-4'>
+            {[
+              {
+                q: "Is zodify faster than Pydantic?",
+                a: "No. Pydantic v2 uses a Rust-compiled core and achieves 1.3M ops/sec vs zodify's 615K ops/sec. However, zodify is the fastest pure-Python validation library \u2014 2.1x faster than voluptuous, 14x faster than schema, and 61x faster than cerberus. zodify is also 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+              },
+              {
+                q: "How were these benchmarks measured?",
+                a: "All benchmarks use Python 3.10 on Apple Silicon (ARM64). Validation speed is measured with timeit.repeat (best of 5 runs, 100,000+ iterations per measurement) using a 3-key flat dict (str, int, bool). Import time uses subprocess isolation per library to avoid cross-contamination.",
+              },
+              {
+                q: "Can I reproduce these benchmarks?",
+                a: "Yes. Clone the repo (git clone https://github.com/junyoung2015/zodify), install dev dependencies (pip install -e .[dev]), and run python benchmarks/bench_validate.py and python benchmarks/bench_import.py. All source code is in the benchmarks/ directory.",
+              },
+              {
+                q: "Why is zodify's import time so much faster?",
+                a: "zodify has zero dependencies and a single-file architecture (402 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms \u2014 a 10x difference.",
+              },
+            ].map((item, i) => (
+              <details
+                key={i}
+                className='glass-panel rounded-xl border border-white/5 hover:border-cyber-purple/30 transition-colors group'
+              >
+                <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
+                  <span>{item.q}</span>
+                  <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>
+                    +
+                  </span>
+                </summary>
+                <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* Last Updated */}
+        <div className='text-center text-xs font-mono text-cyber-text/30'>
+          Last updated: March 5, 2026
+        </div>
       </motion.div>
     </div>
   );

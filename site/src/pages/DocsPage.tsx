@@ -42,6 +42,16 @@ export function DocsPage() {
           content='Documentation for zodify: installation, schemas, validation, type coercion, union types, custom validators, environment variables, and structured errors.'
         />
         <link rel='canonical' href='https://zodify.dev/docs' />
+        <script type='application/ld+json'>{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "How do I install zodify?", "acceptedAnswer": { "@type": "Answer", "text": "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax." } },
+            { "@type": "Question", "name": "Can zodify validate nested data structures?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Nest dicts inside your schema to validate deeply nested structures. Errors report the full dot-path (e.g., db.port: expected int, got str). Recursion depth is protected by default." } },
+            { "@type": "Question", "name": "Does zodify support type checking with mypy and pyright?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. zodify is PEP 561 compliant with a py.typed marker. It ships overloaded type signatures so mypy and pyright can infer return types. Both type checkers are merge-blocking CI gates in zodify's own test suite." } },
+            { "@type": "Question", "name": "How does zodify handle validation errors?", "acceptedAnswer": { "@type": "Answer", "text": "By default, validate() raises a ValueError with a human-readable message. Pass error_mode='structured' to get a ValidationError with programmatic access to each issue (path, message, expected, got). ValidationError is a subclass of ValueError." } }
+          ]
+        })}</script>
       </Helmet>
       {/* Sidebar */}
       <aside className='hidden md:block w-64 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-4'>
@@ -158,6 +168,22 @@ export function DocsPage() {
               </li>
             </ul>
           </div>
+          <div>
+            <h5 className='text-white font-bold mb-4 flex items-center gap-2'>
+              <AlertTriangle className='w-4 h-4 text-cyber-purple' />
+              More
+            </h5>
+            <ul className='space-y-2 border-l border-white/10 ml-2 pl-4'>
+              <li>
+                <a
+                  href='#faq'
+                  className='block text-cyber-text/60 hover:text-white transition-colors'
+                >
+                  FAQ
+                </a>
+              </li>
+            </ul>
+          </div>
         </nav>
       </aside>
 
@@ -176,6 +202,28 @@ export function DocsPage() {
             Get from zero to validating dicts in 60 seconds. zodify uses plain
             Python types as schemas - no DSL, no decorators, no magic.
           </p>
+          <div className='grid grid-cols-3 md:grid-cols-6 gap-3 mt-6'>
+            {[
+              { label: "VERSION", value: "v0.4.1" },
+              { label: "OPS/SEC", value: "615K" },
+              { label: "SIZE", value: "48KB" },
+              { label: "DEPS", value: "0" },
+              { label: "TESTS", value: "263" },
+              { label: "LOC", value: "402" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className='rounded-lg bg-white/5 border border-white/5 p-2 text-center'
+              >
+                <div className='text-[9px] font-mono text-cyber-text/40 uppercase tracking-widest'>
+                  {stat.label}
+                </div>
+                <div className='font-mono font-bold text-white text-sm'>
+                  {stat.value}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Installation */}
@@ -755,6 +803,54 @@ export function DocsPage() {
             , so existing except blocks still work.
           </p>
         </section>
+
+        {/* FAQ */}
+        <section id='faq' className='mb-16 scroll-mt-24'>
+          <h2 className='font-display font-bold text-3xl text-white mb-6 group cursor-pointer flex items-center'>
+            <span className='text-cyber-purple/60 mr-2 opacity-50 text-2xl font-mono group-hover:opacity-100 transition-opacity'>
+              #
+            </span>
+            FAQ
+          </h2>
+          <div className='space-y-4'>
+            {[
+              {
+                q: "How do I install zodify?",
+                a: "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax.",
+              },
+              {
+                q: "Can zodify validate nested data structures?",
+                a: "Yes. Nest dicts inside your schema to validate deeply nested structures. Errors report the full dot-path (e.g., db.port: expected int, got str). Recursion depth is protected by default.",
+              },
+              {
+                q: "Does zodify support type checking with mypy and pyright?",
+                a: "Yes. zodify is PEP 561 compliant with a py.typed marker. It ships overloaded type signatures so mypy and pyright can infer return types. Both type checkers are merge-blocking CI gates in zodify's own test suite.",
+              },
+              {
+                q: "How does zodify handle validation errors?",
+                a: 'By default, validate() raises a ValueError with a human-readable message. Pass error_mode="structured" to get a ValidationError with programmatic access to each issue (path, message, expected, got). ValidationError is a subclass of ValueError.',
+              },
+            ].map((item, i) => (
+              <details
+                key={i}
+                className='glass-panel rounded-xl border border-white/5 hover:border-cyber-purple/30 transition-colors group'
+              >
+                <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
+                  <span>{item.q}</span>
+                  <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>+</span>
+                </summary>
+                <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* Last Updated */}
+        <div className='text-center text-xs font-mono text-cyber-text/30 mb-8'>
+          Last updated: March 5, 2026
+        </div>
       </main>
 
       {/* Right Sidebar (Table of Contents) */}
@@ -842,6 +938,14 @@ export function DocsPage() {
                 className='block text-cyber-text/60 hover:text-cyber-purple transition-colors'
               >
                 Structured Errors
+              </a>
+            </li>
+            <li>
+              <a
+                href='#faq'
+                className='block text-cyber-text/60 hover:text-cyber-purple transition-colors'
+              >
+                FAQ
               </a>
             </li>
           </ul>
