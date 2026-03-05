@@ -338,7 +338,7 @@ export function HomePage() {
               {benchmarks.map((bench, index) => {
                 const barPx = Math.max(
                   MIN_BAR_PX,
-                  Math.round((bench.value / maxValue) * BAR_AREA_PX)
+                  Math.round((bench.value / maxValue) * BAR_AREA_PX),
                 );
                 return (
                   <div
@@ -366,8 +366,12 @@ export function HomePage() {
                       initial={{ height: 0 }}
                       whileInView={{ height: barPx }}
                       viewport={{ once: true }}
-                      transition={{ duration: 1, delay: index * 0.15 }}
-                      className={`w-full ${bench.color} rounded-t-lg relative group-hover:brightness-110 transition-all shadow-lg`}
+                      transition={{
+                        duration: 2,
+                        delay: index * 0.4,
+                        ease: "easeOut",
+                      }}
+                      className={`w-full ${bench.color} rounded-t-lg relative group-hover:brightness-110 transition-[filter] shadow-lg`}
                     >
                       {bench.name === "zodify" && (
                         <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity'></div>
