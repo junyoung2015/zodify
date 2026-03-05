@@ -11,15 +11,38 @@ export function AboutPage() {
           content='How a 20-line automation script turned into a published Python validation library - the story behind zodify and why it exists.'
         />
         <link rel='canonical' href='https://zodify.dev/about' />
-        <script type='application/ld+json'>{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-            { "@type": "Question", "name": "Who created zodify?", "acceptedAnswer": { "@type": "Answer", "text": "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases." } },
-            { "@type": "Question", "name": "Why was zodify created?", "acceptedAnswer": { "@type": "Answer", "text": "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data)." } },
-            { "@type": "Question", "name": "What are zodify's design constraints?", "acceptedAnswer": { "@type": "Answer", "text": "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines." } }
-          ]
-        })}</script>
+        <script type='application/ld+json'>
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Who created zodify?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Why was zodify created?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What are zodify's design constraints?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines.",
+                },
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -254,8 +277,8 @@ export function AboutPage() {
             </p>
 
             {/* Benchmark Table */}
-            <div className='w-full overflow-hidden rounded-lg border border-white/10 mb-6'>
-              <table className='w-full text-sm text-left'>
+            <div className='w-full rounded-lg border border-white/10 mb-6 overflow-x-auto'>
+              <table className='w-full text-sm text-left min-w-120'>
                 <thead className='bg-white/5 text-cyber-text/60 font-mono text-xs uppercase'>
                   <tr>
                     <th className='px-6 py-3 font-medium'>Library</th>
@@ -417,7 +440,9 @@ export function AboutPage() {
                 >
                   <summary className='px-6 py-5 cursor-pointer font-display font-bold text-white text-lg flex items-center justify-between list-none'>
                     <span>{item.q}</span>
-                    <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>+</span>
+                    <span className='text-cyber-purple text-xl ml-4 group-open:rotate-45 transition-transform'>
+                      +
+                    </span>
                   </summary>
                   <div className='px-6 pb-5 text-cyber-text/70 leading-relaxed'>
                     {item.a}

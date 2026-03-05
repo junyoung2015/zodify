@@ -315,14 +315,14 @@ export function BenchmarksPage() {
             </div>
           </div>
 
-          <div className='w-full overflow-hidden rounded-xl border border-white/10'>
-            <table className='w-full text-sm text-left'>
+          <div className='w-full rounded-xl border border-white/10 overflow-x-auto'>
+            <table className='w-full text-sm text-left min-w-[560px]'>
               <thead className='bg-white/5 text-cyber-text/60 font-mono text-xs uppercase'>
                 <tr>
-                  <th className='px-6 py-3 font-medium'>Library</th>
-                  <th className='px-6 py-3 font-medium'>Validation</th>
-                  <th className='px-6 py-3 font-medium'>Import</th>
-                  <th className='px-6 py-3 font-medium'>Install Size</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Library</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Validation</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Import</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Install Size</th>
                   <th className='px-6 py-3 font-medium'>Dependencies</th>
                 </tr>
               </thead>

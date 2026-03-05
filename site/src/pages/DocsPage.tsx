@@ -189,6 +189,37 @@ export function DocsPage() {
 
       {/* Main Content */}
       <main className='flex-grow min-w-0 max-w-3xl'>
+        {/* Mobile TOC */}
+        <details className='md:hidden glass-panel rounded-xl border border-white/5 mb-8 group'>
+          <summary className='px-4 py-3 cursor-pointer font-display font-bold text-white text-sm flex items-center justify-between list-none'>
+            <span>On this page</span>
+            <span className='text-cyber-purple text-lg group-open:rotate-45 transition-transform'>+</span>
+          </summary>
+          <nav className='px-4 pb-4 grid grid-cols-2 gap-2 text-sm font-display'>
+            {[
+              { label: "Installation", href: "#install" },
+              { label: "Basic Validation", href: "#basic-validation" },
+              { label: "Type Support", href: "#type-support" },
+              { label: "Optional Keys", href: "#optional-keys" },
+              { label: "Union Types", href: "#union-types" },
+              { label: "Nested Schemas", href: "#nested-schemas" },
+              { label: "Custom Validators", href: "#custom-validators" },
+              { label: "Env Helper", href: "#env-helper" },
+              { label: "Error Handling", href: "#error-handling" },
+              { label: "Structured Errors", href: "#structured-errors" },
+              { label: "FAQ", href: "#faq" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className='text-cyber-text/60 hover:text-cyber-purple transition-colors py-1'
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </details>
+
         <div className='mb-12 border-b border-white/10 pb-8'>
           <div className='flex items-center gap-3 text-xs font-mono text-cyber-purple mb-4'>
             <span className='opacity-70'>DOCS</span>
@@ -334,13 +365,13 @@ export function DocsPage() {
             </code>{" "}
             under the hood.
           </p>
-          <div className='w-full overflow-hidden rounded-lg border border-white/10 mb-6'>
-            <table className='w-full text-sm text-left'>
+          <div className='w-full rounded-lg border border-white/10 mb-6 overflow-x-auto'>
+            <table className='w-full text-sm text-left min-w-[400px]'>
               <thead className='bg-white/5 text-cyber-text/60 font-mono text-xs uppercase'>
                 <tr>
-                  <th className='px-6 py-3 font-medium'>Schema Type</th>
-                  <th className='px-6 py-3 font-medium'>Accepts</th>
-                  <th className='px-6 py-3 font-medium'>Example</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Schema Type</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Accepts</th>
+                  <th className='px-3 md:px-6 py-3 font-medium'>Example</th>
                 </tr>
               </thead>
               <tbody className='divide-y divide-white/5'>

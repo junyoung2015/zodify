@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
@@ -6,11 +7,11 @@ import {
   Cpu,
   Box,
   Download,
+  Copy,
   Check,
   FileCode,
   Layers,
   ShieldCheck,
-  Settings,
 } from "lucide-react";
 
 const benchmarks = [
@@ -34,6 +35,15 @@ const benchmarks = [
 const maxValue = 1300000;
 
 export function HomePage() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText("pip install zodify").then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className='flex flex-col gap-20 pb-20'>
       <Helmet>
@@ -133,10 +143,28 @@ export function HomePage() {
           className='flex flex-col sm:flex-row gap-4 items-center'
         >
           <div className='relative group'>
-            <div className='bg-cyber-dark border border-white/10 rounded-lg px-6 py-3 font-mono text-sm text-cyber-text/80 flex items-center gap-3 group-hover:border-cyber-purple/50 transition-colors'>
+            <button
+              onClick={handleCopy}
+              className='bg-cyber-dark border border-white/10 rounded-lg px-6 py-3 font-mono text-sm text-cyber-text/80 flex items-center gap-3 group-hover:border-cyber-purple/50 transition-colors cursor-pointer'
+              title='Copy to clipboard'
+            >
               <span className='text-cyber-purple'>$</span>
               <span>pip install zodify</span>
-            </div>
+              {copied ? (
+                <Check className='w-4 h-4 text-green-400 ml-2' />
+              ) : (
+                <Copy className='w-4 h-4 text-cyber-text/40 ml-2 group-hover:text-cyber-purple transition-colors' />
+              )}
+            </button>
+            {copied && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className='absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs font-mono text-green-400'
+              >
+                Copied!
+              </motion.div>
+            )}
           </div>
           <a
             href='https://github.com/junyoung2015/zodify'
@@ -304,7 +332,7 @@ export function HomePage() {
               ))}
             </div>
 
-            <div className='relative z-10 flex justify-around items-end h-[360px] pl-12 gap-2 md:gap-6'>
+            <div className='relative z-10 flex justify-around items-end h-[360px] pl-6 md:pl-12 gap-1 md:gap-6'>
               {benchmarks.map((bench, index) => (
                 <div
                   key={bench.name}
@@ -503,7 +531,7 @@ export function HomePage() {
         <p className='text-cyber-text/50 font-mono text-sm mb-8'>
           pip install zodify
         </p>
-        <div className='flex justify-center gap-4'>
+        <div className='flex flex-col sm:flex-row justify-center gap-4'>
           <a
             href='https://pypi.org/project/zodify/'
             target='_blank'
