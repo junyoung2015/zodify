@@ -50,7 +50,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | API style       | Plain dicts  | Chained builders | Chained builders | Classes        |
 | Schema composition | Plain dict reuse | Requires schema DSL/builders | Requires schema DSL/builders | Requires model classes |
 | Dependencies    | **0**        | 2                | 0                | 4              |
-| Code size       | **~400 LOC** | ~1,900 LOC       | ~1,400 LOC       | ~32,000 LOC    |
+| Code size       | **511 LOC**  | ~1,900 LOC       | ~1,400 LOC       | ~32,000 LOC    |
 | Learning curve  | **Zero**     | Must learn DSL   | Must learn DSL   | Must learn DSL |
 | Env var support | **Built-in** | No               | No               | Partial        |
 
