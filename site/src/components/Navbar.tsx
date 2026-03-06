@@ -34,7 +34,7 @@ export function Navbar() {
             zodify
           </span>
           <span className='ml-2 text-[10px] font-mono text-cyber-purple bg-cyber-purple/10 border border-cyber-purple/20 px-1.5 py-0.5 rounded'>
-            v0.4.1
+            v0.5.0
           </span>
         </Link>
 
