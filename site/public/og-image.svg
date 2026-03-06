@@ -93,11 +93,11 @@
     </g>
     <g transform="translate(200, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">TESTS</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">263</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">291</text>
     </g>
     <g transform="translate(400, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">LOC</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">402</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">511</text>
     </g>
   </g>
 
