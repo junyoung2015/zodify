@@ -4,8 +4,8 @@ import os
 import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__: str = "0.4.1"
-__all__ = ["__version__", "validate", "env", "Optional", "ValidationError"]
+__version__: str = "0.5.0"
+__all__ = ["__version__", "validate", "env", "Validator", "Optional", "ValidationError"]
 
 _MISSING: object = object()
 _BOOL_TRUE = {"true", "1", "yes"}
@@ -116,6 +116,21 @@ def _coerce_value(value: Any, target: type, key: str) -> Any:
             ) from e
     raise ValueError(
         f"{key}: cannot coerce to {target.__name__}"
+    )
+
+
+def _resolve_mode_options(
+    unknown_keys: object,
+    error_mode: object,
+) -> tuple[UnknownKeysMode, ErrorMode]:
+    """Validate and normalize unknown_keys/error_mode options."""
+    if unknown_keys not in ("reject", "strip"):
+        raise ValueError("unknown_keys must be 'reject' or 'strip'")
+    if error_mode not in ("text", "structured"):
+        raise ValueError("error_mode must be 'text' or 'structured'")
+    return (
+        typing_cast(UnknownKeysMode, unknown_keys),
+        typing_cast(ErrorMode, error_mode),
     )
 
 
@@ -336,17 +351,17 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
         raise TypeError("schema must be a dict")
     if type(data) is not dict:
         raise TypeError("data must be a dict")
-    if unknown_keys not in ("reject", "strip"):
-        raise ValueError("unknown_keys must be 'reject' or 'strip'")
-    if error_mode not in ("text", "structured"):
-        raise ValueError("error_mode must be 'text' or 'structured'")
+    resolved_unknown_keys, resolved_error_mode = _resolve_mode_options(
+        unknown_keys,
+        error_mode,
+    )
     errors: list[tuple[str, str, str, str]] = []
     result = _validate(
         schema, data, coerce, "", errors, max_depth,
-        unknown_keys,
+        resolved_unknown_keys,
     )
     if errors:
-        if error_mode == "structured":
+        if resolved_error_mode == "structured":
             raise ValidationError([
                 {"path": p, "message": m, "expected": e, "got": g}
                 for p, m, e, g in errors
@@ -400,3 +415,97 @@ def env(name: str, cast: type[_EnvCastT], default: object = _MISSING) -> _EnvCas
             f"{name}: missing required env var"
         )
     return typing_cast(_EnvCastT, _coerce_value(value, cast, name))
+
+
+class Validator:
+    """Validate dict data with reusable default validate() options
+
+    Args:
+        coerce: Default value for ``validate(..., coerce=...)``.
+        max_depth: Default value for ``validate(..., max_depth=...)``.
+        unknown_keys: Default value for ``validate(..., unknown_keys=...)``.
+        error_mode: Default value for ``validate(..., error_mode=...)``.
+
+    Example:
+        >>> from zodify import Validator
+        >>> v = Validator(coerce=True, error_mode="structured")
+        >>> v.validate({"port": int}, {"port": "8080"})
+        {'port': 8080}
+    """
+
+    __slots__ = ("coerce", "max_depth", "unknown_keys", "error_mode")
+
+    coerce: bool
+    max_depth: int
+    unknown_keys: UnknownKeysMode
+    error_mode: ErrorMode
+
+    def __init__(
+        self,
+        *,
+        coerce: bool = False,
+        max_depth: int = 32,
+        unknown_keys: UnknownKeysMode = "reject",
+        error_mode: ErrorMode = "text",
+    ) -> None:
+        resolved_unknown_keys, resolved_error_mode = _resolve_mode_options(
+            unknown_keys,
+            error_mode,
+        )
+        self.coerce = coerce
+        self.max_depth = max_depth
+        self.unknown_keys = resolved_unknown_keys
+        self.error_mode = resolved_error_mode
+
+    @overload
+    def validate(
+        self,
+        schema: dict[str, type[_SchemaValueT]],
+        data: dict[str, Any],
+        *,
+        coerce: bool = ...,
+        max_depth: int = ...,
+        unknown_keys: UnknownKeysMode = ...,
+        error_mode: ErrorMode = ...,
+    ) -> dict[str, _SchemaValueT]:
+        ...
+
+    @overload
+    def validate(
+        self,
+        schema: dict[str, Any],
+        data: dict[str, _DictValueT],
+        *,
+        coerce: bool = ...,
+        max_depth: int = ...,
+        unknown_keys: UnknownKeysMode = ...,
+        error_mode: ErrorMode = ...,
+    ) -> dict[str, _DictValueT]:
+        ...
+
+    def validate(
+        self,
+        schema: dict[str, Any],
+        data: dict[str, Any],
+        *,
+        coerce: object = _MISSING,
+        max_depth: object = _MISSING,
+        unknown_keys: object = _MISSING,
+        error_mode: object = _MISSING,
+    ) -> dict[str, Any]:
+        use_coerce = self.coerce if coerce is _MISSING else coerce
+        use_max_depth = self.max_depth if max_depth is _MISSING else max_depth
+        use_unknown_keys = (
+            self.unknown_keys
+            if unknown_keys is _MISSING
+            else unknown_keys
+        )
+        use_error_mode = self.error_mode if error_mode is _MISSING else error_mode
+        return validate(
+            schema,
+            data,
+            coerce=typing_cast(bool, use_coerce),
+            max_depth=typing_cast(int, use_max_depth),
+            unknown_keys=typing_cast(UnknownKeysMode, use_unknown_keys),
+            error_mode=typing_cast(ErrorMode, use_error_mode),
+        )
