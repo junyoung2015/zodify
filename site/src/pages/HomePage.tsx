@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
@@ -33,11 +33,23 @@ const benchmarks = [
 ];
 
 const maxValue = 1300000;
-const BAR_AREA_PX = 320; // pixel height reserved for bars (within 360px row)
+const BAR_AREA_SM = 220; // pixel height for bars on mobile (<640px)
+const BAR_AREA_PX = 320; // pixel height reserved for bars on desktop
 const MIN_BAR_PX = 18; // visual floor so tiny values are still visible bars
 
 export function HomePage() {
   const [copied, setCopied] = useState(false);
+  const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setIsSmall(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsSmall(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const barArea = isSmall ? BAR_AREA_SM : BAR_AREA_PX;
 
   const handleCopy = () => {
     navigator.clipboard.writeText("pip install zodify").then(() => {
@@ -123,7 +135,7 @@ export function HomePage() {
           className='font-display font-extrabold text-5xl md:text-7xl mb-6 leading-[0.9] tracking-tighter text-white drop-shadow-lg'
         >
           Lightweight Python <br />
-          <span className='text-transparent bg-clip-text bg-gradient-to-r from-cyber-purple via-cyber-neon to-cyber-blue text-glow'>
+          <span className='text-transparent bg-clip-text bg-linear-to-r from-cyber-purple via-cyber-neon to-cyber-blue text-glow'>
             dict validation
           </span>
         </motion.h1>
@@ -218,7 +230,7 @@ export function HomePage() {
           viewport={{ once: true }}
           className='relative group'
         >
-          <div className='absolute -inset-1 bg-gradient-to-r from-cyber-purple to-cyber-blue opacity-20 blur rounded-xl group-hover:opacity-30 transition-opacity duration-500'></div>
+          <div className='absolute -inset-1 bg-linear-to-r from-cyber-purple to-cyber-blue opacity-20 blur rounded-xl group-hover:opacity-30 transition-opacity duration-500'></div>
           <div className='relative rounded-xl bg-[#0d0b16] border border-white/10 overflow-hidden'>
             <div className='flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/5'>
               <div className='flex gap-1.5'>
@@ -294,7 +306,7 @@ export function HomePage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className='glass-panel p-8 md:p-12 rounded-2xl relative overflow-hidden box-glow'
+          className='glass-panel p-4 sm:p-8 md:p-12 rounded-2xl relative overflow-hidden box-glow'
         >
           <div className='flex justify-between items-end mb-8 border-b border-white/5 pb-4'>
             <div>
@@ -321,7 +333,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className='relative h-[400px] w-full flex flex-col justify-end'>
+          <div className='relative h-75 sm:h-100 w-full flex flex-col justify-end'>
             {/* Grid lines */}
             <div className='absolute inset-0 flex flex-col justify-between pointer-events-none text-cyber-text/20 font-mono text-xs z-0'>
               {["1.3M", "975K", "650K", "325K", "0"].map((val) => (
@@ -334,23 +346,23 @@ export function HomePage() {
               ))}
             </div>
 
-            <div className='relative z-10 flex justify-around items-end h-[360px] pl-6 md:pl-12 gap-1 md:gap-6'>
+            <div className='relative z-10 flex justify-around items-end h-65 sm:h-90 pl-4 sm:pl-6 md:pl-12 gap-1 md:gap-6'>
               {benchmarks.map((bench, index) => {
                 const barPx = Math.max(
                   MIN_BAR_PX,
-                  Math.round((bench.value / maxValue) * BAR_AREA_PX),
+                  Math.round((bench.value / maxValue) * barArea),
                 );
                 return (
                   <div
                     key={bench.name}
-                    className='flex flex-col items-center justify-end w-full max-w-[120px] h-full group relative'
+                    className='flex flex-col items-center justify-end w-full max-w-15 sm:max-w-30 h-full group relative'
                   >
                     {bench.name === "zodify" && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1, duration: 0.5 }}
-                        className='absolute -top-12 bg-cyber-purple text-white text-xs font-bold px-3 py-1 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]'
+                        className='absolute -top-10 sm:-top-12 bg-cyber-purple text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)] whitespace-nowrap'
                       >
                         Fastest pure-Python
                       </motion.div>
@@ -400,7 +412,7 @@ export function HomePage() {
       </section>
 
       <div className='max-w-7xl mx-auto w-full px-6'>
-        <div className='w-full h-px bg-gradient-to-r from-transparent via-cyber-border to-transparent opacity-50'></div>
+        <div className='w-full h-px bg-linear-to-r from-transparent via-cyber-border to-transparent opacity-50'></div>
       </div>
 
       {/* Features Section */}
