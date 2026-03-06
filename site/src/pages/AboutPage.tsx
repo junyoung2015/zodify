@@ -21,7 +21,7 @@ export function AboutPage() {
                 name: "Who created zodify?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases.",
+                  text: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 291 tests and 8 releases.",
                 },
               },
               {
@@ -37,7 +37,7 @@ export function AboutPage() {
                 name: "What are zodify's design constraints?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines.",
+                  text: "zodify follows three deliberate constraints: one source file, zero dependencies, and aggressive LOC discipline. The project started with a 500 LOC target, and v0.5.0 pushes the single-file core to 511 lines, which now serves as a signal to review scope before adding more surface area.",
                 },
               },
             ],
@@ -68,7 +68,7 @@ export function AboutPage() {
           {/* Intro */}
           <p className='text-cyber-text/80 leading-relaxed text-lg'>
             This is the story of how zodify went from a throwaway helper
-            function to a published PyPI library with 263 tests, 7 releases, and
+            function to a published PyPI library with 291 tests, 8 releases, and
             615,000 validations per second. It covers the friction that started
             it, the constraints that shaped it, and what building open source
             taught me.
@@ -214,17 +214,18 @@ export function AboutPage() {
               From helper function to open-source library
             </h2>
             <p className='text-cyber-text/70 leading-relaxed mb-4 font-semibold text-lg'>
-              Deliberate constraints - one file, zero dependencies, 500 LOC cap
-              - shaped every decision.
+              Deliberate constraints - one file, zero dependencies, and ruthless
+              LOC discipline - shaped every decision.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               I set myself constraints from the start. One source file. Zero
-              dependencies. Cap the implementation at 500 lines of code. Every
+              dependencies. A working target of roughly 500 lines of code. Every
               line had to earn its place. These weren't arbitrary limitations -
               they were design decisions. A single file means trivial auditing.
-              Zero dependencies means zero supply-chain risk. The LOC cap forces
-              API discipline: if adding a feature pushes you past the budget,
-              you have to find a better abstraction.
+              Zero dependencies means zero supply-chain risk. The LOC target
+              forced API discipline, and crossing it at v0.5.0 is the point
+              where the project has to pause and re-evaluate before letting the
+              surface area sprawl.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-6'>
               The first release, v0.0.1, landed on PyPI on February 25, 2026.
@@ -261,6 +262,10 @@ export function AboutPage() {
                   "Structured error reporting: machine-readable ValidationError with path, message, expected, and got",
                 ],
                 ["v0.4.1", "Example scripts, schema composition documentation"],
+                [
+                  "v0.5.0",
+                  "Validator defaults, expanded parity tests, and release hardening",
+                ],
               ].map(([version, desc]) => (
                 <li key={version} className='flex gap-3 text-cyber-text/70'>
                   <span className='font-mono text-cyber-purple text-sm font-bold shrink-0'>
@@ -271,9 +276,9 @@ export function AboutPage() {
               ))}
             </ul>
             <p className='text-cyber-text/70 leading-relaxed mb-6'>
-              Seven releases in eight days. 263 tests. 402 lines of code. Strict
-              type checking with mypy and pyright as merge-blocking CI gates.
-              Automated PyPI publishing on every version tag.
+              Eight releases in under two weeks. 291 tests. 511 lines of code.
+              Strict type checking with mypy and pyright as merge-blocking CI
+              gates. Automated PyPI publishing on every version tag.
             </p>
 
             {/* Benchmark Table */}
@@ -396,7 +401,7 @@ export function AboutPage() {
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               Every moment of building zodify has been <em>happy</em>.
               Discussing architecture decisions, debating API design, watching
-              test counts climb from 10 to 263 - it never felt like work. It
+              test counts climb from 10 to 291 - it never felt like work. It
               felt like building something that mattered, even if the audience
               was small.
             </p>
@@ -423,7 +428,7 @@ export function AboutPage() {
               {[
                 {
                   q: "Who created zodify?",
-                  a: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 263 tests and 7 releases.",
+                  a: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 291 tests and 8 releases.",
                 },
                 {
                   q: "Why was zodify created?",
@@ -431,7 +436,7 @@ export function AboutPage() {
                 },
                 {
                   q: "What are zodify's design constraints?",
-                  a: "zodify follows three deliberate constraints: one source file, zero dependencies, and a 500 LOC cap. These ensure trivial auditing, zero supply-chain risk, and API discipline. The current implementation is 402 lines.",
+                  a: "zodify follows three deliberate constraints: one source file, zero dependencies, and aggressive LOC discipline. The project started with a 500 LOC target, and v0.5.0 pushes the single-file core to 511 lines, which now serves as a signal to review scope before adding more surface area.",
                 },
               ].map((item, i) => (
                 <details
@@ -461,7 +466,7 @@ export function AboutPage() {
 
           {/* Last Updated */}
           <div className='text-center text-xs font-mono text-cyber-text/30'>
-            Last updated: March 5, 2026
+            Last updated: March 6, 2026
           </div>
         </div>
       </motion.div>
