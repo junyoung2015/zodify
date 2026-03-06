@@ -6,11 +6,11 @@
 
 zodify is a lightweight, pure-Python data validation library. It provides a schema-first `validate(schema, data)` API with zero dependencies, making it ideal for projects that need fast, simple validation without heavy frameworks.
 
-- **Version:** 0.4.1
+- **Version:** 0.5.0
 - **License:** MIT
-- **Python:** 3.9+
-- **Lines of Code:** 402
-- **Test Count:** 263
+- **Python:** 3.10+
+- **Lines of Code:** 511
+- **Test Count:** 291
 - **Dependencies:** Zero
 
 ## Links
