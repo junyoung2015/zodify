@@ -64,7 +64,7 @@ export function HomePage() {
         <title>zodify - Fastest Pure-Python Validation Library</title>
         <meta
           name='description'
-          content='Zero-dependency Python dict validation with 615K ops/sec, recursive schemas, type coercion, and first-class type-checker support. 402 LOC, 48KB installed.'
+          content='Zero-dependency Python dict validation with 615K ops/sec, recursive schemas, type coercion, and first-class type-checker support. 511 LOC, 48KB installed.'
         />
         <link rel='canonical' href='https://zodify.dev/' />
         <script type='application/ld+json'>
@@ -77,7 +77,7 @@ export function HomePage() {
                 name: "What is zodify?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 402-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+                  text: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 511-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
                 },
               },
               {
@@ -93,7 +93,7 @@ export function HomePage() {
                 name: "Does zodify have any dependencies?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is a single file (402 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+                  text: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is still a single file (511 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
                 },
               },
               {
@@ -109,7 +109,7 @@ export function HomePage() {
                 name: "Is zodify production-ready?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify is in alpha (v0.4.1). The API is stable for current features but may expand. It has 263 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+                  text: "zodify is in alpha (v0.5.0). The API is stable for current features but may expand. It has 291 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
                 },
               },
             ],
@@ -200,12 +200,12 @@ export function HomePage() {
           className='grid grid-cols-2 md:grid-cols-6 gap-4'
         >
           {[
-            { label: "VERSION", value: "v0.4.1" },
+            { label: "VERSION", value: "v0.5.0" },
             { label: "OPS/SEC", value: "615K" },
             { label: "SIZE", value: "48KB" },
             { label: "DEPS", value: "0" },
-            { label: "TESTS", value: "263" },
-            { label: "LOC", value: "402" },
+            { label: "TESTS", value: "291" },
+            { label: "LOC", value: "511" },
           ].map((stat, i) => (
             <div
               key={stat.label}
@@ -439,8 +439,8 @@ export function HomePage() {
             {
               icon: <FileCode className='w-6 h-6 text-cyber-purple' />,
               title: "Single File",
-              desc: "The entire library is one Python file - 402 lines of logic. Easy to audit, vendor, or understand.",
-              stat: "LOC: 402",
+              desc: "The entire library still fits in one Python file at 511 lines of logic. Easy to audit, vendor, or understand.",
+              stat: "LOC: 511",
               status: "OPTIMAL",
             },
             {
@@ -510,7 +510,7 @@ export function HomePage() {
           {[
             {
               q: "What is zodify?",
-              a: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 402-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+              a: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 511-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
             },
             {
               q: "When should I use zodify instead of Pydantic?",
@@ -518,7 +518,7 @@ export function HomePage() {
             },
             {
               q: "Does zodify have any dependencies?",
-              a: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is a single file (402 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+              a: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is still a single file (511 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
             },
             {
               q: "What Python versions does zodify support?",
@@ -526,7 +526,7 @@ export function HomePage() {
             },
             {
               q: "Is zodify production-ready?",
-              a: "zodify is in alpha (v0.4.1). The API is stable for current features but may expand. It has 263 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+              a: "zodify is in alpha (v0.5.0). The API is stable for current features but may expand. It has 291 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
             },
           ].map((item, i) => (
             <details
@@ -582,7 +582,7 @@ export function HomePage() {
 
       {/* Last Updated */}
       <div className='text-center text-xs font-mono text-cyber-text/30'>
-        Last updated: March 5, 2026
+        Last updated: March 6, 2026
       </div>
     </div>
   );
