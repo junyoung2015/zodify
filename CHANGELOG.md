@@ -7,6 +7,20 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.5.0] - 2026-03-06
+
+### Added
+
+- Added `Validator` class with reusable default configuration (`coerce`, `max_depth`, `unknown_keys`, `error_mode`) and per-call overrides.
+- Added comprehensive `tests/test_validator_class.py` coverage for defaults, override non-mutation, multi-instance isolation, and parity with bare `validate()`.
+- Added README `Configuration` section documenting `Validator` usage and call-level override patterns while retaining bare `validate()` as the recommended starting point.
+
+### Changed
+
+- Refactored mode-option validation into shared internal helper logic to keep `validate()` and `Validator` option contracts aligned.
+- Updated static typing configuration for pyright package-targeted checks (`[tool.pyright] include = ["zodify"]`).
+- Updated benchmark comparison harness to use zodify's dict-schema API directly.
+
 ## [v0.4.1] - 2026-03-04
 
 ### Added
