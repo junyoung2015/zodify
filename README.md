@@ -133,6 +133,49 @@ validate(
 
 ---
 
+### Configuration
+
+`validate()` remains the recommended starting point. Use `Validator` when you repeatedly apply the same options and want reusable defaults.
+
+```python
+from zodify import Validator
+
+validator = Validator(
+    coerce=True,
+    max_depth=16,
+    unknown_keys="strip",
+    error_mode="structured",
+)
+
+result = validator.validate(
+    {"port": int, "debug": bool},
+    {"port": "8080", "debug": "true", "unused": "x"},
+)
+# -> {"port": 8080, "debug": True}
+```
+
+Per-call keyword arguments override instance defaults for that call only:
+
+```python
+from zodify import Validator
+
+validator = Validator(coerce=False, unknown_keys="reject")
+
+# Temporary override for one call:
+result = validator.validate(
+    {"port": int},
+    {"port": "8080"},
+    coerce=True,
+)
+# -> {"port": 8080}
+
+# Defaults remain unchanged:
+validator.validate({"port": int}, {"port": "8080"})
+# ValueError: port: expected int, got str
+```
+
+---
+
 ### Structured Errors
 
 By default, validation failures raise `ValueError` with human-readable messages. Use `error_mode="structured"` to get machine-readable `ValidationError` exceptions with an `.issues` list - ideal for API error responses.
@@ -365,20 +408,20 @@ Run local preflight before tagging:
 ./scripts/release_preflight.sh
 ```
 
-If preflight passes, push the version tag:
+If preflight passes, push the release tag for the version in `pyproject.toml`:
 
 ```bash
-git tag v0.4.1
-git push origin v0.4.1
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 ---
 
 ## Roadmap
 
-zodify is in **alpha** (v0.4.1). The API surface is small and may evolve. All pre-1.0 APIs are provisional per semver. See [`CHANGELOG.md`](CHANGELOG.md) for version-by-version details.
+zodify is in **alpha**. The API surface is small and may evolve. All pre-1.0 APIs are provisional per semver. See [`CHANGELOG.md`](CHANGELOG.md) for released version-by-version details.
 
-**Shipped (v0.1.0-v0.4.1):**
+**Shipped (current mainline capabilities):**
 
 - [x] Nested schema validation with dot-path errors
 - [x] Optional keys with defaults
@@ -394,6 +437,7 @@ zodify is in **alpha** (v0.4.1). The API surface is small and may evolve. All pr
 - [x] Union type schemas (`str | int` syntax) with left-to-right coercion priority
 - [x] `ValidationError` exception with `.issues` for machine-readable errors
 - [x] `error_mode="structured"` parameter on `validate()`
+- [x] `Validator` class with reusable configuration defaults and per-call overrides
 - [x] Runnable example scripts in `examples/` (`basic_validation.py`, `nested_schemas.py`, `custom_validators.py`, `union_types.py`, `env_config.py`, `structured_errors.py`)
 - [x] README schema composition documentation with plain dict reuse patterns
 
@@ -401,7 +445,6 @@ zodify is in **alpha** (v0.4.1). The API surface is small and may evolve. All pr
 
 | Version | Theme |
 |---------|-------|
-| v0.5.0 | `Validator` class with configurable defaults |
 | v0.6.0 | Class-based schema syntax (`Schema` base class) |
 | v0.7.0 | `.env` file loading (`load_env()`) |
 | v0.8.0 | JSON Schema export (`to_json_schema()`) |
