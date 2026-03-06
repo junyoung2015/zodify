@@ -267,12 +267,12 @@ export function DocsPage() {
           </p>
           <div className='grid grid-cols-3 md:grid-cols-6 gap-3 mt-6'>
             {[
-              { label: "VERSION", value: "v0.4.1" },
+              { label: "VERSION", value: "v0.5.0" },
               { label: "OPS/SEC", value: "615K" },
               { label: "SIZE", value: "48KB" },
               { label: "DEPS", value: "0" },
-              { label: "TESTS", value: "263" },
-              { label: "LOC", value: "402" },
+              { label: "TESTS", value: "291" },
+              { label: "LOC", value: "511" },
             ].map((stat) => (
               <div
                 key={stat.label}
