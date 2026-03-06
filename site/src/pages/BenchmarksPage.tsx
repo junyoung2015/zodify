@@ -129,7 +129,7 @@ export function BenchmarksPage() {
                 name: "Why is zodify's import time so much faster?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify has zero dependencies and a single-file architecture (402 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms.",
+                  text: "zodify has zero dependencies and a single-file architecture (511 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms.",
                 },
               },
             ],
@@ -532,7 +532,7 @@ $ python benchmarks/bench_import.py`}
               },
               {
                 q: "Why is zodify's import time so much faster?",
-                a: "zodify has zero dependencies and a single-file architecture (402 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms \u2014 a 10x difference.",
+                a: "zodify has zero dependencies and a single-file architecture (511 lines, 48KB). There is no Rust compilation, no framework initialization, and no transitive dependency loading. This gives a 4.2ms import time vs Pydantic's 44.1ms \u2014 a 10x difference.",
               },
             ].map((item, i) => (
               <details
