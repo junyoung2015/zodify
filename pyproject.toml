@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zodify"
-version = "0.5.0"
-description = "Zod-inspired dict validation for Python. Zero deps. One file."
+version = "0.6.0"
+description = "Zod-inspired validation for Python. Zero deps. One engine."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
