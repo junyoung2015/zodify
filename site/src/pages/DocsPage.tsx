@@ -2,6 +2,8 @@ import { type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Rocket, Layers, Zap, AlertTriangle, Code } from "lucide-react";
 
+import { SITE_LAST_UPDATED, SITE_NUMBERS, SITE_STATS, SITE_VERSION } from "../siteMeta";
+
 function CodeBlock({
   filename,
   children,
@@ -39,7 +41,7 @@ export function DocsPage() {
         <title>Docs - zodify</title>
         <meta
           name='description'
-          content='Documentation for zodify: installation, schemas, validation, type coercion, union types, custom validators, environment variables, and structured errors.'
+          content='Documentation for zodify: installation, dict schemas, optional class-based schemas, type coercion, union types, custom validators, environment variables, and structured errors.'
         />
         <link rel='canonical' href='https://zodify.dev/docs' />
         <script type='application/ld+json'>
@@ -52,7 +54,7 @@ export function DocsPage() {
                 name: "How do I install zodify?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax.",
+                  text: `Run pip install zodify. zodify has zero dependencies, one shared validation engine, and a compact ${SITE_NUMBERS.size} install. Requires Python 3.10+ for str | int union type syntax.`,
                 },
               },
               {
@@ -148,6 +150,14 @@ export function DocsPage() {
                   Nested Schemas
                 </a>
               </li>
+              <li>
+                <a
+                  href='#class-schemas'
+                  className='block text-cyber-text/60 hover:text-white transition-colors'
+                >
+                  Class Schemas
+                </a>
+              </li>
             </ul>
           </div>
           <div>
@@ -235,6 +245,7 @@ export function DocsPage() {
               { label: "Optional Keys", href: "#optional-keys" },
               { label: "Union Types", href: "#union-types" },
               { label: "Nested Schemas", href: "#nested-schemas" },
+              { label: "Class Schemas", href: "#class-schemas" },
               { label: "Custom Validators", href: "#custom-validators" },
               { label: "Env Helper", href: "#env-helper" },
               { label: "Error Handling", href: "#error-handling" },
@@ -263,17 +274,11 @@ export function DocsPage() {
           </h1>
           <p className='text-lg text-cyber-text/70 leading-relaxed font-light'>
             Get from zero to validating dicts in 60 seconds. zodify uses plain
-            Python types as schemas - no DSL, no decorators, no magic.
+            Python types as schemas, with optional Schema classes when you want
+            typed attribute access - no DSL, no decorators, no magic.
           </p>
           <div className='grid grid-cols-3 md:grid-cols-6 gap-3 mt-6'>
-            {[
-              { label: "VERSION", value: "v0.5.0" },
-              { label: "OPS/SEC", value: "615K" },
-              { label: "SIZE", value: "48KB" },
-              { label: "DEPS", value: "0" },
-              { label: "TESTS", value: "291" },
-              { label: "LOC", value: "511" },
-            ].map((stat) => (
+            {SITE_STATS.map((stat) => (
               <div
                 key={stat.label}
                 className='rounded-lg bg-white/5 border border-white/5 p-2 text-center'
@@ -298,7 +303,7 @@ export function DocsPage() {
             Installation
           </h2>
           <p className='text-cyber-text/80 mb-6 leading-relaxed'>
-            zodify is a single file with zero dependencies. Install from PyPI:
+            zodify ships a compact, zero-dependency runtime. Install from PyPI:
           </p>
           <CodeBlock filename='terminal'>
             <span className='text-cyber-purple'>$</span> pip install zodify
@@ -607,6 +612,101 @@ export function DocsPage() {
           </CodeBlock>
         </section>
 
+        {/* Class Schemas */}
+        <section id='class-schemas' className='mb-16 scroll-mt-24'>
+          <h2 className='font-display font-bold text-3xl text-white mb-6 group cursor-pointer flex items-center'>
+            <span className='text-cyber-purple/60 mr-2 opacity-50 text-2xl font-mono group-hover:opacity-100 transition-opacity'>
+              #
+            </span>
+            Class Schemas
+          </h2>
+          <p className='text-cyber-text/80 mb-6 leading-relaxed'>
+            Plain dict schemas remain the default API. Use{" "}
+            <code className='bg-white/5 px-1.5 py-0.5 rounded text-sm font-mono text-cyber-purple'>
+              Schema
+            </code>{" "}
+            when you want typed attribute access without changing the
+            validation engine underneath.
+          </p>
+          <CodeBlock filename='class_schemas.py'>
+            <span className='text-cyber-purple'>from</span>{" "}
+            <span className='text-cyber-neon'>zodify</span>{" "}
+            <span className='text-cyber-purple'>import</span> Optional, Schema,
+            validate{"\n"}
+            {"\n"}
+            <span className='text-cyber-purple'>class</span>{" "}
+            <span className='text-cyber-neon'>DatabaseConfig</span>(Schema):
+            {"\n"}
+            {"    "}host: <span className='text-cyber-blue'>str</span>{"\n"}
+            {"    "}port: <span className='text-cyber-blue'>int</span> ={" "}
+            <span className='text-orange-400'>5432</span>{"\n"}
+            {"    "}role: Optional[
+            <span className='text-cyber-blue'>str</span>] ={" "}
+            <span className='text-cyber-purple'>None</span>
+            {"\n"}
+            {"\n"}
+            config = <span className='text-cyber-purple'>validate</span>(
+            DatabaseConfig, {"{"}
+            <span className='text-green-400'>"host"</span>:{" "}
+            <span className='text-green-400'>"db.local"</span>
+            {"}"}){"\n"}
+            {"\n"}
+            config.host{"\n"}
+            <span className='text-slate-500 italic'># → "db.local"</span>
+            {"\n"}
+            config.port{"\n"}
+            <span className='text-slate-500 italic'># → 5432</span>
+          </CodeBlock>
+          <p className='text-cyber-text/80 mb-4 leading-relaxed'>
+            Class schemas are syntactic sugar. Unknown-key handling, coercion,
+            structured errors, and nested validation all flow through the same
+            core engine.
+          </p>
+          <div className='w-full rounded-lg border border-white/10 overflow-hidden'>
+            <table className='w-full text-sm text-left min-w-[420px]'>
+              <thead className='bg-white/5 text-cyber-text/60 font-mono text-xs uppercase'>
+                <tr>
+                  <th className='px-6 py-3 font-medium'>Use Schema When...</th>
+                  <th className='px-6 py-3 font-medium'>Stay on Dicts When...</th>
+                </tr>
+              </thead>
+              <tbody className='divide-y divide-white/5'>
+                {[
+                  [
+                    "You want attribute access and editor autocomplete.",
+                    "You need the lowest-friction runtime shape.",
+                  ],
+                  [
+                    "Field names are valid Python identifiers.",
+                    "Keys may be invalid identifiers or collide with dict methods.",
+                  ],
+                  [
+                    "Nested schemas benefit from typed access in application code.",
+                    "You need callable validators directly in the schema body.",
+                  ],
+                ].map(([schemaCase, dictCase]) => (
+                  <tr
+                    key={schemaCase}
+                    className='bg-cyber-glass hover:bg-white/5 transition-colors'
+                  >
+                    <td className='px-6 py-4 text-cyber-text/70'>
+                      {schemaCase}
+                    </td>
+                    <td className='px-6 py-4 text-cyber-text/70'>
+                      {dictCase}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className='text-cyber-text/60 text-sm mt-4 leading-relaxed'>
+            {SITE_VERSION} intentionally keeps class schemas narrow: no forward
+            references, no `model_config` API, no parameterized dict
+            annotations, and no direct `MySchema()` instantiation.
+          </p>
+        </section>
+
         {/* Custom Validators */}
         <section id='custom-validators' className='mb-16 scroll-mt-24'>
           <h2 className='font-display font-bold text-3xl text-white mb-6 group cursor-pointer flex items-center'>
@@ -879,7 +979,7 @@ export function DocsPage() {
             {[
               {
                 q: "How do I install zodify?",
-                a: "Run pip install zodify. zodify has zero dependencies and installs as a single 48KB package. Requires Python 3.10+ for str | int union type syntax.",
+                a: "Run pip install zodify. zodify has zero dependencies and installs with a compact ~78KB footprint. Requires Python 3.10+ for str | int union type syntax.",
               },
               {
                 q: "Can zodify validate nested data structures?",
@@ -914,7 +1014,7 @@ export function DocsPage() {
 
         {/* Last Updated */}
         <div className='text-center text-xs font-mono text-cyber-text/30 mb-8'>
-          Last updated: March 5, 2026
+          Last updated: {SITE_LAST_UPDATED}
         </div>
       </main>
 
@@ -971,6 +1071,14 @@ export function DocsPage() {
                 className='block text-cyber-text/60 hover:text-cyber-purple transition-colors'
               >
                 Nested Schemas
+              </a>
+            </li>
+            <li>
+              <a
+                href='#class-schemas'
+                className='block text-cyber-text/60 hover:text-cyber-purple transition-colors'
+              >
+                Class Schemas
               </a>
             </li>
             <li>
