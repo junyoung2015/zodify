@@ -81,11 +81,11 @@
     
     <g transform="translate(-400, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">OPS/SEC</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">615K</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">533K</text>
     </g>
     <g transform="translate(-200, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">SIZE</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">48KB</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">78KB</text>
     </g>
     <g transform="translate(0, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">DEPS</text>
@@ -93,11 +93,11 @@
     </g>
     <g transform="translate(200, 0)">
       <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">TESTS</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">291</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">345</text>
     </g>
     <g transform="translate(400, 0)">
-      <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">LOC</text>
-      <text y="18" font-size="28" fill="white" font-weight="700">511</text>
+      <text y="-12" font-size="11" fill="#64748b" letter-spacing="2">SRC LOC</text>
+      <text y="18" font-size="28" fill="white" font-weight="700">808</text>
     </g>
   </g>
 
