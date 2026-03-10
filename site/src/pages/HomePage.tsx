@@ -14,25 +14,27 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { SITE_LAST_UPDATED, SITE_NUMBERS, SITE_STATS } from "../siteMeta";
+
 const benchmarks = [
-  { name: "cerberus", value: 10000, ops: "10K", color: "bg-cyber-text/10" },
-  { name: "schema", value: 43000, ops: "43K", color: "bg-cyber-text/15" },
-  { name: "voluptuous", value: 289000, ops: "289K", color: "bg-cyber-text/20" },
+  { name: "cerberus", value: 8466, ops: "8.5K", color: "bg-cyber-text/10" },
+  { name: "schema", value: 38772, ops: "38.8K", color: "bg-cyber-text/15" },
+  { name: "voluptuous", value: 218198, ops: "218K", color: "bg-cyber-text/20" },
   {
     name: "zodify",
-    value: 615000,
-    ops: "615K",
+    value: 533333,
+    ops: "533K",
     color: "bg-gradient-to-t from-cyber-purple to-cyber-neon",
   },
   {
     name: "pydantic v2",
-    value: 1300000,
-    ops: "1.3M",
+    value: 1499251,
+    ops: "1.50M",
     color: "bg-cyber-text/25",
   },
 ];
 
-const maxValue = 1300000;
+const maxValue = 1500000;
 const BAR_AREA_SM = 220; // pixel height for bars on mobile (<640px)
 const BAR_AREA_PX = 320; // pixel height reserved for bars on desktop
 const MIN_BAR_PX = 18; // visual floor so tiny values are still visible bars
@@ -64,7 +66,7 @@ export function HomePage() {
         <title>zodify - Fastest Pure-Python Validation Library</title>
         <meta
           name='description'
-          content='Zero-dependency Python dict validation with 615K ops/sec, recursive schemas, type coercion, and first-class type-checker support. 511 LOC, 48KB installed.'
+          content='Zero-dependency Python dict validation with optional class-based schemas, 533K ops/sec, type coercion, and first-class type-checker support. 808 source LOC, 78KB installed.'
         />
         <link rel='canonical' href='https://zodify.dev/' />
         <script type='application/ld+json'>
@@ -77,7 +79,7 @@ export function HomePage() {
                 name: "What is zodify?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 511-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+                  text: "zodify is the fastest pure-Python validation library in the latest local comparison run. It validates Python dicts at about 533,000 operations per second with zero dependencies, one shared validation engine, and a 78KB installed footprint. Plain dict schemas stay the default, with optional Schema classes when you want typed attribute access.",
                 },
               },
               {
@@ -85,7 +87,7 @@ export function HomePage() {
                 name: "When should I use zodify instead of Pydantic?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where a 7.8MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.3M ops/sec) but zodify is 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+                  text: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where an 8.1MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.50M ops/sec) but zodify is about 104x smaller and imports about 17x faster in the latest local run.",
                 },
               },
               {
@@ -93,7 +95,7 @@ export function HomePage() {
                 name: "Does zodify have any dependencies?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is still a single file (511 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+                  text: "No. zodify has zero dependencies and uses only Python's standard library. The shipped runtime stays compact at roughly 78KB installed with 808 Python source lines across the package.",
                 },
               },
               {
@@ -109,7 +111,7 @@ export function HomePage() {
                 name: "Is zodify production-ready?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify is in alpha (v0.5.0). The API is stable for current features but may expand. It has 291 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+                  text: `zodify is in alpha. The ${SITE_STATS[0].value} release candidate has ${SITE_NUMBERS.tests} automated tests plus strict mypy and pyright gates. The API is intentionally small and may still expand.`,
                 },
               },
             ],
@@ -146,8 +148,8 @@ export function HomePage() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className='text-lg text-cyber-text/70 leading-relaxed font-light mb-8 max-w-xl mx-auto'
         >
-          Zero dependencies. Single file. Type-checked schemas. <br />
-          Validate dicts in microseconds with pure Python.
+          Zero dependencies. One engine. Type-checked schemas. <br />
+          Plain dicts first. Optional class syntax when you want typed access.
         </motion.p>
 
         <motion.div
@@ -199,14 +201,7 @@ export function HomePage() {
           viewport={{ once: true }}
           className='grid grid-cols-2 md:grid-cols-6 gap-4'
         >
-          {[
-            { label: "VERSION", value: "v0.5.0" },
-            { label: "OPS/SEC", value: "615K" },
-            { label: "SIZE", value: "48KB" },
-            { label: "DEPS", value: "0" },
-            { label: "TESTS", value: "291" },
-            { label: "LOC", value: "511" },
-          ].map((stat, i) => (
+          {SITE_STATS.map((stat, i) => (
             <div
               key={stat.label}
               className='glass-panel rounded-lg p-4 text-center'
@@ -314,7 +309,8 @@ export function HomePage() {
                 Validation Speed (ops/sec)
               </h3>
               <p className='text-xs text-cyber-text/50 font-mono mt-1'>
-                3-key dict • Python 3.10 • Apple Silicon • Higher is better
+                3-key dict comparison • Python 3.10.19 • Apple Silicon •
+                Higher is better
               </p>
             </div>
             <div className='hidden md:flex gap-4'>
@@ -336,7 +332,7 @@ export function HomePage() {
           <div className='relative h-75 sm:h-100 w-full flex flex-col justify-end'>
             {/* Grid lines */}
             <div className='absolute inset-0 flex flex-col justify-between pointer-events-none text-cyber-text/20 font-mono text-xs z-0'>
-              {["1.3M", "975K", "650K", "325K", "0"].map((val) => (
+              {["1.5M", "1.125M", "750K", "375K", "0"].map((val) => (
                 <div
                   key={val}
                   className='w-full border-t border-white/5 h-0 flex items-center'
@@ -422,8 +418,8 @@ export function HomePage() {
             Why <span className='text-cyber-purple'>zodify?</span>
           </h2>
           <p className='text-cyber-text/60 max-w-2xl mx-auto'>
-            One file. Zero dependencies. Validate Python dicts with type-checked
-            schemas.
+            One engine. Zero dependencies. Validate Python dicts with optional
+            class syntax on top.
           </p>
         </div>
 
@@ -438,37 +434,37 @@ export function HomePage() {
             },
             {
               icon: <FileCode className='w-6 h-6 text-cyber-purple' />,
-              title: "Single File",
-              desc: "The entire library still fits in one Python file at 511 lines of logic. Easy to audit, vendor, or understand.",
-              stat: "LOC: 511",
+              title: "One Engine",
+              desc: "Plain dict schemas and optional Schema classes share the same runtime validation engine. Small surface area, no duplicated logic.",
+              stat: `SRC LOC: ${SITE_NUMBERS.sourceLoc}`,
               status: "OPTIMAL",
             },
             {
               icon: <Activity className='w-6 h-6 text-cyber-purple' />,
-              title: "615K ops/sec",
-              desc: "Fastest pure-Python validation library. 2.1x faster than voluptuous, 14x faster than schema.",
-              stat: "LATENCY: 1.62µs",
+              title: `${SITE_NUMBERS.ops} ops/sec`,
+              desc: "Fastest pure-Python validation library in the latest local comparison run. 2.4x faster than voluptuous and 13.8x faster than schema.",
+              stat: `LATENCY: ${SITE_NUMBERS.latencyUs}`,
               status: "OPTIMAL",
             },
             {
               icon: <Cpu className='w-6 h-6 text-cyber-purple' />,
-              title: "4.2ms Import",
-              desc: "Start validating instantly. No heavy framework initialization - 10x faster import than Pydantic.",
-              stat: "IMPORT: 4.2ms",
+              title: `${SITE_NUMBERS.importMs} Import`,
+              desc: "Start validating instantly. No heavy framework initialization - about 17x faster import than Pydantic in the latest local run.",
+              stat: `IMPORT: ${SITE_NUMBERS.importMs}`,
               status: "OPTIMAL",
             },
             {
               icon: <Layers className='w-6 h-6 text-cyber-purple' />,
-              title: "Union Types & Nesting",
-              desc: "Support for str | int union types (Python 3.10+), Optional keys, and deeply nested dict schemas.",
-              stat: "TYPES: full",
+              title: "Dicts + Schema Classes",
+              desc: "Stay on plain dicts for the lowest-friction runtime shape, or use Schema classes when autocomplete and typed attribute access help.",
+              stat: `TESTS: ${SITE_NUMBERS.tests}`,
               status: "OPTIMAL",
             },
             {
               icon: <ShieldCheck className='w-6 h-6 text-cyber-purple' />,
               title: "Structured Errors",
               desc: "Detailed error paths, expected vs actual types, and missing key reports. Debug in seconds.",
-              stat: "SIZE: 48KB",
+              stat: `SIZE: ${SITE_NUMBERS.size}`,
               status: "OPTIMAL",
             },
           ].map((feature, i) => (
@@ -510,15 +506,15 @@ export function HomePage() {
           {[
             {
               q: "What is zodify?",
-              a: "zodify is the fastest pure-Python validation library. It validates Python dicts at 615,000 operations per second with zero dependencies, a single 511-line source file, and a 48KB install size. The API is schema-first: validate(schema, data).",
+              a: "zodify is the fastest pure-Python validation library in the latest local comparison run. It validates Python dicts at about 533,000 operations per second with zero dependencies, one shared validation engine, and a 78KB installed footprint. Plain dict schemas stay the default, with optional Schema classes when you want typed attribute access.",
             },
             {
               q: "When should I use zodify instead of Pydantic?",
-              a: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where a 7.8MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.3M ops/sec) but zodify is 162x smaller (48KB vs 7.8MB) and imports 10x faster (4ms vs 44ms).",
+              a: "Use zodify when you need lightweight validation without heavy frameworks - scripts, CLI tools, microservices, serverless functions, or any project where an 8.1MB install with 4 transitive dependencies feels excessive. Pydantic v2 is faster (Rust core, 1.50M ops/sec) but zodify is about 104x smaller and imports about 17x faster in the latest local run.",
             },
             {
               q: "Does zodify have any dependencies?",
-              a: "No. zodify has zero dependencies - it uses only Python's standard library. The entire library is still a single file (511 lines of code, 48KB installed). This means zero supply-chain risk and trivial auditing.",
+              a: "No. zodify has zero dependencies and uses only Python's standard library. The shipped runtime stays compact at roughly 78KB installed with 808 Python source lines across the package.",
             },
             {
               q: "What Python versions does zodify support?",
@@ -526,7 +522,7 @@ export function HomePage() {
             },
             {
               q: "Is zodify production-ready?",
-              a: "zodify is in alpha (v0.5.0). The API is stable for current features but may expand. It has 291 tests with strict type checking enforced by mypy and pyright as merge-blocking CI gates. Automated PyPI publishing on every version tag.",
+              a: `zodify is in alpha. The ${SITE_STATS[0].value} release candidate has ${SITE_NUMBERS.tests} automated tests plus strict mypy and pyright gates. The API is intentionally small and may still expand.`,
             },
           ].map((item, i) => (
             <details
@@ -582,7 +578,7 @@ export function HomePage() {
 
       {/* Last Updated */}
       <div className='text-center text-xs font-mono text-cyber-text/30'>
-        Last updated: March 6, 2026
+        Last updated: {SITE_LAST_UPDATED}
       </div>
     </div>
   );
