@@ -1,7 +1,7 @@
 <h1 align="center">zodify</h1>
 
 <p align="center">
-  <strong>Zod-inspired dict validation for Python. Zero deps. One file.</strong>
+  <strong>Zod-inspired validation for Python. Zero deps. One engine.</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://zodify.dev">
-    <img src="site/public/og-image.svg" alt="zodify - Fastest Pure-Python Validation" width="640" />
+    <img src="https://zodify.dev/og-image.png" alt="zodify - Fastest Pure-Python Validation" width="640" />
   </a>
 </p>
 
@@ -51,7 +51,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 | API style          | Plain dicts + class sugar | Chained builders             | Chained builders             | Classes                |
 | Schema composition | Plain dict reuse | Requires schema DSL/builders | Requires schema DSL/builders | Requires model classes |
 | Dependencies       | **0**            | 2                            | 0                            | 4                      |
-| Code size          | **511 LOC**      | ~1,900 LOC                   | ~1,400 LOC                   | ~32,000 LOC            |
+| Code size          | **808 source LOC** | ~1,900 LOC                   | ~1,400 LOC                   | ~32,000 LOC            |
 | Learning curve     | **Zero**         | Must learn DSL               | Must learn DSL               | Must learn DSL         |
 | Env var support    | **Built-in**     | No                           | No                           | Partial                |
 
@@ -571,7 +571,7 @@ zodify is in **alpha**. The API surface is small and may evolve. All pre-1.0 API
 | ------- | ----------------------------------------------- |
 | v0.7.0  | `.env` file loading (`load_env()`)              |
 | v0.8.0  | JSON Schema export (`to_json_schema()`)         |
-| v1.0.0  | API freeze, documentation site at zodify.dev    |
+| v1.0.0  | API freeze, docs polish, and release hardening  |
 
 **Post-v1.0 (exploring):**
 
