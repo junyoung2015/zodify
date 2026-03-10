@@ -1,10 +1,10 @@
-"""zodify - Zod-inspired dict validation for Python."""
+"""zodify - Zod-inspired validation for Python. Zero deps. One engine."""
 
 import os
 import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
-__version__: str = "0.5.0"
+__version__: str = "0.6.0"
 __all__ = ["__version__", "validate", "env", "Validator", "Optional", "ValidationError", "Schema"]
 
 _MISSING: object = object()
