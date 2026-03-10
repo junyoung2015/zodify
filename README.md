@@ -37,7 +37,7 @@ config = validate(
 )
 ```
 
-That's it. Plain dicts in, validated dicts out. No classes, no DSL, no dependencies.
+That's it. Plain dicts by default. Optional class syntax when you want typed attribute access. No DSL, no dependencies.
 
 ---
 
@@ -48,7 +48,7 @@ Most validation libraries ask you to learn a new DSL or model system. zodify doe
 |                    | zodify           | zon                          | zodic                        | Pydantic               |
 | ------------------ | ---------------- | ---------------------------- | ---------------------------- | ---------------------- |
 | Philosophy         | Minimalist       | Full Zod port                | Full Zod port                | Full ORM               |
-| API style          | Plain dicts      | Chained builders             | Chained builders             | Classes                |
+| API style          | Plain dicts + class sugar | Chained builders             | Chained builders             | Classes                |
 | Schema composition | Plain dict reuse | Requires schema DSL/builders | Requires schema DSL/builders | Requires model classes |
 | Dependencies       | **0**            | 2                            | 0                            | 4                      |
 | Code size          | **511 LOC**      | ~1,900 LOC                   | ~1,400 LOC                   | ~32,000 LOC            |
@@ -174,6 +174,127 @@ result = validator.validate(
 validator.validate({"port": int}, {"port": "8080"})
 # ValueError: port: expected int, got str
 ```
+
+---
+
+### Class-Based Schemas
+
+`Schema` gives you typed attribute access without changing the validation engine.
+
+Class schemas are syntactic sugar - the dict engine does all the work.
+
+```python
+from zodify import Optional, Schema, Validator, validate
+
+dict_schema = {
+    "host": str,
+    "port": Optional(int, 5432),
+}
+
+
+class DBConfig(Schema):
+    host: str
+    port: int = 5432
+
+
+payload = {"host": "db.local"}
+
+assert validate(dict_schema, payload) == {"host": "db.local", "port": 5432}
+
+db = validate(DBConfig, payload)
+assert db.host == "db.local"
+assert db["port"] == 5432
+
+validator = Validator(unknown_keys="strip")
+assert validator.validate(DBConfig, {"host": "db.local", "extra": "x"}).host == "db.local"
+```
+
+The class and dict forms are equivalent for the same structure:
+
+```python
+from zodify import Optional, Schema
+
+db_dict_schema = {
+    "host": str,
+    "port": Optional(int, 5432),
+}
+
+
+class DBConfig(Schema):
+    host: str
+    port: int = 5432
+```
+
+Nested composition works the same way:
+
+```python
+from zodify import Schema, validate
+
+
+class Credentials(Schema):
+    username: str
+    password: str
+
+
+class DatabaseConfig(Schema):
+    host: str
+    port: int = 5432
+    creds: Credentials
+
+
+class AppConfig(Schema):
+    name: str
+    db: DatabaseConfig
+
+
+app = validate(
+    AppConfig,
+    {
+        "name": "api",
+        "db": {
+            "host": "localhost",
+            "creds": {"username": "svc", "password": "secret"},
+        },
+    },
+)
+
+assert app.db.host == "localhost"
+assert app.db.creds.username == "svc"
+```
+
+Prefer class syntax when you want autocomplete, attribute access, and field names that are already valid Python identifiers. Prefer plain dict schemas when you need the lowest-friction runtime shape, invalid identifiers, or callable field validators.
+
+Supported in v0.6.0:
+
+- Direct annotations for primitive fields
+- Default values compiled into `Optional(...)`
+- Unions whose members are plain runtime types (for example `str | int` or `int | None`)
+- Typed lists, bare `dict`, and bare `list`
+- Nested `Schema` subclasses resolved at class-definition time
+- Wrapped nested results for nested `Schema` fields and `list[Schema]`
+- Wrapped results preserve Schema-origin nesting across `|` and `|=` dict merges
+- Non-dict operands on `|` still raise `TypeError`, matching plain `dict` semantics
+
+Intentional non-goals and unsupported boundaries in v0.6.0:
+
+- Later-defined forward references and self-referential schemas
+- Postponed string annotations
+- Inheritance beyond direct `class X(Schema): ...`
+- Unions containing nested `Schema` subclasses or parameterized container members
+- Parameterized `dict[K, V]` annotations
+- Invalid identifier field names
+- Dict-method field names such as `items`, `keys`, and `values`
+- Callable validators in the class body
+- `model_config`-style options and custom metaclass APIs
+- User-facing registries and caching layers
+- Direct `MySchema()` instantiation; Schema classes are declarations, not runtime models
+
+Notes:
+
+- `ValidatedDict` is an internal runtime carrier, not a supported public import.
+- Only annotated fields become schema fields. Unannotated control objects such as `model_config`, `registry`, or `cache` stay inert plain class attributes and are not interpreted by zodify.
+- If you need dict-method field names or unsupported union members, stay on plain dict schemas.
+- Plain dict schemas still return plain `dict` values. Nested plain dict fields stay plain dicts.
 
 ---
 
@@ -412,8 +533,9 @@ Run local preflight before tagging:
 If preflight passes, push the release tag for the version in `pyproject.toml`:
 
 ```bash
-git tag v0.5.0
-git push origin v0.5.0
+TAG="v$(sed -nE 's/^version = "([^"]+)"/\1/p' pyproject.toml | head -n 1)"
+git tag "${TAG}"
+git push origin "${TAG}"
 ```
 
 ---
@@ -439,6 +561,7 @@ zodify is in **alpha**. The API surface is small and may evolve. All pre-1.0 API
 - [x] `ValidationError` exception with `.issues` for machine-readable errors
 - [x] `error_mode="structured"` parameter on `validate()`
 - [x] `Validator` class with reusable configuration defaults and per-call overrides
+- [x] `Schema` base class with typed attribute access, nested wrapping for nested `Schema` fields, and `ValidatedDict` kept internal
 - [x] Runnable example scripts in `examples/` (`basic_validation.py`, `nested_schemas.py`, `custom_validators.py`, `union_types.py`, `env_config.py`, `structured_errors.py`)
 - [x] README schema composition documentation with plain dict reuse patterns
 
@@ -446,7 +569,6 @@ zodify is in **alpha**. The API surface is small and may evolve. All pre-1.0 API
 
 | Version | Theme                                           |
 | ------- | ----------------------------------------------- |
-| v0.6.0  | Class-based schema syntax (`Schema` base class) |
 | v0.7.0  | `.env` file loading (`load_env()`)              |
 | v0.8.0  | JSON Schema export (`to_json_schema()`)         |
 | v1.0.0  | API freeze, documentation site at zodify.dev    |
