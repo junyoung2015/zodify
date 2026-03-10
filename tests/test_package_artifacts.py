@@ -71,6 +71,10 @@ def test_artifact_example_boundaries(built_artifacts: tuple[Path, Path]) -> None
     with tarfile.open(sdist_path, mode="r:gz") as sdist:
         sdist_names = sdist.getnames()
 
+    assert not any("/tests/" in name or name.endswith("/tests") for name in sdist_names), (
+        "sdist must not include repository test modules"
+    )
+
     for filename in REQUIRED_EXAMPLES:
         assert any(name.endswith(f"examples/{filename}") for name in sdist_names), (
             f"sdist missing required example file: {filename}"
