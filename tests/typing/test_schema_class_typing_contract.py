@@ -1,10 +1,10 @@
-"""Typing smoke for schema-class prototype contract."""
+"""Typing smoke for the live Schema public API."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from tests.typing.schema_class_runtime_prototype import Schema, Validator, validate
+from zodify import Schema, Validator, validate
 
 
 if TYPE_CHECKING:
