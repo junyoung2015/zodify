@@ -5,13 +5,14 @@ import types
 from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
 __version__: str = "0.5.0"
-__all__ = ["__version__", "validate", "env", "Validator", "Optional", "ValidationError"]
+__all__ = ["__version__", "validate", "env", "Validator", "Optional", "ValidationError", "Schema"]
 
 _MISSING: object = object()
 _BOOL_TRUE = {"true", "1", "yes"}
 _BOOL_FALSE = {"false", "0", "no"}
 UnknownKeysMode = Literal["reject", "strip"]
 ErrorMode = Literal["text", "structured"]
+_SchemaT = TypeVar("_SchemaT", bound="Schema")
 _DictValueT = TypeVar("_DictValueT")
 _SchemaValueT = TypeVar("_SchemaValueT")
 _EnvCastT = TypeVar("_EnvCastT", str, int, float, bool)
@@ -275,6 +276,19 @@ def _validate(schema: dict[str, Any], data: dict[str, Any], coerce: bool,
 
 @overload
 def validate(
+    schema: type[_SchemaT],
+    data: dict[str, Any],
+    *,
+    coerce: bool = False,
+    max_depth: int = 32,
+    unknown_keys: UnknownKeysMode = "reject",
+    error_mode: ErrorMode = "text",
+) -> _SchemaT:
+    ...
+
+
+@overload
+def validate(
     schema: dict[str, type[_SchemaValueT]],
     data: dict[str, Any],
     *,
@@ -312,13 +326,21 @@ def validate(
     ...
 
 
-def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = False,
-             max_depth: int = 32, unknown_keys: UnknownKeysMode = "reject",
-             error_mode: ErrorMode = "text") -> dict[str, Any]:
-    """Validate a dict against a type schema
+def validate(
+    schema: type[_SchemaT] | dict[str, Any],
+    data: dict[str, Any],
+    *,
+    coerce: bool = False,
+    max_depth: int = 32,
+    unknown_keys: UnknownKeysMode = "reject",
+    error_mode: ErrorMode = "text",
+) -> _SchemaT | dict[str, Any]:
+    """Validate a dict against a plain schema dict or Schema subclass
 
     Args:
-        schema: Dict mapping keys to expected types.
+        schema: Dict mapping keys to expected types, or a
+                `Schema` subclass compiled into an equivalent
+                plain dict schema.
         data: The dict to validate.
         coerce: If True, cast string values to target types.
         max_depth: Maximum nesting depth (default 32).
@@ -331,11 +353,12 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
                     of dicts.
 
     Returns:
-        A new dict with only schema-declared keys.
+        A new plain dict for dict-schema input, or a dict-
+        compatible wrapped Schema result for Schema input.
 
     Raises:
-        TypeError: If schema or data is not a dict, or
-                   if schema contains invalid values.
+        TypeError: If schema or data is not valid input, or if
+                   schema contains invalid values.
         ValueError: If any key fails validation (text mode),
                     or if unknown_keys / error_mode is invalid.
         ValidationError: If any key fails validation
@@ -347,8 +370,7 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
         >>> validate({"name": str, "age": int}, {"name": "Alice", "age": 30})
         {'name': 'Alice', 'age': 30}
     """
-    if type(schema) is not dict:
-        raise TypeError("schema must be a dict")
+    normalized_schema, schema_type = normalize_schema_input(schema)
     if type(data) is not dict:
         raise TypeError("data must be a dict")
     resolved_unknown_keys, resolved_error_mode = _resolve_mode_options(
@@ -357,7 +379,7 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
     )
     errors: list[tuple[str, str, str, str]] = []
     result = _validate(
-        schema, data, coerce, "", errors, max_depth,
+        normalized_schema, data, coerce, "", errors, max_depth,
         resolved_unknown_keys,
     )
     if errors:
@@ -369,7 +391,9 @@ def validate(schema: dict[str, Any], data: dict[str, Any], *, coerce: bool = Fal
         raise ValueError("\n".join(
             f"{path}: {msg}" for path, msg, _, _ in errors
         ))
-    return result
+    if schema_type is None:
+        return result
+    return wrap_schema_result(schema_type, result)
 
 
 @overload
@@ -418,7 +442,7 @@ def env(name: str, cast: type[_EnvCastT], default: object = _MISSING) -> _EnvCas
 
 
 class Validator:
-    """Validate dict data with reusable default validate() options
+    """Validate dict or Schema data with reusable default validate() options
 
     Args:
         coerce: Default value for ``validate(..., coerce=...)``.
@@ -460,12 +484,25 @@ class Validator:
     @overload
     def validate(
         self,
-        schema: dict[str, type[_SchemaValueT]],
+        schema: type[_SchemaT],
         data: dict[str, Any],
         *,
         coerce: bool = ...,
         max_depth: int = ...,
         unknown_keys: UnknownKeysMode = ...,
+        error_mode: ErrorMode = ...,
+    ) -> _SchemaT:
+        ...
+
+    @overload
+    def validate(
+        self,
+        schema: dict[str, type[_SchemaValueT]],
+        data: dict[str, Any],
+        *,
+        coerce: bool = ...,
+        max_depth: int = ...,
+        unknown_keys: Literal["reject"] = ...,
         error_mode: ErrorMode = ...,
     ) -> dict[str, _SchemaValueT]:
         ...
@@ -478,21 +515,34 @@ class Validator:
         *,
         coerce: bool = ...,
         max_depth: int = ...,
-        unknown_keys: UnknownKeysMode = ...,
+        unknown_keys: Literal["reject"] = ...,
         error_mode: ErrorMode = ...,
     ) -> dict[str, _DictValueT]:
         ...
 
+    @overload
     def validate(
         self,
         schema: dict[str, Any],
+        data: dict[str, Any],
+        *,
+        coerce: bool = ...,
+        max_depth: int = ...,
+        unknown_keys: Literal["strip"],
+        error_mode: ErrorMode = ...,
+    ) -> dict[str, Any]:
+        ...
+
+    def validate(
+        self,
+        schema: type[_SchemaT] | dict[str, Any],
         data: dict[str, Any],
         *,
         coerce: object = _MISSING,
         max_depth: object = _MISSING,
         unknown_keys: object = _MISSING,
         error_mode: object = _MISSING,
-    ) -> dict[str, Any]:
+    ) -> _SchemaT | dict[str, Any]:
         use_coerce = self.coerce if coerce is _MISSING else coerce
         use_max_depth = self.max_depth if max_depth is _MISSING else max_depth
         use_unknown_keys = (
@@ -509,3 +559,6 @@ class Validator:
             unknown_keys=typing_cast(UnknownKeysMode, use_unknown_keys),
             error_mode=typing_cast(ErrorMode, use_error_mode),
         )
+
+
+from .schema import Schema, normalize_schema_input, wrap_schema_result
