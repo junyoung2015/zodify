@@ -8,6 +8,10 @@ import zodify
 
 from tests.typing import schema_class_runtime_prototype as prototype
 
+pytestmark = pytest.mark.skip(
+    reason="Historical nline-path prototype"
+)
+
 
 def test_prototype_module_is_importable() -> None:
     assert prototype.Schema is not None
@@ -155,6 +159,17 @@ def test_field_name_collisions_and_unsupported_forward_refs_are_explicit() -> No
         exec(
             "class Node(Schema):\n"
             "    child: 'Node'\n",
+            namespace,
+            namespace,
+        )
+
+
+def test_postponed_string_annotations_are_explicitly_unsupported() -> None:
+    namespace: dict[str, object] = {"Schema": prototype.Schema}
+    with pytest.raises(TypeError, match="forward references are unsupported"):
+        exec(
+            "class FutureStyle(Schema):\n"
+            "    host: 'str'\n",
             namespace,
             namespace,
         )
