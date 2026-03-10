@@ -7,7 +7,7 @@ from zodify import validate, Optional, __version__
 # --- __version__ ---
 
 def test_version():
-    assert __version__ == "0.5.0"
+    assert __version__ == "0.6.0"
 
 
 # --- PEP 561: py.typed marker ---
