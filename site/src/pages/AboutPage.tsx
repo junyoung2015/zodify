@@ -1,6 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 
+import { SITE_LAST_UPDATED, SITE_NUMBERS, SITE_VERSION } from "../siteMeta";
+
 export function AboutPage() {
   return (
     <div className='max-w-3xl mx-auto px-6 pt-12 pb-20'>
@@ -8,7 +10,7 @@ export function AboutPage() {
         <title>About - zodify</title>
         <meta
           name='description'
-          content='How a 20-line automation script turned into a published Python validation library - the story behind zodify and why it exists.'
+          content='How a 20-line automation script turned into a published Python validation library - the background behind zodify and why it exists.'
         />
         <link rel='canonical' href='https://zodify.dev/about' />
         <script type='application/ld+json'>
@@ -21,7 +23,7 @@ export function AboutPage() {
                 name: "Who created zodify?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 291 tests and 8 releases.",
+                  text: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and grew into a published PyPI library with 345 automated tests and a shared validation engine for dicts and optional Schema classes.",
                 },
               },
               {
@@ -29,7 +31,7 @@ export function AboutPage() {
                 name: "Why was zodify created?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data).",
+                  text: "zodify was created because existing validation options were either too heavy (Pydantic: 8.1MB installed, 4 deps, 39ms import) or poorly maintained. The goal was a zero-dependency validation library that uses plain Python dicts by default, with optional Schema classes when typed attribute access helps.",
                 },
               },
               {
@@ -37,7 +39,7 @@ export function AboutPage() {
                 name: "What are zodify's design constraints?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "zodify follows three deliberate constraints: one source file, zero dependencies, and aggressive LOC discipline. The project started with a 500 LOC target, and v0.5.0 pushes the single-file core to 511 lines, which now serves as a signal to review scope before adding more surface area.",
+                  text: "zodify started with strict single-file discipline and evolved into a compact multi-module runtime that still keeps one validation engine, zero dependencies, and aggressive scope control. The current runtime ships 808 Python source lines across the package.",
                 },
               },
             ],
@@ -67,11 +69,12 @@ export function AboutPage() {
         <div className='prose-cyber space-y-12'>
           {/* Intro */}
           <p className='text-cyber-text/80 leading-relaxed text-lg'>
-            This is the story of how zodify went from a throwaway helper
-            function to a published PyPI library with 291 tests, 8 releases, and
-            615,000 validations per second. It covers the friction that started
-            it, the constraints that shaped it, and what building open source
-            taught me.
+            This is how zodify went from a throwaway helper
+            function to a published PyPI library with 345 automated tests,
+            optional class-based schemas, and about 533,000 validations per
+            second in the latest local comparison run.
+            It covers the friction that started it, the constraints that shaped
+            it, and what building open source taught me.
           </p>
 
           {/* Section 1 */}
@@ -107,8 +110,8 @@ export function AboutPage() {
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               But I hesitated. Pydantic felt way too <em>serious</em> for this.
               In my head, Pydantic belonged in the backend - FastAPI route
-              validators, Django serializers, production data pipelines. It's a
-              7.8MB install with four transitive dependencies. Import time: 44
+              validators, Django serializers, production data pipelines. It's an
+              8.1MB install with four transitive dependencies. Import time: 39
               milliseconds. My entire script was lighter than the validator I
               was about to install.
             </p>
@@ -179,7 +182,7 @@ export function AboutPage() {
               </div>
             </div>
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
-              No classes. No{" "}
+              No heavy model system. No{" "}
               <code className='bg-white/5 px-1.5 py-0.5 rounded text-sm font-mono text-cyber-purple'>
                 BaseModel
               </code>
@@ -188,7 +191,8 @@ export function AboutPage() {
                 {"Field(ge=0, le=65535)"}
               </code>
               . Just the shape of the data, described in the types you already
-              think in.
+              think in. Dicts stayed the default even after optional Schema
+              classes arrived later.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               But then a question crept in:{" "}
@@ -214,18 +218,17 @@ export function AboutPage() {
               From helper function to open-source library
             </h2>
             <p className='text-cyber-text/70 leading-relaxed mb-4 font-semibold text-lg'>
-              Deliberate constraints - one file, zero dependencies, and ruthless
-              LOC discipline - shaped every decision.
+              Deliberate constraints - one engine, zero dependencies, and
+              ruthless scope discipline - shaped every decision.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
-              I set myself constraints from the start. One source file. Zero
-              dependencies. A working target of roughly 500 lines of code. Every
-              line had to earn its place. These weren't arbitrary limitations -
-              they were design decisions. A single file means trivial auditing.
-              Zero dependencies means zero supply-chain risk. The LOC target
-              forced API discipline, and crossing it at v0.5.0 is the point
-              where the project has to pause and re-evaluate before letting the
-              surface area sprawl.
+              I set myself constraints from the start. Zero dependencies. A
+              working target of roughly 500 lines of logic. Every line had to
+              earn its place. Those constraints were not arbitrary. They forced
+              API discipline, kept the runtime easy to audit, and made every new
+              feature justify itself. When class-based schemas landed, the
+              runtime grew into a focused companion module instead of bolting on
+              a second engine.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-6'>
               The first release, v0.0.1, landed on PyPI on February 25, 2026.
@@ -266,6 +269,10 @@ export function AboutPage() {
                   "v0.5.0",
                   "Validator defaults, expanded parity tests, and release hardening",
                 ],
+                [
+                  SITE_VERSION,
+                  "Class-based schemas with typed attribute access on the same validation engine",
+                ],
               ].map(([version, desc]) => (
                 <li key={version} className='flex gap-3 text-cyber-text/70'>
                   <span className='font-mono text-cyber-purple text-sm font-bold shrink-0'>
@@ -276,9 +283,11 @@ export function AboutPage() {
               ))}
             </ul>
             <p className='text-cyber-text/70 leading-relaxed mb-6'>
-              Eight releases in under two weeks. 291 tests. 511 lines of code.
-              Strict type checking with mypy and pyright as merge-blocking CI
-              gates. Automated PyPI publishing on every version tag.
+              Today the runtime sits at {SITE_NUMBERS.tests} automated tests and{" "}
+              {SITE_NUMBERS.sourceLoc} Python source lines across the package.
+              Strict type
+              checking with mypy and pyright remains a merge-blocking gate, and
+              PyPI publishing is automated on version tags.
             </p>
 
             {/* Benchmark Table */}
@@ -295,46 +304,46 @@ export function AboutPage() {
                 </thead>
                 <tbody className='divide-y divide-white/5'>
                   {[
-                    {
-                      lib: "zodify",
-                      ops: "615K",
-                      imp: "4ms",
-                      size: "48KB",
-                      deps: "0",
-                      highlight: true,
-                    },
-                    {
-                      lib: "pydantic v2 (Rust)",
-                      ops: "1.3M",
-                      imp: "44ms",
-                      size: "7.8MB",
-                      deps: "4",
-                      highlight: false,
-                    },
-                    {
-                      lib: "voluptuous",
-                      ops: "289K",
-                      imp: "15ms",
-                      size: "212KB",
-                      deps: "0",
-                      highlight: false,
-                    },
-                    {
-                      lib: "schema",
-                      ops: "43K",
-                      imp: "9ms",
-                      size: "64KB",
-                      deps: "0",
-                      highlight: false,
-                    },
-                    {
-                      lib: "cerberus",
-                      ops: "10K",
-                      imp: "34ms",
-                      size: "228KB",
-                      deps: "0",
-                      highlight: false,
-                    },
+                  {
+                    lib: "zodify",
+                    ops: "533K",
+                    imp: "2.3ms",
+                    size: "78KB",
+                    deps: "0",
+                    highlight: true,
+                  },
+                  {
+                    lib: "pydantic v2 (Rust)",
+                    ops: "1.50M",
+                    imp: "39.4ms",
+                    size: "8.1MB",
+                    deps: "4",
+                    highlight: false,
+                  },
+                  {
+                    lib: "voluptuous",
+                    ops: "218K",
+                    imp: "10.8ms",
+                    size: "213KB",
+                    deps: "0",
+                    highlight: false,
+                  },
+                  {
+                    lib: "schema",
+                    ops: "38.8K",
+                    imp: "5.4ms",
+                    size: "101KB",
+                    deps: "0",
+                    highlight: false,
+                  },
+                  {
+                    lib: "cerberus",
+                    ops: "8.5K",
+                    imp: "28.4ms",
+                    size: "215KB",
+                    deps: "0",
+                    highlight: false,
+                  },
                   ].map((row) => (
                     <tr
                       key={row.lib}
@@ -373,8 +382,8 @@ export function AboutPage() {
             <p className='text-cyber-text/70 leading-relaxed'>
               zodify is the fastest pure-Python validation library I could find.
               Only Pydantic v2's Rust-compiled core validates faster - but at
-              the cost of a 7.8MB install and a 44ms import time. zodify does it
-              in 48KB and 4 milliseconds.
+              the cost of an 8.1MB install and a 39.4ms import time. zodify
+              does it in 78KB and 2.3 milliseconds.
             </p>
           </section>
 
@@ -401,9 +410,9 @@ export function AboutPage() {
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               Every moment of building zodify has been <em>happy</em>.
               Discussing architecture decisions, debating API design, watching
-              test counts climb from 10 to 291 - it never felt like work. It
-              felt like building something that mattered, even if the audience
-              was small.
+              test counts climb from 10 to {SITE_NUMBERS.tests} - it never felt
+              like work. It felt like building something that mattered, even if
+              the audience was small.
             </p>
             <p className='text-cyber-text/70 leading-relaxed mb-4'>
               I understand now that open-source contributors aren't doing
@@ -428,15 +437,15 @@ export function AboutPage() {
               {[
                 {
                   q: "Who created zodify?",
-                  a: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and evolved into a published PyPI library with 291 tests and 8 releases.",
+                  a: "zodify was created by Jun Young Sohn (jusohn). It started as a 20-line automation script for validating .env files and API keys, and grew into a published PyPI library with 345 automated tests and a shared validation engine for dicts and optional Schema classes.",
                 },
                 {
                   q: "Why was zodify created?",
-                  a: "zodify was created because existing validation options were either too heavy (Pydantic: 7.8MB, 4 deps, 44ms import) or poorly maintained. The goal was a single-file, zero-dependency validation library that uses plain Python dicts as schemas \u2014 validate(schema, data).",
+                  a: "zodify was created because existing validation options were either too heavy (Pydantic: 8.1MB installed, 4 deps, 39ms import) or poorly maintained. The goal was a zero-dependency validation library that uses plain Python dicts by default, with optional Schema classes when typed attribute access helps.",
                 },
                 {
                   q: "What are zodify's design constraints?",
-                  a: "zodify follows three deliberate constraints: one source file, zero dependencies, and aggressive LOC discipline. The project started with a 500 LOC target, and v0.5.0 pushes the single-file core to 511 lines, which now serves as a signal to review scope before adding more surface area.",
+                  a: "zodify started with strict single-file discipline and evolved into a compact multi-module runtime that still keeps one validation engine, zero dependencies, and aggressive scope control. The current runtime ships 808 Python source lines across the package.",
                 },
               ].map((item, i) => (
                 <details
@@ -466,7 +475,7 @@ export function AboutPage() {
 
           {/* Last Updated */}
           <div className='text-center text-xs font-mono text-cyber-text/30'>
-            Last updated: March 6, 2026
+            Last updated: {SITE_LAST_UPDATED}
           </div>
         </div>
       </motion.div>
