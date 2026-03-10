@@ -9,8 +9,11 @@ import zipfile
 from pathlib import Path
 
 import pytest
+import zodify
 
 ROOT = Path(__file__).resolve().parent.parent
+SOURCE_PACKAGE = ROOT / "zodify"
+SCHEMA_MODULE = SOURCE_PACKAGE / "schema.py"
 REQUIRED_EXAMPLES = {
     "basic_validation.py",
     "nested_schemas.py",
@@ -119,3 +122,68 @@ def test_install_context_smoke_required_examples(
             f"stdout:\n{result.stdout}\n"
             f"stderr:\n{result.stderr}"
         )
+
+
+def test_install_context_schema_public_surface_when_present(
+    built_artifacts: tuple[Path, Path], tmp_path: Path
+) -> None:
+    if not SCHEMA_MODULE.exists():
+        return
+
+    wheel_path, _ = built_artifacts
+    venv_dir = tmp_path / "schema-venv"
+    python = _venv_python(venv_dir)
+
+    create_venv = subprocess.run(
+        [sys.executable, "-m", "venv", str(venv_dir)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert create_venv.returncode == 0, (
+        "venv creation failed:\n"
+        f"stdout:\n{create_venv.stdout}\n"
+        f"stderr:\n{create_venv.stderr}"
+    )
+
+    install = subprocess.run(
+        [str(python), "-m", "pip", "install", str(wheel_path)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert install.returncode == 0, (
+        "wheel install failed:\n"
+        f"stdout:\n{install.stdout}\n"
+        f"stderr:\n{install.stderr}"
+    )
+
+    result = subprocess.run(
+        [
+            str(python),
+            "-c",
+            "import zodify; from zodify import Schema, Validator, validate; "
+            "assert hasattr(zodify, 'Schema'); "
+            "assert callable(validate); "
+            "assert Validator is not None; "
+            "assert Schema is not None",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, (
+        "install-context smoke failed for Schema public surface:\n"
+        f"stdout:\n{result.stdout}\n"
+        f"stderr:\n{result.stderr}"
+    )
+
+
+def test_public_schema_surface_requires_extracted_module_path() -> None:
+    if not hasattr(zodify, "Schema"):
+        return
+
+    assert SCHEMA_MODULE.exists(), (
+        "public Schema surface requires the approved extracted-module path at zodify/schema.py"
+    )
