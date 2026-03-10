@@ -1,16 +1,16 @@
 # zodify
 
-> The fastest pure-Python validation library. Zero dependencies, schema-first API.
+> The fastest pure-Python validation library. Zero dependencies. One engine.
 
 ## About
 
-zodify is a lightweight, pure-Python data validation library. It provides a schema-first `validate(schema, data)` API with zero dependencies, making it ideal for projects that need fast, simple validation without heavy frameworks.
+zodify is a lightweight, pure-Python data validation library. It provides a schema-first `validate(schema, data)` API with zero dependencies, making it ideal for projects that need fast, simple validation without heavy frameworks. Plain dict schemas are the default, with optional `Schema` classes when typed attribute access helps.
 
-- **Version:** 0.5.0
+- **Version:** 0.6.0
 - **License:** MIT
 - **Python:** 3.10+
-- **Lines of Code:** 511
-- **Test Count:** 291
+- **Lines of Code:** 808
+- **Test Count:** 345
 - **Dependencies:** Zero
 
 ## Links
