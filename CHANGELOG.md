@@ -7,6 +7,20 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [v0.6.0] - 2026-03-10
+
+### Added
+
+- Added the public `Schema` base class for class-based schema definitions while keeping validation on the existing dict engine.
+- Added `zodify/schema.py` as the extracted runtime module for class-based schemas while keeping `ValidatedDict` as an internal runtime carrier.
+- Added comprehensive Schema-vs-dict parity coverage, typing-contract checks, package-artifact checks, and release-gate validation for the public class-based schema surface.
+- Added README `Class-Based Schemas` documentation with side-by-side dict/class examples, nested composition, supported boundaries, and intentional non-goals.
+
+### Changed
+
+- Aligned package metadata, module version, and tests on `0.6.0`.
+- Updated package/README positioning from "one file" to "one engine" to match the extracted runtime layout.
+
 ## [v0.5.0] - 2026-03-06
 
 ### Added
