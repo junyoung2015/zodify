@@ -59,8 +59,8 @@ fi
 python -m pytest tests/ -v
 python -m pytest --doctest-modules zodify/
 python -m pytest -q tests/test_logic_loc_budget.py
-mypy --strict zodify/
-pyright zodify/
+mypy --strict zodify/ tests/typing/test_schema_class_typing_contract.py
+pyright zodify/ tests/typing/test_schema_class_typing_contract.py
 python -m build
 
 echo
