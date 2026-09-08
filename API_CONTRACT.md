@@ -1,6 +1,6 @@
 # Supported API and compatibility contract
 
-This inventory describes the **unreleased 0.8.0 candidate** and the intended
+This inventory describes the **0.8.0 interface** and the intended
 scope for 1.0 stabilization. It does not announce a stable release. PyPI release
 availability is verified separately from source version numbers.
 
@@ -22,7 +22,7 @@ availability is verified separately from source version numbers.
 | `zodify.json_schema.UnsupportedSchemaError` | Explicit export refusal with structural location and reason. |
 | `zodify.json_io.validate_json` | Parse a text or UTF-8 byte JSON object under the documented parser policy, then delegate ordinary validation. |
 | `zodify.json_io.JSONInputError` | Generic parser/root error with code and optional decoder line/column; separate from application validation. |
-| `zodify.__version__` | Candidate/runtime version; does not establish publication. |
+| `zodify.__version__` | Runtime version; does not establish publication. |
 
 Internal helpers, private modules, generated class-result carriers, imported
 typing names, and schema normalization internals are not extension interfaces.
