@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Additional explicit crawler allowances (search and other uses)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://zodify.dev/sitemap.xml

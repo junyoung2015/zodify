@@ -1,0 +1,25 @@
+# zodify
+
+> Small, predictable validation for plain Python data.
+
+Released version: 0.6.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license.
+
+Unreleased source is not an installation promise. Compilation, canonical details, reports, validate_json, JSON Schema export, and load_env are not in this recorded release.
+
+- [Small, predictable validation for plain Python data.](https://zodify.dev/): Validate ordinary Python dicts with zero required runtime dependencies and optional class declarations.
+- [Documentation](https://zodify.dev/docs/): Released API documentation and task guides, with stable links for existing zodify documentation.
+- [Getting started](https://zodify.dev/docs/getting-started/): Install zodify and validate your first Python dict, including a useful failure.
+- [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar.
+- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.6.0.
+- [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership.
+- [Errors and privacy](https://zodify.dev/docs/errors/): Catch released text and structured validation errors without assuming input redaction.
+- [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible.
+- [Validate a configuration dict](https://zodify.dev/guides/config-validation/): Catch missing keys and misspelled configuration, with an explicit strip alternative.
+- [Validate command-line inputs](https://zodify.dev/guides/cli-input-validation/): Convert argparse strings deliberately and handle invalid command-line values.
+- [Validate a JSON object](https://zodify.dev/guides/json-object-validation/): Parse JSON with the standard library, enforce an object root, then validate Python fields.
+- [Choosing a Python validator](https://zodify.dev/compare/): A task-based choice between small dict validation and broader validation tools.
+- [Benchmarks and measurement](https://zodify.dev/benchmarks/): Reproducible measurement requirements and the limits of current performance claims.
+- [Why zodify exists](https://zodify.dev/about/): The project's origin, author, design choices, and honest boundaries.
+- [Released, planned, and experimental](https://zodify.dev/roadmap/): Feature availability separated from unreleased source work and proposed designs.
+- [Release history](https://zodify.dev/changelog/): Verified released package identity and the development changelog.
+- [Why a Python int check is not JSON Schema integer](https://zodify.dev/articles/python-integers-and-json/): An executable explanation of exact Python types and JSON numeric semantics.
