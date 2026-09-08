@@ -58,6 +58,9 @@ def main() -> None:
         configuration = {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}
         subprocess.run(["gh", "api", "--method", "PUT", f"repos/{repo}/pages", "--input", "-"],
                        input=json.dumps(configuration), text=True, check=True, cwd=ROOT)
+        # A first switch from workflow to branch publishing can otherwise
+        # continue serving the old artifact until Pages receives a publish request.
+        run("gh", "api", "--method", "POST", f"repos/{repo}/pages/builds")
         print(json.dumps({"source_commit": source, "pages_commit": run("git", "rev-parse", "HEAD", cwd=target),
                           "previous_pages_settings": settings}, indent=2))
 
