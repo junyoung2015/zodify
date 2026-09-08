@@ -38,7 +38,7 @@ def _export_candidate(tmp_path: Path) -> Path:
     """Build reviewed working files, never a stale HEAD or local build cache."""
     source_root = tmp_path / "candidate"
     source_root.mkdir()
-    for name in ("LICENSE", "README.md", "pyproject.toml", "MANIFEST.in"):
+    for name in ("LICENSE", "README.md", "API_CONTRACT.md", "pyproject.toml", "MANIFEST.in"):
         shutil.copy2(ROOT / name, source_root / name)
     for name in ("zodify", "examples"):
         shutil.copytree(ROOT / name, source_root / name,
@@ -94,6 +94,8 @@ def test_artifact_example_boundaries(built_artifacts: BuiltArtifacts) -> None:
 
     with tarfile.open(sdist_path, mode="r:gz") as sdist:
         sdist_names = sdist.getnames()
+
+    assert any(name.endswith("/API_CONTRACT.md") for name in sdist_names)
 
     assert not any("/tests/" in name or name.endswith("/tests") for name in sdist_names), (
         "sdist must not include repository test modules"

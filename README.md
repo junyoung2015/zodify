@@ -706,15 +706,19 @@ The gates run fatal lint, runtime and doctests, both type checkers, installed
 artifact checks, package metadata validation, and the static site build. See
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for compatibility expectations.
 
-Package publishing is separate from merging. From a clean verified checkout,
-`./scripts/release_preflight.sh` checks candidate versions and artifacts without
-uploading. After the Actions pause ends, an authorized `v*` tag can invoke the
-publish workflow; a final GitHub Release is created only after upload succeeds.
-Verify the wheel from PyPI before changing website release facts. During the
-pause, production site deployment uses locally verified static files and
-`.nojekyll` on the Pages source branch; no DNS or additional service is required.
+Package publishing is separate from merging. The [local release procedure](release-notes/RELEASING.md)
+retains the exact wheel, source distribution, source commit and SHA-256 evidence
+from a clean merged checkout. Obtain the owner's release decision before uploading
+those files with Twine. Verify downloaded PyPI hashes and an independent install
+before creating the matching tag and final GitHub Release or changing availability
+facts. Recheck budget and reconcile publishing workflows before enabling Actions;
+the calendar alone does not enable publication. Production site deployment uses
+locally verified static files and `.nojekyll` on the Pages source branch.
 
 ## Compatibility and direction
+
+The [supported API and compatibility contract](API_CONTRACT.md) records the
+0.8.0 candidate surface and the explicit conditions for 1.0 stabilization.
 
 0.6.0 is the released baseline. This 0.8.0 candidate retains the existing `.env`
 work and adds diagnostics and conservative JSON boundaries. Existing imports,

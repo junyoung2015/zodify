@@ -237,3 +237,6 @@ pyrightconfig.json
 
 benchmarks-mobile.png
 home-mobile.png
+
+# Retained local release artifacts and verification evidence
+.release/
