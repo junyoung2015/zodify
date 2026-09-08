@@ -184,8 +184,10 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
+# Website source is tracked; generated and local files are not.
+site/node_modules/
+site/dist/
+site/.env*
 
 # mypy
 .mypy_cache/
@@ -217,3 +219,21 @@ poetry.toml
 
 # LSP config files
 pyrightconfig.json
+
+#####################
+# LLM / MCP / Agent
+#####################
+.agent/
+.agents/
+.claude/
+.github/agents/
+.github/instructions/
+.github/prompts/
+.github/copilot-instructions.md
+.gemini/
+.cursor/
+.clinerules/
+.githooks/
+
+benchmarks-mobile.png
+home-mobile.png

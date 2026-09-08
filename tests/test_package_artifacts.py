@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -20,17 +22,38 @@ REQUIRED_EXAMPLES = {
     "custom_validators.py",
     "union_types.py",
     "env_config.py",
+    "json_schema_export.py",
     "structured_errors.py",
 }
 
 
-def _build_artifacts(tmp_path: Path) -> tuple[Path, Path]:
+@dataclass(frozen=True)
+class BuiltArtifacts:
+    wheel_path: Path
+    sdist_path: Path
+    source_root: Path
+
+
+def _export_candidate(tmp_path: Path) -> Path:
+    """Build reviewed working files, never a stale HEAD or local build cache."""
+    source_root = tmp_path / "candidate"
+    source_root.mkdir()
+    for name in ("LICENSE", "README.md", "pyproject.toml", "MANIFEST.in"):
+        shutil.copy2(ROOT / name, source_root / name)
+    for name in ("zodify", "examples"):
+        shutil.copytree(ROOT / name, source_root / name,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    return source_root
+
+
+def _build_artifacts(tmp_path: Path) -> BuiltArtifacts:
+    source_root = _export_candidate(tmp_path)
     outdir = tmp_path / "dist"
     outdir.mkdir()
 
     result = subprocess.run(
         [sys.executable, "-m", "build", "--no-isolation", "--outdir", str(outdir)],
-        cwd=ROOT,
+        cwd=source_root,
         capture_output=True,
         text=True,
         timeout=180,
@@ -45,7 +68,7 @@ def _build_artifacts(tmp_path: Path) -> tuple[Path, Path]:
     sdists = sorted(outdir.glob("*.tar.gz"))
     assert wheels, "expected at least one wheel artifact"
     assert sdists, "expected at least one sdist artifact"
-    return wheels[-1], sdists[-1]
+    return BuiltArtifacts(wheels[-1], sdists[-1], source_root)
 
 
 def _venv_python(venv_dir: Path) -> Path:
@@ -55,12 +78,13 @@ def _venv_python(venv_dir: Path) -> Path:
 
 
 @pytest.fixture
-def built_artifacts(tmp_path: Path) -> tuple[Path, Path]:
+def built_artifacts(tmp_path: Path) -> BuiltArtifacts:
     return _build_artifacts(tmp_path)
 
 
-def test_artifact_example_boundaries(built_artifacts: tuple[Path, Path]) -> None:
-    wheel_path, sdist_path = built_artifacts
+def test_artifact_example_boundaries(built_artifacts: BuiltArtifacts) -> None:
+    wheel_path = built_artifacts.wheel_path
+    sdist_path = built_artifacts.sdist_path
 
     with zipfile.ZipFile(wheel_path) as wheel:
         wheel_names = set(wheel.namelist())
@@ -82,9 +106,9 @@ def test_artifact_example_boundaries(built_artifacts: tuple[Path, Path]) -> None
 
 
 def test_install_context_smoke_required_examples(
-    built_artifacts: tuple[Path, Path], tmp_path: Path
+    built_artifacts: BuiltArtifacts, tmp_path: Path
 ) -> None:
-    wheel_path, _ = built_artifacts
+    wheel_path = built_artifacts.wheel_path
     venv_dir = tmp_path / "venv"
     python = _venv_python(venv_dir)
 
@@ -113,7 +137,7 @@ def test_install_context_smoke_required_examples(
     )
 
     for filename in sorted(REQUIRED_EXAMPLES):
-        example_path = ROOT / "examples" / filename
+        example_path = built_artifacts.source_root / "examples" / filename
         result = subprocess.run(
             [str(python), str(example_path)],
             cwd=tmp_path,
@@ -129,12 +153,13 @@ def test_install_context_smoke_required_examples(
 
 
 def test_install_context_schema_public_surface_when_present(
-    built_artifacts: tuple[Path, Path], tmp_path: Path
+    built_artifacts: BuiltArtifacts, tmp_path: Path
 ) -> None:
-    if not SCHEMA_MODULE.exists():
+    schema_module = built_artifacts.source_root / "zodify" / "schema.py"
+    if not schema_module.exists():
         return
 
-    wheel_path, _ = built_artifacts
+    wheel_path = built_artifacts.wheel_path
     venv_dir = tmp_path / "schema-venv"
     python = _venv_python(venv_dir)
 
@@ -166,11 +191,17 @@ def test_install_context_schema_public_surface_when_present(
         [
             str(python),
             "-c",
-            "import zodify; from zodify import Schema, Validator, validate; "
+            "import zodify; from zodify import Schema, Validator, to_json_schema, validate; "
             "assert hasattr(zodify, 'Schema'); "
+            "assert hasattr(zodify, 'to_json_schema'); "
+            "from importlib.metadata import metadata; "
+            "assert zodify.__version__ == metadata('zodify')['Version']; "
+            "assert not any('extra ==' not in req for req in (metadata('zodify').get_all('Requires-Dist') or [])); "
             "assert callable(validate); "
+            "assert callable(to_json_schema); "
             "assert Validator is not None; "
-            "assert Schema is not None",
+            "assert Schema is not None; "
+            "assert to_json_schema({'host': str})['properties']['host']['type'] == 'string'",
         ],
         cwd=tmp_path,
         capture_output=True,
@@ -178,7 +209,7 @@ def test_install_context_schema_public_surface_when_present(
         timeout=60,
     )
     assert result.returncode == 0, (
-        "install-context smoke failed for Schema public surface:\n"
+        "install-context smoke failed for Schema / JSON Schema public surface:\n"
         f"stdout:\n{result.stdout}\n"
         f"stderr:\n{result.stderr}"
     )

@@ -1,0 +1,166 @@
+{
+  "python": "3.12.13 (main, Jun 23 2026, 15:44:24) [Clang 22.1.3 ]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "package_path": "/tmp/zodify-v2-wheel/lib/python3.12/site-packages/zodify",
+  "runtime_source_sha256": "c07500d3848c1ab9adf5307387c8152b5e5be151aef58d25a01d3992d1a098c2",
+  "versions": {
+    "zodify": "0.8.0",
+    "pydantic": "2.13.5",
+    "pydantic-core": "2.46.5",
+    "typing_extensions": "4.16.0"
+  },
+  "protocol": {
+    "iterations": 3000,
+    "repeats": 9,
+    "warmup": 500,
+    "gc_enabled": true,
+    "timer": "perf_counter_ns",
+    "power_settings": "not controlled; local macOS machine"
+  },
+  "domain": "plain JSON-like dict/list/str/bool values only; strict; unknown keys rejected; new dict output",
+  "limitations": [
+    "Synthetic workloads, not observed customer reuse.",
+    "No model construction, coercion, numeric subclasses, JSON parsing or diagnostics comparison.",
+    "Warm successful calls exclude schema/adapter construction; setup reported separately.",
+    "Laptop run, no universal ranking; inspect variability across separate process runs."
+  ],
+  "workloads": {
+    "flat": {
+      "negative_fixtures_passed": 4,
+      "warm_success": {
+        "zodify": {
+          "samples_ns": [
+            1025.0696666666668,
+            963.111,
+            966.9723333333334,
+            983.014,
+            1002.0833333333334,
+            949.639,
+            992.0276666666666,
+            1006.528,
+            927.4583333333334
+          ],
+          "median_ns": 983.014,
+          "min_ns": 927.4583333333334,
+          "max_ns": 1025.0696666666668
+        },
+        "pydantic_type_adapter": {
+          "samples_ns": [
+            389.4026666666667,
+            385.31933333333336,
+            397.2083333333333,
+            377.375,
+            376.86133333333333,
+            399.014,
+            355.139,
+            350.028,
+            352.111
+          ],
+          "median_ns": 377.375,
+          "min_ns": 350.028,
+          "max_ns": 399.014
+        }
+      },
+      "pydantic_adapter_setup": {
+        "samples_ns": [
+          70260.4,
+          62962.5,
+          57516.7,
+          57289.55,
+          74997.95,
+          57479.2,
+          59795.8,
+          57152.1,
+          57595.8
+        ],
+        "median_ns": 57595.8,
+        "min_ns": 57152.1,
+        "max_ns": 74997.95
+      }
+    },
+    "nested_list": {
+      "negative_fixtures_passed": 4,
+      "warm_success": {
+        "zodify": {
+          "samples_ns": [
+            7144.097333333333,
+            7011.333333333333,
+            7027.5,
+            6993.597333333333,
+            7120.194333333333,
+            7136.5,
+            7059.138666666667,
+            6937.125,
+            6951.333333333333
+          ],
+          "median_ns": 7027.5,
+          "min_ns": 6937.125,
+          "max_ns": 7144.097333333333
+        },
+        "pydantic_type_adapter": {
+          "samples_ns": [
+            700.9583333333334,
+            700.736,
+            793.9863333333333,
+            723.3053333333334,
+            762.528,
+            682.8193333333334,
+            696.6526666666666,
+            749.1526666666666,
+            698.3613333333333
+          ],
+          "median_ns": 700.9583333333334,
+          "min_ns": 682.8193333333334,
+          "max_ns": 793.9863333333333
+        }
+      },
+      "pydantic_adapter_setup": {
+        "samples_ns": [
+          136406.25,
+          119083.3,
+          138356.25,
+          119506.25,
+          117910.4,
+          124495.8,
+          149210.45,
+          133543.75,
+          125895.8
+        ],
+        "median_ns": 125895.8,
+        "min_ns": 117910.4,
+        "max_ns": 149210.45
+      }
+    }
+  },
+  "fresh_process_import": {
+    "zodify": {
+      "samples_ns": [
+        9972708,
+        9957416,
+        10322916,
+        10333041,
+        9518334,
+        9744917,
+        9366791,
+        9297541,
+        9534666
+      ],
+      "median_ns": 9744917
+    },
+    "pydantic": {
+      "samples_ns": [
+        21227917,
+        20965875,
+        20524000,
+        21448833,
+        21999000,
+        21542833,
+        20787500,
+        20789333,
+        21780084
+      ],
+      "median_ns": 21227917
+    }
+  }
+}

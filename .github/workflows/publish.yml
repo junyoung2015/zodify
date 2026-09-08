@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -25,22 +27,73 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[dev]
 
-      - name: Extract release notes from changelog
-        run: ./scripts/extract_changelog_section.sh "${GITHUB_REF_NAME}" CHANGELOG.md RELEASE_NOTES.md
+      - name: Prepare release notes
+        run: ./scripts/prepare_release_notes.sh "${GITHUB_REF_NAME}" RELEASE_NOTES.md
+
+      - name: Verify tag provenance and version triad
+        run: |
+          set -euo pipefail
+
+          git fetch origin main --depth=1
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" "origin/main"; then
+            echo "error: release tags must point to commits reachable from origin/main" >&2
+            exit 1
+          fi
+
+          pyproject_version="$(sed -nE 's/^version = "([^"]+)"/\1/p' pyproject.toml | head -n 1)"
+          module_version="$(sed -nE 's/^__version__(:[[:space:]]*[^=]+)?[[:space:]]*=[[:space:]]*"([^"]+)".*/\2/p' zodify/__init__.py | head -n 1)"
+          test_version="$(sed -nE 's/^[[:space:]]*assert __version__ == "([^"]+)".*/\1/p' tests/test_zodify.py | head -n 1)"
+          tag_version="${GITHUB_REF_NAME#v}"
+
+          if [[ -z "${pyproject_version}" || -z "${module_version}" || -z "${test_version}" ]]; then
+            echo "error: could not read release version triad" >&2
+            exit 1
+          fi
+
+          if [[ "${pyproject_version}" != "${module_version}" || "${pyproject_version}" != "${test_version}" ]]; then
+            echo "error: release version triad mismatch" >&2
+            echo "  pyproject.toml: ${pyproject_version}" >&2
+            echo "  zodify/__init__.py: ${module_version}" >&2
+            echo "  tests/test_zodify.py: ${test_version}" >&2
+            exit 1
+          fi
+
+          if [[ "${tag_version}" != "${pyproject_version}" ]]; then
+            echo "error: release tag ${GITHUB_REF_NAME} does not match package version ${pyproject_version}" >&2
+            exit 1
+          fi
 
       - name: Run tests
         run: pytest tests/ -v
 
+      - name: Check public repo policy
+        run: python scripts/check_public_repo_policy.py
+
+      - name: Run doctests
+        run: pytest --doctest-modules zodify/
+
+      - name: Run mypy
+        run: python -m mypy
+
+      - name: Run pyright
+        run: python -m pyright
+
       - name: Build package
         id: build
         run: python -m build
+
+      - name: Verify package artifacts
+        run: python scripts/check_package_artifacts.py dist
+
+      - name: Check package metadata
+        run: python -m twine check dist/*
 
       - name: Publish to PyPI
         id: pypi
         uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Create GitHub Release
-        if: always() && steps.build.outcome == 'success'
+        if: success() && steps.build.outcome == 'success' && steps.pypi.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
           body_path: RELEASE_NOTES.md

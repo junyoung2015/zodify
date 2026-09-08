@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zodify"
-version = "0.6.0"
+version = "0.8.0"
 description = "Zod-inspired validation for Python. Zero deps. One engine."
 readme = "README.md"
 license = "MIT"
@@ -28,16 +28,18 @@ classifiers = [
 dev = [
     "build",
     "flake8",
+    "jsonschema>=4,<5",
     "mypy",
     "pyright",
     "pytest",
     "pytest-cov",
     "setuptools>=69.0,<81.0",
+    "twine",
 ]
 
 [project.urls]
 Homepage = "https://zodify.dev"
-Documentation = "https://zodify.dev"
+Documentation = "https://zodify.dev/docs"
 Repository = "https://github.com/junyoung2015/zodify"
 Changelog = "https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md"
 Issues = "https://github.com/junyoung2015/zodify/issues"
@@ -52,8 +54,8 @@ include = ["zodify*"]
 [tool.mypy]
 python_version = "3.10"
 strict = true
-files = ["zodify", "tests/typing/test_schema_class_typing_contract.py"]
+files = ["zodify", "tests/typing/test_schema_class_typing_contract.py", "tests/typing/test_load_env_typing_contract.py", "tests/typing/test_json_schema_typing_contract.py", "tests/typing/test_diagnostics_typing_contract.py", "tests/typing/test_json_io_typing_contract.py"]
 
 [tool.pyright]
-include = ["zodify", "tests/typing/test_schema_class_typing_contract.py"]
+include = ["zodify", "tests/typing/test_schema_class_typing_contract.py", "tests/typing/test_load_env_typing_contract.py", "tests/typing/test_json_schema_typing_contract.py", "tests/typing/test_diagnostics_typing_contract.py", "tests/typing/test_json_io_typing_contract.py"]
 pythonVersion = "3.10"
