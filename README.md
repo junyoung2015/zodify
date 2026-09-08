@@ -16,13 +16,13 @@
 
 ---
 
-<p align="center">
-  <a href="https://zodify.dev">
-    <img src="https://zodify.dev/og-image.png" alt="zodify - Fastest Pure-Python Validation" width="640" />
-  </a>
-</p>
 
-**Note:** zodify is in alpha. The API is minimal and may change. Feedback and contributions are welcome!
+
+**Availability:** PyPI serves **0.6.0**, verified September 9, 2026. This branch
+contains the **unreleased 0.8.0 candidate**. The quickstart and core APIs below work
+with 0.6.0; `.env` file loading, canonical details, JSON input and export sections
+are labeled candidate-only. A merge or successful build does not publish a wheel.
+The project is in alpha; compatibility policy and limits are described below.
 
 ---
 
@@ -43,17 +43,21 @@ That's it. Plain dicts by default. Optional class syntax when you want typed att
 
 ## Why zodify?
 
-Most validation libraries ask you to learn a new DSL or model system. zodify doesn't.
+Use zodify for small configuration dictionaries and ordinary Python data when
+explicit types and zero required runtime dependencies suit the task. Schemas use
+plain dictionaries, with optional class syntax for typed attribute access.
 
-|                    | zodify           | zon                          | zodic                        | Pydantic               |
-| ------------------ | ---------------- | ---------------------------- | ---------------------------- | ---------------------- |
-| Philosophy         | Minimalist       | Full Zod port                | Full Zod port                | Full ORM               |
-| API style          | Plain dicts + class sugar | Chained builders             | Chained builders             | Classes                |
-| Schema composition | Plain dict reuse | Requires schema DSL/builders | Requires schema DSL/builders | Requires model classes |
-| Dependencies       | **0**            | 2                            | 0                            | 4                      |
-| Code size          | **808 source LOC** | ~1,900 LOC                   | ~1,400 LOC                   | ~32,000 LOC            |
-| Learning curve     | **Zero**         | Must learn DSL               | Must learn DSL               | Must learn DSL         |
-| Env var support    | **Built-in**     | No                           | No                           | Partial                |
+Pydantic supports both models and `TypeAdapter` validation of ordinary types,
+including dictionaries. Consider it for a broader annotation vocabulary and
+integrations. A dedicated JSON Schema implementation is appropriate when the
+schema document itself is your validation language. Choose using the constraints,
+outputs, error handling and deployment environment your application needs.
+
+Current quality guardrails are enforced in-repo:
+
+- `pytest tests/ -q` covers the checked-out public test surface.
+- `tests/test_logic_loc_budget.py` enforces the shipped runtime LOC budgets.
+- `benchmarks/equivalent.py` validates equivalent positive and negative fixtures before timing strict dictionary output. Historical comparison scripts are not evidence of a general speed ranking.
 
 ---
 
@@ -264,7 +268,7 @@ assert app.db.creds.username == "svc"
 
 Prefer class syntax when you want autocomplete, attribute access, and field names that are already valid Python identifiers. Prefer plain dict schemas when you need the lowest-friction runtime shape, invalid identifiers, or callable field validators.
 
-Supported in v0.6.0:
+Currently supported:
 
 - Direct annotations for primitive fields
 - Default values compiled into `Optional(...)`
@@ -275,7 +279,7 @@ Supported in v0.6.0:
 - Wrapped results preserve Schema-origin nesting across `|` and `|=` dict merges
 - Non-dict operands on `|` still raise `TypeError`, matching plain `dict` semantics
 
-Intentional non-goals and unsupported boundaries in v0.6.0:
+Current unsupported boundaries:
 
 - Later-defined forward references and self-referential schemas
 - Postponed string annotations
@@ -297,6 +301,73 @@ Notes:
 - Plain dict schemas still return plain `dict` values. Nested plain dict fields stay plain dicts.
 
 ---
+
+### JSON Schema Export (unreleased 0.8.0 candidate)
+
+Export a deliberately narrow input contract over plain JSON-compatible built-in
+instances to Draft 2020-12:
+
+```python
+from zodify import Optional
+from zodify.json_schema import export_json_schema
+
+result = export_json_schema({"host": str, "debug": Optional(bool)})
+assert result.fidelity == "exact"
+assert result.contract_kind == "input"
+assert result.document["additionalProperties"] is False
+```
+
+`to_json_schema(schema)` remains a root-level document-returning convenience.
+The richer result also reports `schema_draft` and `differences`. Exact export
+supports shaped objects, strings, booleans, null, homogeneous lists and supported
+unions. Optional fields without defaults may be omitted. Nullability does not
+make a required key optional.
+
+Unsupported declarations raise `UnsupportedSchemaError` with a schema location.
+Numbers, defaults, predicates, bare containers, cycles, non-string keys and
+structures outside the ordinary 32-dictionary depth budget or the separate
+64-transition preparation cap are rejected. In particular, JSON
+Schema integer accepts `1.0`, whereas zodify's exact `int` check rejects it;
+JSON Schema default annotations cannot describe insertion of trusted values.
+There is no approximation mode, coercion/stripping contract, remote reference
+resolver or general JSON Schema validator. No `jsonschema` runtime dependency
+is required. See [`examples/json_schema_export.py`](examples/json_schema_export.py).
+
+### JSON object input (unreleased 0.8.0 candidate)
+
+```python
+from zodify.json_io import validate_json
+
+config = validate_json({"port": int}, '{"port": 8080}', max_bytes=1024)
+assert config == {"port": 8080}
+```
+
+Accepts text or UTF-8 bytes containing one JSON object. Duplicate keys, BOMs,
+NaN/infinities and overflowing float tokens are rejected. Optional `max_bytes`
+limits encoded input size before parsing; it does not limit decoder allocations,
+CPU use or nesting. Counting text bytes needs a UTF-8 encoding allocation.
+Parse errors use `JSONInputError` with a generic machine code and optional line
+and column; validation errors retain the shared engine's error modes. Neither
+tracebacks nor application code should be assumed to redact input automatically.
+
+---
+
+### Canonical details (unreleased 0.8.0 candidate)
+
+Engine errors in structured mode add `error.details`, a tuple of immutable
+`ValidationIssue` records containing `code`, typed `loc`, display `path`,
+`message`, `expected` and `got`. A key named `"a.b"` has location `("a.b",)`;
+a nested key has `("a", "b")`. Codes cover type/union mismatch, missing/unknown
+keys, failed coercion/predicates and exceeded depth.
+
+Legacy `.issues` still contains the same four mutable keys and legacy messages.
+It is independent of the canonical snapshot. Direct `ValidationError([...])`
+construction has `details=None`, as do legacy adapter errors without structural
+locations and failures involving unsupported non-string/non-integer mapping keys.
+Canonical messages omit raw values and callback exception text; key names and
+type labels can still be sensitive. Legacy messages can include raw values.
+`copy`, `deepcopy` and `pickle` preserve both views. Consumers should tolerate
+future additional codes; this candidate is not a frozen 1.0 serialization format.
 
 ### Structured Errors
 
@@ -516,66 +587,154 @@ secret = env("SECRET_KEY", str)  # raises ValueError if missing
 
 ---
 
-## Release Process
+### `.env` File Loading
 
-Release automation is tag-driven:
+**Candidate-only:** Use `load_env()` when you want deterministic `.env` parsing with optional schema validation. It is parse-and-return only: it does not mutate `os.environ`.
 
-- Pushing a tag that matches `v*` triggers `.github/workflows/publish.yml`.
-- The workflow runs tests, builds distributions, publishes to PyPI, and creates a GitHub Release.
-- GitHub Release notes are sourced from the matching section in `CHANGELOG.md` (for example, `## [v0.1.0]`).
+```python
+from zodify import load_env
 
-Run local preflight before tagging:
-
-```bash
-./scripts/release_preflight.sh
+raw = load_env("app.env")
+# -> {"PORT": "8080", "DEBUG": "yes"}
 ```
 
-If preflight passes, push the release tag for the version in `pyproject.toml`:
+Pass `schema=` to validate the parsed mapping through the existing `validate()` engine:
 
-```bash
-TAG="v$(sed -nE 's/^version = "([^"]+)"/\1/p' pyproject.toml | head -n 1)"
-git tag "${TAG}"
-git push origin "${TAG}"
+```python
+from zodify import load_env
+
+config = load_env(
+    "app.env",
+    schema={"PORT": int, "DEBUG": bool},
+)
+# -> {"PORT": 8080, "DEBUG": True}
 ```
+
+If you prefer explicit composition, instantiate `Validator` first:
+
+```python
+from zodify import Validator, load_env
+
+validator = Validator(coerce=False, unknown_keys="reject")
+raw = load_env("app.env")
+
+config = validator.validate(
+    {"PORT": int},
+    raw,
+    coerce=True,
+    max_depth=32,
+    unknown_keys="strip",
+)
+# -> {"PORT": 8080}
+```
+
+`load_env("app.env", schema=...)` is the canonical one-call convenience path and defaults to `coerce=True`, `max_depth=32`, and `unknown_keys="strip"` in schema mode. `validator.validate(schema, load_env(path), ...)` uses the `Validator` instance defaults unless you pass explicit overrides.
+
+Contract notes:
+
+- `path` accepts `str | os.PathLike[str]`. Relative paths resolve from the current working directory.
+- Files are read with plain UTF-8 decoding. A leading UTF-8 BOM is preserved, so the first key usually fails as `invalid key` instead of being stripped silently.
+- Raw mode returns `dict[str, str]`.
+- Schema mode returns the same result shape as `validate()`: a plain dict for dict schemas, or the wrapped schema result for `Schema` subclasses.
+- Schema mode defaults to `coerce=True`, `max_depth=32`, and `unknown_keys="strip"`. Pass explicit overrides when you want stricter behavior such as `coerce=False` or `unknown_keys="reject"`.
+- Raw mode forbids schema-only kwargs. `load_env("app.env", coerce=True)` raises `TypeError("schema is required when using coerce, max_depth, or unknown_keys")` before file parsing begins.
+- `on_missing="raise"` is the default. `on_missing="empty"` suppresses only the missing-file case and still validates an empty mapping when `schema=` is supplied.
+- Non-missing I/O failures such as `PermissionError`, `IsADirectoryError`, other `OSError` subclasses, and `UnicodeDecodeError` propagate unchanged.
+
+Parser rules:
+
+- Blank lines are ignored.
+- Lines whose first non-whitespace character is `#` are ignored.
+- Assignments split on the first `=` only.
+- Keys are stripped before validation and must match `[A-Za-z_][A-Za-z0-9_.-]*`.
+- Duplicate keys use last assignment wins while preserving the key's original insertion position.
+- Quote classification happens after trimming the value fragment once.
+- Matching surrounding single or double quotes are removed only when they are the first and last characters of the trimmed value.
+- Literal interior quotes stay literal when they remain inside the surrounding pair. For example, `CITY=O'Hare` stays unquoted, while `KEY='"hello"'` becomes `"hello"` because only the surrounding single quotes are removed and zodify does no escape processing.
+- `#`, `${VAR}`, and additional `=` characters inside values stay literal.
+
+Exact parser failure messages:
+
+- `missing '='`
+- `blank key`
+- `invalid key`
+- `unmatched surrounding quote`
+- `export syntax is unsupported`
+- `multiline values are unsupported`
+- `unsupported .env syntax`
+
+Parse failures are aggregated in file order. In text mode, all messages are newline-joined in one `ValueError`. In structured mode, zodify raises `ValidationError` with one issue per failure using the resolved path and the exact shape `{"path": "<resolved-path>[line N]", "message": "...", "expected": "valid .env assignment", "got": "<raw line>"}`.
+
+```python
+from zodify import ValidationError, load_env
+
+try:
+    load_env("app.env", error_mode="structured")
+except ValidationError as exc:
+    print(exc.issues[0])
+    # {
+    #   "path": "/absolute/path/app.env[line 1]",
+    #   "message": "missing '='",
+    #   "expected": "valid .env assignment",
+    #   "got": "BROKEN",
+    # }
+```
+
+Current non-goals for `load_env()`:
+
+- No variable expansion.
+- No multiline values.
+- No `export KEY=value` support.
+- No inline-comment parsing.
+- No environment mutation.
+- No `Validator.load_env()` convenience method.
 
 ---
 
-## Roadmap
+## Local verification and release process
 
-zodify is in **alpha**. The API surface is small and may evolve. All pre-1.0 APIs are provisional per semver. See [`CHANGELOG.md`](CHANGELOG.md) for released version-by-version details.
+GitHub Actions is disabled until **October 1, 2026 at 09:00 Asia/Seoul**.
+Run the local gates before merging:
 
-**Shipped (current mainline capabilities):**
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'
+./scripts/local_checks.sh
+```
 
-- [x] Nested schema validation with dot-path errors
-- [x] Optional keys with defaults
-- [x] List element validation (including list-of-dicts)
-- [x] Custom validator functions
-- [x] `unknown_keys` parameter (`"reject"` / `"strip"`)
-- [x] `max_depth` recursion depth limit
-- [x] Performance benchmark infrastructure
-- [x] PEP 561 `py.typed` marker & inline type annotations
-- [x] `@overload` signatures for `env()` (IDE type inference)
-- [x] Google-style docstrings on all public API symbols
-- [x] mypy (strict) & pyright CI gates
-- [x] Union type schemas (`str | int` syntax) with left-to-right coercion priority
-- [x] `ValidationError` exception with `.issues` for machine-readable errors
-- [x] `error_mode="structured"` parameter on `validate()`
-- [x] `Validator` class with reusable configuration defaults and per-call overrides
-- [x] `Schema` base class with typed attribute access, nested wrapping for nested `Schema` fields, and `ValidatedDict` kept internal
-- [x] Runnable example scripts in `examples/` (`basic_validation.py`, `nested_schemas.py`, `custom_validators.py`, `union_types.py`, `env_config.py`, `structured_errors.py`)
-- [x] README schema composition documentation with plain dict reuse patterns
+The gates run fatal lint, runtime and doctests, both type checkers, installed
+artifact checks, package metadata validation, and the static site build. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for compatibility expectations.
 
-**Planned:**
+Package publishing is separate from merging. From a clean verified checkout,
+`./scripts/release_preflight.sh` checks candidate versions and artifacts without
+uploading. After the Actions pause ends, an authorized `v*` tag can invoke the
+publish workflow; a final GitHub Release is created only after upload succeeds.
+Verify the wheel from PyPI before changing website release facts. During the
+pause, production site deployment uses locally verified static files and
+`.nojekyll` on the Pages source branch; no DNS or additional service is required.
 
-| Version | Theme                                           |
-| ------- | ----------------------------------------------- |
-| v0.7.0  | `.env` file loading (`load_env()`)              |
-| v0.8.0  | JSON Schema export (`to_json_schema()`)         |
-| v1.0.0  | API freeze, docs polish, and release hardening  |
+## Compatibility and direction
 
-**Post-v1.0 (exploring):**
+0.6.0 is the released baseline. This 0.8.0 candidate retains the existing `.env`
+work and adds diagnostics and conservative JSON boundaries. Existing imports,
+text errors, four-key structured issues and optional class syntax remain.
+Defaults are trusted and returned by reference without validation or copying.
+`max_depth` counts dictionaries, including the root, rather than list nesting;
+it is not a general resource bound. Class annotations support the documented
+subset, not arbitrary Python typing expressions. `py.typed` does not promise
+key-sensitive inference for arbitrary dictionaries.
 
-- [ ] Framework integrations as extension packages (`zodify-fastapi`, etc.)
+Before 1.0, intentional compatibility changes require a named decision, concrete
+before/after examples, tests and migration notes. Patch releases should preserve
+accepted inputs and outputs. The supported interpreter matrix is Python
+3.10–3.13; newer versions are not advertised without verification.
+
+Compilation requires real repeated-use evidence, lifecycle conformance and
+measured economics before a public API is approved. Rich reports, approximation
+export, source generation, native backends and framework adapters remain
+conditional. None is mandatory for a small stable 1.0. Current planning and
+results are tracked in [the implementation issue](https://github.com/junyoung2015/zodify/issues/6).
 
 ---
 

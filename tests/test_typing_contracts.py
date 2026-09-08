@@ -1,7 +1,9 @@
 """Typing contract tests"""
 
+import inspect
+import os
 from pathlib import Path
-from typing import Any, Literal, get_origin, get_type_hints
+from typing import Any, Literal, get_args, get_origin, get_type_hints
 
 import pytest
 import zodify
@@ -9,7 +11,14 @@ import zodify
 SCHEMA_TYPING_CONTRACT = (
     Path(__file__).resolve().parent / "typing" / "test_schema_class_typing_contract.py"
 )
+JSON_SCHEMA_TYPING_CONTRACT = (
+    Path(__file__).resolve().parent / "typing" / "test_json_schema_typing_contract.py"
+)
+LOAD_ENV_TYPING_CONTRACT = (
+    Path(__file__).resolve().parent / "typing" / "test_load_env_typing_contract.py"
+)
 SCHEMA_RUNTIME_SMOKE = Path(__file__).resolve().parent / "test_schema_class.py"
+LOAD_ENV_RUNTIME_SMOKE = Path(__file__).resolve().parent / "test_load_env.py"
 
 
 def test_module_level_annotations_exist():
@@ -59,6 +68,24 @@ def test_env_signature_is_generic_over_cast_type():
     assert hints["default"] is object
 
 
+def test_load_env_signature_has_literal_modes_and_path_protocol():
+    hints = get_type_hints(zodify.load_env)
+
+    path_args = get_args(hints["path"])
+    assert path_args[0] is str
+    assert get_origin(path_args[1]) is os.PathLike
+    assert get_args(path_args[1]) == (str,)
+    assert hints["error_mode"] == Literal["text", "structured"]
+    assert hints["on_missing"] == Literal["raise", "empty"]
+
+
+def test_load_env_signature_keeps_all_parameters_after_path_keyword_only():
+    params = list(inspect.signature(zodify.load_env).parameters.values())
+
+    assert params[0].name == "path"
+    assert all(param.kind is inspect.Parameter.KEYWORD_ONLY for param in params[1:])
+
+
 def test_validate_rejects_invalid_unknown_keys_runtime_mode():
     with pytest.raises(ValueError):
         zodify.validate({"a": int}, {"a": 1}, unknown_keys="bad")  # type: ignore[arg-type]
@@ -75,3 +102,23 @@ def test_schema_typing_contract_switches_to_live_api_once_schema_is_public():
 
 def test_live_schema_smoke_file_exists():
     assert SCHEMA_RUNTIME_SMOKE.exists()
+
+
+def test_json_schema_typing_contract_uses_live_api_once_public():
+    contract_text = JSON_SCHEMA_TYPING_CONTRACT.read_text(encoding="utf-8")
+    assert "from zodify import Schema, to_json_schema" in contract_text
+    assert "dict[str, Any] = to_json_schema(" in contract_text
+    assert "# pyright: strict" in contract_text
+    assert "from tests.typing import" not in contract_text
+
+
+def test_load_env_typing_contract_uses_live_api_once_public():
+    contract_text = LOAD_ENV_TYPING_CONTRACT.read_text(encoding="utf-8")
+    assert "from zodify import Schema, Validator, load_env" in contract_text
+    assert "validator.validate(" in contract_text
+    assert "# pyright: strict" in contract_text
+    assert "type: ignore[call-overload]" in contract_text
+
+
+def test_live_load_env_smoke_file_exists():
+    assert LOAD_ENV_RUNTIME_SMOKE.exists()

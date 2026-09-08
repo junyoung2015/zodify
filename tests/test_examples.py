@@ -17,9 +17,16 @@ REQUIRED_EXAMPLES = [
     "custom_validators.py",
     "union_types.py",
     "env_config.py",
+    "json_schema_export.py",
     "structured_errors.py",
 ]
-REQUIRED_RUNTIME_SYMBOLS = {"validate", "env", "Optional", "ValidationError"}
+REQUIRED_RUNTIME_SYMBOLS = {
+    "validate",
+    "env",
+    "Optional",
+    "ValidationError",
+    "to_json_schema",
+}
 
 
 def discover_optional_examples() -> list[Path]:
@@ -162,6 +169,7 @@ def test_examples_cover_public_api() -> None:
     assert "env" in calls and "env" in imported_local
     assert "Optional" in names and "Optional" in imported_local
     assert "ValidationError" in names and "ValidationError" in imported_local
+    assert "to_json_schema" in calls and "to_json_schema" in imported_local
 
     shadowed = REQUIRED_RUNTIME_SYMBOLS & local_definitions
     assert not shadowed, (

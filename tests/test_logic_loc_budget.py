@@ -8,10 +8,17 @@ from pathlib import Path
 SOURCE_PACKAGE = Path(__file__).resolve().parents[1] / "zodify"
 SOURCE_FILE = SOURCE_PACKAGE / "__init__.py"
 SCHEMA_FILE = SOURCE_PACKAGE / "schema.py"
-MAX_LOGIC_LOC = 500
+ENVFILE_FILE = SOURCE_PACKAGE / "envfile.py"
+JSON_SCHEMA_FILE = SOURCE_PACKAGE / "json_schema.py"
+# CTO decision 2026-09-09: additive canonical diagnostics and strict JSON input
+# raise the reviewed package budget from 600 to 700. Existing module caps stay.
+# Actual integrated logic LOC: 652; no runtime dependency or second engine.
+MAX_LOGIC_LOC = 700
 BASELINE_INIT_LOGIC_LOC = 260
 MAX_INIT_LOGIC_DELTA_WITH_SCHEMA = 50
 MAX_SCHEMA_LOGIC_LOC = 175
+MAX_ENVFILE_LOGIC_LOC = 60
+MAX_JSON_SCHEMA_LOGIC_LOC = 110
 
 
 def _collect_docstring_lines(tree: ast.AST) -> set[int]:
@@ -81,7 +88,7 @@ def compute_package_logic_loc(package_dir: Path) -> int:
     )
 
 
-def test_logic_loc_budget_is_below_500_lines():
+def test_logic_loc_budget_is_below_700_lines():
     logic_loc = compute_package_logic_loc(SOURCE_PACKAGE)
     assert logic_loc <= MAX_LOGIC_LOC, (
         f"package logic LOC budget exceeded: {logic_loc} > {MAX_LOGIC_LOC}"
@@ -109,3 +116,30 @@ def test_schema_module_logic_loc_stays_within_schema_module_budget():
         "zodify/schema.py exceeded the approved focused-module budget: "
         f"{schema_logic_loc} > {MAX_SCHEMA_LOGIC_LOC}"
     )
+
+
+def test_envfile_module_logic_loc_stays_within_helper_module_budget():
+    if not ENVFILE_FILE.exists():
+        return
+
+    envfile_logic_loc = compute_logic_loc(ENVFILE_FILE)
+    assert envfile_logic_loc <= MAX_ENVFILE_LOGIC_LOC, (
+        "zodify/envfile.py exceeded the approved focused-helper budget: "
+        f"{envfile_logic_loc} > {MAX_ENVFILE_LOGIC_LOC}"
+    )
+
+
+def test_json_schema_module_logic_loc_stays_within_exporter_module_budget():
+    if not JSON_SCHEMA_FILE.exists():
+        return
+
+    json_schema_logic_loc = compute_logic_loc(JSON_SCHEMA_FILE)
+    assert json_schema_logic_loc <= MAX_JSON_SCHEMA_LOGIC_LOC, (
+        "zodify/json_schema.py exceeded the approved focused-exporter budget: "
+        f"{json_schema_logic_loc} > {MAX_JSON_SCHEMA_LOGIC_LOC}"
+    )
+
+
+def test_json_input_and_canonical_issues_have_focused_budgets():
+    assert compute_logic_loc(SOURCE_PACKAGE / "json_io.py") <= 80
+    assert compute_logic_loc(SOURCE_PACKAGE / "_issues.py") <= 50

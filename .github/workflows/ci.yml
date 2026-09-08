@@ -3,12 +3,8 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "site/**"
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "site/**"
 
 jobs:
   test:
@@ -32,7 +28,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 zodify/ tests/ --count --exit-zero --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 zodify/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 zodify/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
       - name: Test with pytest
@@ -54,10 +50,23 @@ jobs:
           pip install -e .[dev]
 
       - name: Run mypy
-        run: mypy --strict zodify/
+        run: python -m mypy
 
       - name: Run pyright
-        run: pyright zodify/
+        run: python -m pyright
+
+  public-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check public repo policy
+        run: python scripts/check_public_repo_policy.py
 
   package:
     runs-on: ubuntu-latest
@@ -133,3 +142,15 @@ jobs:
         with:
           name: benchmark-results
           path: benchmarks/out
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci && npm run lint && npm run build
+        working-directory: site

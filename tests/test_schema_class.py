@@ -57,11 +57,11 @@ def test_validate_schema_returns_wrapped_result_and_normalizes_engine_input(
     captured: dict[str, object] = {}
     original_validate = zodify._validate
 
-    def recording_validate(schema, data, coerce, prefix, errors, depth, unknown_keys):
+    def recording_validate(schema, data, coerce, prefix, errors, depth, unknown_keys, loc=None):
         if prefix == "":
             captured["schema_type"] = type(schema)
             captured["schema"] = schema
-        return original_validate(schema, data, coerce, prefix, errors, depth, unknown_keys)
+        return original_validate(schema, data, coerce, prefix, errors, depth, unknown_keys, loc)
 
     class Credentials(Schema):
         username: str
