@@ -18,10 +18,11 @@
 
 
 
-**Availability:** PyPI serves **0.6.0**, verified September 9, 2026. This branch
-contains the **unreleased 0.8.0 candidate**. The quickstart and core APIs below work
-with 0.6.0; `.env` file loading, canonical details, JSON input and export sections
-are labeled candidate-only. A merge or successful build does not publish a wheel.
+**Version reference:** These instructions describe the **0.8.0** distribution.
+The quickstart and core APIs also work with 0.6.0; file loading, canonical details
+and the conservative JSON interfaces require 0.8.0. Check the
+[PyPI version history](https://pypi.org/project/zodify/#history) for actual package
+availability. Source documentation and successful builds do not establish publication.
 The project is in alpha; compatibility policy and limits are described below.
 
 ---
@@ -302,7 +303,7 @@ Notes:
 
 ---
 
-### JSON Schema Export (unreleased 0.8.0 candidate)
+### JSON Schema Export (0.8.0)
 
 Export a deliberately narrow input contract over plain JSON-compatible built-in
 instances to Draft 2020-12:
@@ -333,7 +334,7 @@ There is no approximation mode, coercion/stripping contract, remote reference
 resolver or general JSON Schema validator. No `jsonschema` runtime dependency
 is required. See [`examples/json_schema_export.py`](examples/json_schema_export.py).
 
-### JSON object input (unreleased 0.8.0 candidate)
+### JSON object input (0.8.0)
 
 ```python
 from zodify.json_io import validate_json
@@ -352,7 +353,7 @@ tracebacks nor application code should be assumed to redact input automatically.
 
 ---
 
-### Canonical details (unreleased 0.8.0 candidate)
+### Canonical details (0.8.0)
 
 Engine errors in structured mode add `error.details`, a tuple of immutable
 `ValidationIssue` records containing `code`, typed `loc`, display `path`,
@@ -367,7 +368,7 @@ locations and failures involving unsupported non-string/non-integer mapping keys
 Canonical messages omit raw values and callback exception text; key names and
 type labels can still be sensitive. Legacy messages can include raw values.
 `copy`, `deepcopy` and `pickle` preserve both views. Consumers should tolerate
-future additional codes; this candidate is not a frozen 1.0 serialization format.
+future additional codes; the 0.8 interface is not a frozen 1.0 serialization format.
 
 ### Structured Errors
 
@@ -589,7 +590,7 @@ secret = env("SECRET_KEY", str)  # raises ValueError if missing
 
 ### `.env` File Loading
 
-**Candidate-only:** Use `load_env()` when you want deterministic `.env` parsing with optional schema validation. It is parse-and-return only: it does not mutate `os.environ`.
+**Requires 0.8.0:** Use `load_env()` when you want deterministic `.env` parsing with optional schema validation. It is parse-and-return only: it does not mutate `os.environ`.
 
 ```python
 from zodify import load_env
@@ -718,10 +719,10 @@ locally verified static files and `.nojekyll` on the Pages source branch.
 ## Compatibility and direction
 
 The [supported API and compatibility contract](API_CONTRACT.md) records the
-0.8.0 candidate surface and the explicit conditions for 1.0 stabilization.
+0.8.0 surface and the explicit conditions for 1.0 stabilization.
 
-0.6.0 is the released baseline. This 0.8.0 candidate retains the existing `.env`
-work and adds diagnostics and conservative JSON boundaries. Existing imports,
+Relative to 0.6.0, version 0.8.0 includes `.env` file loading, canonical
+diagnostics and conservative JSON boundaries. Existing imports,
 text errors, four-key structured issues and optional class syntax remain.
 Defaults are trusted and returned by reference without validation or copying.
 `max_depth` counts dictionaries, including the root, rather than list nesting;
