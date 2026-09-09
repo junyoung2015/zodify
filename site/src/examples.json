@@ -43,5 +43,10 @@
     "code": "import json\nfrom zodify import validate\n\ndef read_user(text):\n    data = json.loads(text)\n    if type(data) is not dict:\n        raise ValueError(\"Expected a JSON object\")\n    return validate({\"name\": str, \"age\": int}, data)\n\nassert read_user('{\"name\":\"Ada\",\"age\":36}')[\"age\"] == 36\nfor invalid in ['[]', '{\"name\":\"Ada\",\"age\":\"36\"}', '{\"name\":']:\n    try:\n        read_user(invalid)\n    except ValueError:  # Includes JSONDecodeError.\n        pass\n    else:\n        raise AssertionError(\"Expected parsing or validation failure\")\nprint(\"json-object-validation: passed\")\n",
     "releasedVersion": "0.8.0",
     "expected": "json-object-validation: passed"
+  },
+  "first-validation": {
+    "code": "from zodify import validate\n\nschema = {\"port\": int, \"debug\": bool}\ndata = {\"port\": 8080, \"debug\": False}\n\nprint(validate(schema, data))\n",
+    "releasedVersion": "0.8.0",
+    "expected": "{'port': 8080, 'debug': False}"
   }
 }
