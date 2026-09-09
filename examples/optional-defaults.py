@@ -3,7 +3,7 @@ from zodify import Optional, validate
 assert validate({"name": Optional(str)}, {}) == {}
 assert validate({"name": str | None}, {"name": None}) == {"name": None}
 assert validate({"name": Optional(str, "Ada")}, {}) == {"name": "Ada"}
-# Released 0.6.0 defaults are inserted as supplied, without validation or copying.
+# Released 0.8.0 defaults are inserted as supplied, without validation or copying.
 default = []
 result = validate({"items": Optional([str], default)}, {})
 assert result["items"] is default
