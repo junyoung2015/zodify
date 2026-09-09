@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/junyoung2015/zodify/d80b7bba45b7fd9eeb5b5160095dfeaaeb24190d/site/public/brand/lockup-dark.svg">
+    <img src="https://raw.githubusercontent.com/junyoung2015/zodify/d80b7bba45b7fd9eeb5b5160095dfeaaeb24190d/site/public/brand/lockup-light.svg" alt="zodify" width="360" height="100">
+  </picture>
+</p>
+
 # zodify
 
 Validation for Python dictionaries.
