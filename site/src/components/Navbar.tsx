@@ -7,7 +7,8 @@ export function Navbar() {
         Skip to content
       </a>
       <a className="brand" href="/">
-        zodify <span>{SITE_VERSION}</span>
+        <img src="/brand/lockup-dark.svg" alt="zodify" width="147" height="41" />
+        <span>{SITE_VERSION}</span>
       </a>
       <nav aria-label="Main navigation">
         {routes
