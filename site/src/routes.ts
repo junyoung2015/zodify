@@ -1,8 +1,10 @@
+import type examples from "./examples.json";
+
 export type Section = {
   id: string;
   title: string;
   paragraphs: string[];
-  example?: string;
+  example?: keyof typeof examples;
   links?: [string, string][];
 };
 export type Page = {
@@ -24,14 +26,14 @@ const section = (
   id: string,
   title: string,
   paragraphs: string[],
-  example?: string,
+  example?: keyof typeof examples,
   links?: [string, string][],
 ): Section => ({ id, title, paragraphs, example, links });
 export const routes: Page[] = [
   page(
     "/",
-    "Small, predictable validation for plain Python data.",
-    "Validate ordinary Python dicts with zero required runtime dependencies and optional class declarations.",
+    "Validate Python dictionaries. Keep them dictionaries.",
+    "Describe the data you expect with ordinary Python types. Validate configuration and script inputs with zero required runtime dependencies.",
     [
       section(
         "start",
@@ -39,7 +41,7 @@ export const routes: Page[] = [
         [
           "Describe the shape with ordinary Python types, then validate the data you receive. A model framework or builder API is not required. Zodify is Zod-inspired, with its own Python semantics and deliberately limited scope.",
         ],
-        "quickstart",
+        "first-validation",
         [
           ["Read the getting-started guide", "/docs/getting-started/"],
           ["Choose the right validator", "/compare/"],

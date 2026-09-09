@@ -1,6 +1,7 @@
 import { Layout } from "./components/Layout";
 import { routes, notFound, type Page } from "./routes";
-import examples from "./examples.json";
+import { Example } from "./components/Example";
+import { HomePage } from "./pages/HomePage";
 import { release, REPOSITORY } from "./siteMeta";
 export default function App({
   page = routes.find(
@@ -15,7 +16,7 @@ export default function App({
 }) {
   return (
     <Layout>
-      <article className="content" id="main-content">
+      {page.path === "/" ? <HomePage page={page} /> : <article className="content" id="main-content">
         <p className="eyebrow">PLAIN PYTHON · ZERO RUNTIME DEPS</p>
         <h1>{page.title}</h1>
         <p className="lede">{page.description}</p>
@@ -45,29 +46,7 @@ export default function App({
             {s.paragraphs.map((p) => (
               <p key={p}>{p}</p>
             ))}
-            {s.example && (
-              <div className="example">
-                <div className="example-toolbar">
-                  <span>
-                    Python · tested on {examples[s.example].releasedVersion}
-                  </span>
-                  <button hidden data-copy={s.example}>
-                    Copy example
-                  </button>
-                  <a href={`/examples/${s.example}.py`} download>
-                    Download .py
-                  </a>
-                </div>
-                <pre tabIndex={0}>
-                  <code id={`code-${s.example}`}>
-                    {examples[s.example].code}
-                  </code>
-                </pre>
-                <p className="expected">
-                  Expected output: <code>{examples[s.example].expected}</code>
-                </p>
-              </div>
-            )}
+            {s.example && <Example name={s.example} />}
             {s.links && (
               <ul className="related">
                 {s.links.map(([name, href]) => (
@@ -85,7 +64,7 @@ export default function App({
             Edit this page
           </a>
         </p>
-      </article>
+      </article>}
     </Layout>
   );
 }

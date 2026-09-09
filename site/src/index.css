@@ -218,6 +218,102 @@ code {
   padding: 15px;
   z-index: 2;
 }
+.home-content {
+  max-width: 1180px;
+  padding-top: 56px;
+}
+.home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  margin-bottom: 80px;
+}
+.home-intro h1 {
+  font-size: clamp(2.2rem, 4.2vw, 3.5rem);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  margin: 0 0 24px;
+}
+.home-intro .lede {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+.primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #c4a5ff;
+  color: #170e27;
+  font-weight: 650;
+  text-decoration: none;
+}
+.primary-link:hover {
+  background: #dbc7ff;
+  color: #170e27;
+}
+.release-meta,
+.demo-note {
+  color: #b6bed1;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.release-meta {
+  margin: 16px 0 0;
+}
+.home-demo {
+  min-width: 0;
+}
+.home-demo .example {
+  margin: 16px 0 12px;
+}
+.install-command {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #0d0b19;
+  border: 1px solid #ad86ec40;
+  border-radius: 12px;
+  padding-right: 12px;
+}
+.install-command pre {
+  padding: 12px 16px;
+  min-width: 0;
+}
+.install-command button {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: #c4a5ff;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.demo-note {
+  margin: 0;
+}
+.home-details {
+  max-width: 72ch;
+}
+@media (max-width: 960px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    margin-bottom: 56px;
+  }
+  .home-intro h1 {
+    max-width: 20ch;
+  }
+  .home-intro .lede {
+    max-width: 60ch;
+  }
+}
 @media (max-width: 700px) {
   .site-header {
     align-items: flex-start;
@@ -231,6 +327,15 @@ code {
   }
   .content {
     padding: 42px 22px;
+  }
+  .home-content {
+    padding-top: 32px;
+  }
+  .home-hero {
+    gap: 24px;
+  }
+  .home-intro h1 {
+    margin-bottom: 16px;
   }
   .site-header nav {
     gap: 12px 18px;

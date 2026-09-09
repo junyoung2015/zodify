@@ -1,6 +1,7 @@
 include LICENSE
 include README.md
 include API_CONTRACT.md
+include reference/api.md
 include pyproject.toml
 prune tests
 recursive-include examples *.py
