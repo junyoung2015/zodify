@@ -1,18 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e1042"/>
-      <stop offset="100%" style="stop-color:#030014"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#a855f7"/>
-      <stop offset="100%" style="stop-color:#7c3aed"/>
-    </linearGradient>
-  </defs>
-  <!-- Rounded square background -->
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <!-- "z" letterform -->
-  <text x="256" y="380" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="800" font-size="360" fill="url(#accent)">z</text>
-  <!-- Subtle bottom accent line -->
-  <rect x="96" y="440" width="320" height="6" rx="3" fill="#a855f7" opacity="0.6"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="zodify"><title>zodify</title><rect width="64" height="64" rx="12" fill="#030014"/><g transform="translate(10 8) scale(.44)"><path fill="#C4A5FF" d="M10 8H90Q96 8 96 14V26Q96 29 93 32L36 74H90Q96 74 96 80V90Q96 96 90 96H10Q4 96 4 90V78Q4 75 7 72L64 30H10Q4 30 4 24V14Q4 8 10 8Z"/></g></svg>
