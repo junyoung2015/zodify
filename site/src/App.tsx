@@ -34,7 +34,7 @@ export default function App({
         )}
         {page.sections.map((s) => <SectionContent key={s.id} section={s} />)}
         <p className="page-meta">
-          Updated {page.updated} ·{" "}
+          Updated {page.updated} /{" "}
           <a href={`${REPOSITORY}/edit/main/site/src/routes.ts`}>
             Edit this page
           </a>

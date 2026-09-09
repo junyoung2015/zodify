@@ -12,7 +12,7 @@ python3 -m venv .venv
 
 GitHub Actions is disabled through October 1, 2026, 09:00 Asia/Seoul. Record local
 commands, interpreter versions and outcomes in the PR. A maintainer may publish
-an accurate commit status from those checks; do not bypass a failing check.
+an accurate commit status from those checks. Resolve failing checks before merging.
 Validate web changes by deploying the tested static artifact and checking the
 production pages, missing-route HTTP status and no-JavaScript navigation.
 
@@ -21,15 +21,15 @@ installed-artifact checks, package metadata validation, and the static site buil
 `pytest tests/ -q` covers the public test surface;
 `tests/test_logic_loc_budget.py` enforces shipped runtime LOC budgets.
 `benchmarks/equivalent.py` checks equivalent positive and negative fixtures before
-timing strict dictionary output. Historical comparison scripts do not establish
-a general speed ranking.
+timing strict dictionary output. Interpret historical comparison results within
+their documented workloads and limits.
 
 For publication, follow the [local release procedure](release-notes/RELEASING.md).
 Obtain the owner's release decision before uploading the retained artifacts with
 Twine, then verify downloaded PyPI hashes and an independent install before the
 matching tag, final GitHub Release, or availability changes. Recheck budget and
-reconcile publishing workflows before enabling Actions; the calendar alone does
-not enable publication. Production Pages uses locally verified static files and
+reconcile publishing workflows before enabling Actions. Publication requires
+a separate decision after the disabled period ends. Production Pages uses locally verified static files and
 `.nojekyll` on the Pages source branch.
 
 ## Compatibility and scope
@@ -45,6 +45,14 @@ or dependency upgrades. Public website claims must match the installed release.
 
 Create a branch from main, implement one coherent change, and open a PR describing
 the problem, resulting behavior and actual validation. Include negative cases for
-semantic changes. Builds and merges do not establish package publication; release
-facts change only after the published wheel is verified. Compilation and other
+semantic changes. Update release availability only after verifying the published
+wheel separately from local builds and merges. Compilation and other
 experiments need measured value and explicit contracts before becoming public.
+
+## Documentation style
+
+Use direct, factual sentences and descriptive headings. Explain the task, behavior,
+and limits with examples. Avoid promotional claims, rhetorical contrasts, teaser
+phrases, emoji, em dashes, and middle-dot separators. Reserve emphasis for details
+that need it; use code formatting for API names and values. Keep technical
+restrictions and exact error messages intact.

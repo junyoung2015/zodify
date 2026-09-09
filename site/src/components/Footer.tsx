@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="site-footer">
-      <p>zodify · Small, predictable validation for plain Python data.</p>
+      <p>zodify: validation for Python dictionaries.</p>
       <nav aria-label="Footer">
         <a href="/about/">About</a>
         <a href="/benchmarks/">Benchmarks</a>

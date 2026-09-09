@@ -23,7 +23,7 @@ const escape = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 for (const page of [...routes, notFound]) {
   const canonical = SITE_ORIGIN + page.path;
-  const title = page.title + " — zodify";
+  const title = page.title + " | zodify";
   const project = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -66,7 +66,7 @@ writeFileSync(
 );
 writeFileSync(
   join(dist, "llms.txt"),
-  `# zodify\n\n> Small, predictable validation for plain Python data.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Source versions alone do not establish publication.\n\n` +
+  `# zodify\n\n> Validation for Python dictionaries.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Check PyPI for published versions.\n\n` +
     routes
       .map((p) => `- [${p.title}](${SITE_ORIGIN + p.path}): ${p.description}`)
       .join("\n") +

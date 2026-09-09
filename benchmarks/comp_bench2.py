@@ -92,7 +92,7 @@ with open("/tmp/bench_results.txt", "w") as f:
     for name, us in results:
         ratio = us / fastest
         ops = int(1_000_000 / us)
-        tag = " (fastest)" if ratio == 1.0 else ""
+        tag = " (lowest time in this run)" if ratio == 1.0 else ""
         line = f"  {name:15s}  {us:8.2f} us/op  {ops:>10,} ops/sec  {ratio:.1f}x{tag}\n"
         f.write(line)
     f.write("\n")

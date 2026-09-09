@@ -34,7 +34,7 @@ const section = (
 export const routes: Page[] = [
   page(
     "/",
-    "Validate Python dictionaries. Keep them dictionaries.",
+    "Validation for Python dictionaries",
     "Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies.",
     [
       section(
@@ -45,7 +45,7 @@ export const routes: Page[] = [
       ),
       { ...section(
         "fit",
-        "Is zodify a fit?",
+        "When to use zodify",
         [
           "Use it when you have a Python dict and want a readable, reusable check. Start with ordinary types; add nested shapes, optional keys, or explicit conversions when you need them.",
         ],
@@ -63,17 +63,17 @@ export const routes: Page[] = [
       } },
       section(
         "invalid-input",
-        "See what needs fixing",
+        "Validation errors",
         ["An invalid field raises an error with its path. Here, port needs an int, but the input contains a string. Pass an integer, or choose coerce=True when string conversion is intended."],
         "invalid-input",
         [["Types and conversion", "/docs/types-and-coercion/"]],
       ),
       section(
         "boundaries",
-        "A few defaults to know",
+        "Default behavior",
         [
           "Types are strict and extra keys are rejected. Optional keys and nullable values are separate choices. Defaults are trusted: they are inserted without validation or copying, so mutable defaults can be shared.",
-          "Plain dict schemas return dicts. Optional class declarations add attribute access when it is useful; you do not need them to get started.",
+          "Plain dict schemas return dicts. Optional class declarations provide attribute access.",
         ],
         undefined,
         [
@@ -123,7 +123,7 @@ export const routes: Page[] = [
         "optional-keys",
         "Optional keys and defaults",
         [
-          "Optional controls missing keys; a union with None controls nullable values. Released defaults are not copied or validated.",
+          "Optional controls missing keys; a union with None controls nullable values. Defaults are inserted as supplied, without copying or validation.",
         ],
         undefined,
         [["Optional and defaults", "/docs/optional-and-defaults/"]],
@@ -183,7 +183,7 @@ export const routes: Page[] = [
         "error-handling",
         "Error handling",
         [
-          'Text mode raises ValueError. Choose error_mode="structured" for ValidationError. Do not log untrusted messages without reviewing their contents.',
+          'Text mode raises ValueError. Choose error_mode="structured" for ValidationError. Review error contents before logging them.',
         ],
         undefined,
         [["Errors", "/docs/errors/"]],
@@ -216,7 +216,7 @@ export const routes: Page[] = [
   page(
     "/docs/getting-started/",
     "Getting started",
-    "Install zodify and validate your first Python dict, including a useful failure.",
+    "Install zodify, validate a dict, and handle a validation error.",
     [
       { ...section(
         "install",
@@ -247,16 +247,16 @@ export const routes: Page[] = [
         "Describe a shape with Python values",
         [
           "A dict maps field names to schemas. A one-element list describes each item in a list. A Python type requires that exact type. PEP 604 unions combine types. Optional wraps an optional field.",
-          "Predicates receive the original value and accept it when they return a truthy result. They do not transform values. A predicate should check its own input type before comparing or indexing it.",
+          "Predicates receive the original value and accept it when they return a truthy result. Accepted values are returned unchanged. A predicate should check its own input type before comparing or indexing it.",
         ],
         "schemas",
       ),
       section(
         "limits",
-        "Keep schema boundaries explicit",
+        "Supported schema shapes",
         [
-          "Top-level data must be a dict (or a supported Schema declaration at the schema boundary). Lists with zero or multiple schema items are invalid. Malformed schemas may raise TypeError. Validation has a max_depth option, defaulting to 32; cyclic models and arbitrary typing expressions are not promised.",
-          "Dict-shaped and list-shaped validation creates result containers, but leaf objects and defaults can remain shared. Validation is not a universal deep copy.",
+          "Pass a dict as data and either a dict schema or supported Schema declaration as the schema. Lists with zero or multiple schema items are invalid. Malformed schemas may raise TypeError. Validation has a max_depth option, defaulting to 32; cyclic models and arbitrary typing expressions are not promised.",
+          "Dict-shaped and list-shaped validation creates result containers, but leaf objects and defaults can remain shared.",
         ],
         undefined,
         [["Ownership and defaults", "/docs/optional-and-defaults/"]],
@@ -281,7 +281,7 @@ export const routes: Page[] = [
         "unions",
         "Union order can change string results",
         [
-          "In coercing unions, exact non-string matches win first. String input then tries union members in their declared order: int | str can turn '1' into 1, while str | int preserves '1'. Without coercion, exact membership determines acceptance. Do not reorder a union casually.",
+          "In coercing unions, exact non-string matches win first. String input then tries union members in their declared order: int | str can turn '1' into 1, while str | int preserves '1'. Without coercion, exact membership determines acceptance. Keep union order consistent when relying on string conversion.",
         ],
         undefined,
         [
@@ -311,8 +311,8 @@ export const routes: Page[] = [
         "ownership",
         "Defaults in the released version",
         [
-          "In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The executable example deliberately demonstrates an invalid default being inserted; this documents behavior, not a recommended configuration.",
-          "Prefer immutable, type-correct defaults and construct fresh mutable values in application code. A future default policy belongs to a separately released migration; do not assume unreleased source changes apply to an installed package.",
+          "In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.",
+          "Prefer immutable, type-correct defaults and construct fresh mutable values in application code. Check the compatibility notes for the installed release before changing a default policy.",
         ],
         undefined,
         [
@@ -325,13 +325,13 @@ export const routes: Page[] = [
   page(
     "/docs/errors/",
     "Errors and privacy",
-    "Catch released text and structured validation errors without assuming input redaction.",
+    "Handle text and structured errors and review what their messages contain.",
     [
       section(
         "structured",
         "Choose structured errors explicitly",
         [
-          "The default text mode raises ValueError. error_mode='structured' raises ValidationError, a ValueError subclass with an issues list. Each issue carries a string path, message, expected, and got. These legacy fields are preserved. Engine errors also expose a separate immutable details tuple of ValidationIssue records with machine codes and typed locations; manual legacy errors and unsupported key locations may have details=None. Mutating issues does not change the canonical snapshot.",
+          "The default text mode raises ValueError. error_mode='structured' raises ValidationError, a ValueError subclass with an issues list. Each issue carries a string path, message, expected, and got. These legacy fields are preserved. Engine errors also expose a separate immutable details tuple of ValidationIssue records with machine codes and typed locations; manual legacy errors and unsupported key locations may have details=None. The canonical snapshot stays unchanged when issues is mutated.",
         ],
         "errors",
         [["Measured diagnostics cost", "/benchmarks/#diagnostics-cost"]],
@@ -340,8 +340,8 @@ export const routes: Page[] = [
         "privacy",
         "Treat error text as potentially sensitive",
         [
-          "Coercion failures can include the original string, and custom callback exceptions can include callback messages. An issues list is not a promise of redaction. Avoid logging entire errors for credentials or user secrets; prefer an application-controlled message and a reviewed field identifier.",
-          "Legacy paths use dots and brackets. Literal field names containing punctuation can be ambiguous. Do not parse these strings into an authoritative structural path.",
+          "Coercion failures can include the original string, and custom callback exceptions can include callback messages. Avoid logging entire errors for credentials or user secrets; prefer an application-controlled message and a reviewed field identifier.",
+          "Legacy paths use dots and brackets. Literal field names containing punctuation can be ambiguous. Use each ValidationIssue record’s loc field in details for structural locations when available.",
         ],
         undefined,
         [
@@ -358,9 +358,9 @@ export const routes: Page[] = [
     [
       section(
         "syntax",
-        "One engine, optional declarations",
+        "Declare fields with Schema",
         [
-          "Subclass Schema with concrete field annotations, then call validate(User, data) to get an instance with attributes. Dict schemas remain a first-class entry point; classes are an optional syntax choice.",
+          "Subclass Schema with concrete field annotations, then call validate(User, data) to get an instance with attributes. Dict schemas use the same validation engine.",
         ],
         "class-schemas",
       ),
@@ -369,7 +369,7 @@ export const routes: Page[] = [
         "Use the supported subset",
         [
           "Do not assume arbitrary postponed annotations, forward references, recursive models, general inheritance, generics, or every typing construct are supported. The example uses concrete annotations without 'from __future__ import annotations'.",
-          "Validator is reusable validation configuration. In this release it is not a compiled schema cache.",
+          "Validator stores reusable validation options. Schema compilation and caching are unavailable in this release.",
         ],
         undefined,
         [
@@ -386,7 +386,7 @@ export const routes: Page[] = [
     [
       section(
         "recipe",
-        "Validate once at the configuration boundary",
+        "Validate configuration values",
         [
           "Keep strict validation for configuration that already has Python values. Reject unknown keys to catch misspellings. Insert a simple immutable default only for an intentionally optional setting.",
         ],
@@ -394,10 +394,10 @@ export const routes: Page[] = [
       ),
       section(
         "limits",
-        "Make data loss an explicit choice",
+        "Unknown fields and range checks",
         [
-          "unknown_keys='strip' removes unknown fields from the returned shape; it does not fix misspellings. A type-only port check does not enforce the valid network-port range. Add a reviewed predicate if your application needs that constraint.",
-          "This recipe validates a dict you already have. It does not load .env files, manage secrets, or infer configuration precedence.",
+          "unknown_keys='strip' drops unknown fields. Correct misspelled keys in the input to retain their values. Add a predicate to enforce a network-port range; int checks the Python type.",
+          "This recipe starts from an existing dict. Handle env-file loading, secrets, and configuration precedence separately.",
         ],
         undefined,
         [
@@ -422,9 +422,9 @@ export const routes: Page[] = [
       ),
       section(
         "limits",
-        "Keep the command-line contract small",
+        "Conversion limits",
         [
-          "The integer conversion checks a type, not a valid port range. Boolean conversion recognizes a small vocabulary. Handle errors with an application-controlled message if arguments may contain secrets.",
+          "Add a predicate if a port must fall within a specific range. Boolean conversion recognizes a small vocabulary. Handle errors with an application-controlled message if arguments may contain secrets.",
           "For a single argument, argparse's built-in type or choices may be enough. Use a shared validation schema when the same shape also comes from another boundary.",
         ],
         undefined,
@@ -450,9 +450,9 @@ export const routes: Page[] = [
       ),
       section(
         "limits",
-        "This is a Python object contract",
+        "Parser behavior",
         [
-          "The standard parser keeps the last duplicate object key and accepts non-finite numeric constants by default. This recipe does not promise duplicate-key rejection, strict JSON-number policy, or JSON Schema equivalence. Set input-size limits before parsing untrusted payloads.",
+          "The standard parser keeps the last duplicate object key and accepts non-finite numeric constants by default. Set input-size limits before parsing untrusted payloads.",
           "The int schema rejects a parsed 1.0 because it is a Python float. For a general JSON Schema contract, use a JSON Schema validator. The released zodify.json_io.validate_json helper provides a stricter parsing boundary than this standard-library recipe: it rejects duplicate keys, BOMs, nonfinite values and non-object roots before ordinary validation. zodify.json_schema.export_json_schema exports only the exact supported subset; numeric types, defaults, arbitrary predicates and bare containers are refused. The root to_json_schema facade returns only the document.",
         ],
         undefined,
@@ -475,7 +475,7 @@ export const routes: Page[] = [
         "choice",
         "Start with the task",
         [
-          "Choose the smallest approach that covers your data and integration needs. Zodify is deliberately limited; adding a library is not always necessary.",
+          "Compare the data shapes, type support, and integrations your application needs. Direct Python checks may be enough for a small task.",
         ],
         undefined,
         [
@@ -517,9 +517,9 @@ export const routes: Page[] = [
     [
       section(
         "status",
-        "Measure a workload, not a slogan",
+        "Available measurements",
         [
-          "We have withdrawn the earlier universal speed rankings and multiplier claims from this site. A scalar throughput figure cannot establish a fair cross-library ranking without equivalent semantics and setup accounting.",
+          "Earlier speed rankings and multipliers have been withdrawn. A comparison needs equivalent behavior and separate setup measurements.",
           "No replacement cross-library ranking is published here. Repository experiments are development evidence and must identify their exact commit and environment before supporting a released-product claim.",
         ],
         undefined,
@@ -536,7 +536,7 @@ export const routes: Page[] = [
         "The cost of canonical diagnostics in 0.8.0",
         [
           "Versioned Python 3.12 flat and nested synthetic fixtures compared complete 0.8.0 and 0.6.0 versions on one machine. Structured-mode successful calls increased 36–43% and failed calls 61–64%. Default text-mode successes were approximately unchanged; text-mode failures increased 9–11%. Import median rose from about 2.3 ms to 4.3 ms.",
-          "Typed locations require traversal work and failures retain both canonical records and legacy issues. These measurements describe a diagnostic capability cost, not application-level predictions or a cross-library ranking. No compiler is included.",
+          "Typed locations require traversal work and failures retain both canonical records and legacy issues. These timings cover the diagnostic implementation and synthetic fixtures on the recorded machine. Application performance and cross-library comparisons need separate measurement. This release uses the ordinary validation engine.",
         ],
         undefined,
         [["0.8.0 release notes", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.0.md"]],
@@ -547,7 +547,7 @@ export const routes: Page[] = [
         [
           "Record the commit, installed-wheel version and hash, interpreter, platform, dependency versions, repeated raw samples, and the exact success/failure fixtures. Check output equivalence before timing. Include TypeAdapter for the appropriate Pydantic task.",
           "Measure setup separately from repeated validation. Report invalid input, strictness, unknown-key policy, nested shapes, import time, and installed footprint with named metric definitions. Avoid attributing a single scenario's result to every validation workload.",
-          "Compilation experiments must report preparation cost, ordinary and prepared call costs, and a measured break-even point. A source experiment is not a released feature.",
+          "Compilation experiments must report preparation cost, ordinary and prepared call costs, and a measured break-even point. Published APIs are listed with their PyPI release.",
         ],
         undefined,
         [
@@ -563,8 +563,8 @@ export const routes: Page[] = [
   ),
   page(
     "/about/",
-    "Why zodify exists",
-    "The project's origin, author, design choices, and honest boundaries.",
+    "About zodify",
+    "The project's origin, author, and scope.",
     [
       section(
         "origin",
@@ -581,9 +581,9 @@ export const routes: Page[] = [
       ),
       section(
         "choices",
-        "Small, predictable scope",
+        "Project scope",
         [
-          "Zero required runtime dependencies, explicit coercion, and ordinary data shapes are deliberate choices. Zod-inspired describes an origin, not a full port or affiliation. The project uses the MIT license.",
+          "Zodify has zero required runtime dependencies and uses ordinary Python data shapes with optional coercion. Zod inspired the original interface. Zodify has its own Python API and is maintained independently. The project uses the MIT license.",
           "Other tools solve broader problems. The selection guide explains where TypeAdapter or a JSON Schema implementation may serve your application better.",
         ],
         undefined,
@@ -614,10 +614,10 @@ export const routes: Page[] = [
       ),
       section(
         "future",
-        "Not released in 0.8.0",
+        "Proposed features",
         [
           "Compilation and rich reports remain unavailable. Approximate export, native execution and source generation remain outside the current scope; future work requires separate semantic, evidence and release gates.",
-          "Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 remains alpha; publication does not establish a stable 1.0 contract.",
+          "Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 is an alpha release. API stability is still being evaluated.",
         ],
         undefined,
         [
@@ -625,8 +625,8 @@ export const routes: Page[] = [
           ["Changelog", "/changelog/"],
         ],
       ),
-      section("limits", "Deliberately small scope", [
-        "Zodify focuses on ordinary Python data. It is not a recursive model framework or a general JSON Schema validator. Choose a broader tool when those are requirements for your application.",
+      section("limits", "Scope", [
+        "Zodify validates ordinary Python data. Use a recursive model framework or general JSON Schema validator when your application needs those capabilities.",
       ]),
     ],
   ),
@@ -637,10 +637,10 @@ export const routes: Page[] = [
     [
       section(
         "release",
-        "0.8.0 — September 9, 2026",
+        "0.8.0, September 9, 2026",
         [
           "PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.",
-          "The repository changelog includes development changes; its presence does not mean those changes are available from PyPI.",
+          "The repository changelog includes development changes. Use the PyPI version list to check which changes have been released.",
         ],
         undefined,
         [
@@ -656,12 +656,12 @@ export const routes: Page[] = [
   ),
   page(
     "/articles/python-integers-and-json/",
-    "Why a Python int check is not JSON Schema integer",
+    "Python int and JSON Schema integer",
     "An executable explanation of exact Python types and JSON numeric semantics.",
     [
       section(
         "question",
-        "The same-looking number can have a different contract",
+        "Parsing integers and floats",
         [
           "In zodify 0.8.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.",
         ],
@@ -669,10 +669,10 @@ export const routes: Page[] = [
       ),
       section(
         "standard",
-        "JSON Schema answers a different question",
+        "JSON Schema integer rules",
         [
           "JSON Schema considers a number with zero fractional part an integer, including 1.0. Python runtime type identity and mathematical integrality are distinct contracts. Translating int directly to a JSON Schema integer constraint does not preserve every acceptance decision.",
-          "This is a semantic limitation, not a performance result. The 0.8.0 exact exporter refuses numeric declarations because of this mismatch; it does not imply complete equivalence. Use a JSON Schema validator when that standard is the authority for your payload.",
+          "The 0.8.0 exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.",
         ],
         undefined,
         [
@@ -697,7 +697,7 @@ export const notFound = page(
   [
     section(
       "find",
-      "Find what you need",
+      "Documentation links",
       [
         "The requested address is not a published page. Start with the docs index or one of the practical guides.",
       ],

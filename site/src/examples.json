@@ -5,7 +5,7 @@
     "expected": "{'name': 'Ada', 'age': 36}\nValueError: age: expected int, got str"
   },
   "schemas": {
-    "code": "from zodify import validate\n\nschema = {\"users\": [{\"name\": str}], \"enabled\": bool}\ndata = {\"users\": [{\"name\": \"Ada\"}], \"enabled\": True}\nprint(validate(schema, data))\n\n# A truthy predicate accepts the original value; it does not transform it.\nport_schema = {\"port\": lambda value: type(value) is int and 1 <= value <= 65535}\nprint(validate(port_schema, {\"port\": 8080}))\n",
+    "code": "from zodify import validate\n\nschema = {\"users\": [{\"name\": str}], \"enabled\": bool}\ndata = {\"users\": [{\"name\": \"Ada\"}], \"enabled\": True}\nprint(validate(schema, data))\n\n# A truthy predicate accepts and preserves the original value.\nport_schema = {\"port\": lambda value: type(value) is int and 1 <= value <= 65535}\nprint(validate(port_schema, {\"port\": 8080}))\n",
     "releasedVersion": "0.8.0",
     "expected": "{'users': [{'name': 'Ada'}], 'enabled': True}\n{'port': 8080}"
   },
@@ -30,7 +30,7 @@
     "expected": "Ada\n36"
   },
   "config-validation": {
-    "code": "from zodify import Optional, validate\n\nschema = {\"host\": str, \"port\": int, \"debug\": Optional(bool, False)}\nconfig = {\"host\": \"localhost\", \"port\": 8080}\nprint(validate(schema, config))\n\nwith_typo = dict(config, debgu=True)\ntry:\n    validate(schema, with_typo)\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n\n# Stripping drops the unknown field; it does not repair the typo.\nprint(validate(schema, with_typo, unknown_keys=\"strip\"))\nprint(\"Original input:\", with_typo)\n",
+    "code": "from zodify import Optional, validate\n\nschema = {\"host\": str, \"port\": int, \"debug\": Optional(bool, False)}\nconfig = {\"host\": \"localhost\", \"port\": 8080}\nprint(validate(schema, config))\n\nwith_typo = dict(config, debgu=True)\ntry:\n    validate(schema, with_typo)\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n\n# Stripping drops the unknown field from the result.\nprint(validate(schema, with_typo, unknown_keys=\"strip\"))\nprint(\"Original input:\", with_typo)\n",
     "releasedVersion": "0.8.0",
     "expected": "{'host': 'localhost', 'port': 8080, 'debug': False}\nValueError: debgu: unknown key\n{'host': 'localhost', 'port': 8080, 'debug': False}\nOriginal input: {'host': 'localhost', 'port': 8080, 'debgu': True}"
   },

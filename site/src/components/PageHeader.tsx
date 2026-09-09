@@ -4,10 +4,10 @@ import type { Page } from "../routes";
 export function ReleaseMeta() {
   return (
     <p className="release-meta">
-      Python {release.python} ·{" "}
+      Python {release.python} /{" "}
       <a href={`https://pypi.org/project/zodify/${release.version}/`}>
         released zodify {release.version}
-      </a> · Alpha
+      </a> / Alpha
     </p>
   );
 }

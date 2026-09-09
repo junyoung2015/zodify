@@ -4,7 +4,7 @@ Detailed usage for zodify 0.8.0. Start with the [quickstart](../README.md#quick-
 or the [getting-started guide](https://zodify.dev/docs/getting-started/).
 The [API and compatibility contract](../API_CONTRACT.md) defines the supported
 surface and compatibility commitments. This release is alpha.
-`py.typed` does not promise key-sensitive inference for arbitrary dictionaries.
+Key-sensitive inference for arbitrary dictionaries is outside the `py.typed` support contract.
 
 ## Contents
 
@@ -35,7 +35,7 @@ schema = {"port": int, "debug": bool, "name": str}
 result = validate(schema, {"port": 8080, "debug": True, "name": "myapp"})
 # → {"port": 8080, "debug": True, "name": "myapp"}
 
-# Coerce strings - great for env vars and config files
+# Convert string inputs explicitly
 raw = {"port": "8080", "debug": "true", "name": "myapp"}
 result = validate(schema, raw, coerce=True)
 # → {"port": 8080, "debug": True, "name": "myapp"}
@@ -46,7 +46,7 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 #             b: expected str, got int
 ```
 
-**Parameters:**
+Parameters:
 
 | Param          | Type   | Default    | Description                                           |
 | -------------- | ------ | ---------- | ----------------------------------------------------- |
@@ -57,7 +57,7 @@ validate({"a": int, "b": str}, {"a": "x", "b": 42})
 | `unknown_keys` | `str`  | `"reject"` | How to handle extra keys: `"reject"` or `"strip"`     |
 | `error_mode`   | `str`  | `"text"`   | Error output format: `"text"` or `"structured"`       |
 
-**Behavior:**
+Behavior:
 
 `max_depth` counts shaped dictionary traversals, including the root. It does not
 bound list nesting, parser allocation, callback execution time, or input size.
@@ -129,9 +129,8 @@ validator.validate({"port": int}, {"port": "8080"})
 
 ## Class-Based Schemas
 
-`Schema` gives you typed attribute access without changing the validation engine.
-
-Class schemas are syntactic sugar - the dict engine does all the work.
+`Schema` declarations provide typed attribute access and use the same validation
+engine as dictionary schemas.
 
 ```python
 from zodify import Optional, Schema, Validator, validate
@@ -212,7 +211,9 @@ assert app.db.host == "localhost"
 assert app.db.creds.username == "svc"
 ```
 
-Prefer class syntax when you want autocomplete, attribute access, and field names that are already valid Python identifiers. Prefer plain dict schemas when you need the lowest-friction runtime shape, invalid identifiers, or callable field validators.
+Class syntax supports autocomplete and attribute access for fields with valid
+Python identifiers. Plain dict schemas support arbitrary field names and callable
+field validators.
 
 Currently supported:
 
@@ -237,11 +238,11 @@ Current unsupported boundaries:
 - Callable validators in the class body
 - `model_config`-style options and custom metaclass APIs
 - User-facing registries and caching layers
-- Direct `MySchema()` instantiation; Schema classes are declarations, not runtime models
+- Direct `MySchema()` instantiation; validate class declarations with `validate(MySchema, data)`
 
 Notes:
 
-- `ValidatedDict` is an internal runtime carrier, not a supported public import.
+- `ValidatedDict` is an internal runtime carrier. Its import is outside the public API.
 - Only annotated fields become schema fields. Unannotated control objects such as `model_config`, `registry`, or `cache` stay inert plain class attributes and are not interpreted by zodify.
 - If you need dict-method field names or unsupported union members, stay on plain dict schemas.
 - Plain dict schemas still return plain `dict` values. Nested plain dict fields stay plain dicts.
@@ -250,7 +251,7 @@ Notes:
 
 ## JSON Schema Export (0.8.0)
 
-Export a deliberately narrow input contract over plain JSON-compatible built-in
+Export the supported input contract over plain JSON-compatible built-in
 instances to Draft 2020-12:
 
 ```python
@@ -263,8 +264,8 @@ assert result.contract_kind == "input"
 assert result.document["additionalProperties"] is False
 ```
 
-`to_json_schema(schema)` remains a root-level document-returning convenience.
-The richer result also reports `schema_draft` and `differences`. Exact export
+`to_json_schema(schema)` returns the document from a root-level import.
+`export_json_schema(schema)` also reports `schema_draft` and `differences`. Exact export
 supports shaped objects, strings, booleans, null, homogeneous lists and supported
 unions. Optional fields without defaults may be omitted. Nullability does not
 make a required key optional.
@@ -313,11 +314,14 @@ locations and failures involving unsupported non-string/non-integer mapping keys
 Canonical messages omit raw values and callback exception text; key names and
 type labels can still be sensitive. Legacy messages can include raw values.
 `copy`, `deepcopy` and `pickle` preserve both views. Consumers should tolerate
-future additional codes; the 0.8 interface is not a frozen 1.0 serialization format.
+future additional codes. The 0.8 serialization interface remains subject to the
+pre-1.0 compatibility policy.
 
 ## Structured Errors
 
-By default, validation failures raise `ValueError` with human-readable messages. Use `error_mode="structured"` to get machine-readable `ValidationError` exceptions with an `.issues` list - ideal for API error responses.
+By default, validation failures raise `ValueError` with human-readable messages.
+Set `error_mode="structured"` to receive `ValidationError` exceptions with an
+`.issues` list for application error handling.
 
 ```python
 from zodify import validate, ValidationError
@@ -342,7 +346,7 @@ except ValidationError as e:
 # Works with all error types: type mismatch, missing key, coercion failure,
 # custom validator failure, depth exceeded, unknown key, and union mismatch.
 
-# Combine with other parameters freely:
+# Set conversion, unknown-key, and error options together:
 validate(schema, data, coerce=True, unknown_keys="strip", error_mode="structured")
 ```
 
@@ -384,15 +388,18 @@ validate({"config": {"v": int | str}}, {"config": {"v": "42"}}, coerce=True)
 # → {"config": {"v": 42}}
 ```
 
-> **Note:** When `str` is a union member and `coerce=True`, `str` acts as a catch-all fallback - any value that fails earlier union members will coerce via `str()` (e.g., `int | str` with `True` produces `"True"`). Place `str` last in unions to use it as a deliberate fallback, or first to prefer string preservation.
+With `coerce=True`, non-string input first uses an exact matching union member.
+String inputs try members in order. When conversion reaches a `str` member,
+`str()` accepts the value (for example, `int | str` with `True` produces
+`"True"`). Place `str` last for fallback conversion, or first to preserve strings.
 
-> Requires Python 3.10+ (for `X | Y` union syntax).
+Requires Python 3.10+ (for `X | Y` union syntax).
 
 ---
 
 ## Nested Dict Validation
 
-Your schema can contain nested dicts - validation recurses automatically.
+Validation recurses through nested dictionaries in the schema.
 
 ```python
 schema = {"db": {"host": str, "port": int}}
@@ -410,7 +417,7 @@ Errors use dot-notation paths: `db.host`, `a.b.c`, etc.
 
 ## Schema Composition
 
-schemas are data, not DSL - they compose like dicts because they are dicts
+Compose schemas by placing existing schema dictionaries inside other dictionaries.
 
 ```python
 from zodify import validate
@@ -461,7 +468,7 @@ validate(schema, {"host": "localhost"})
 # → {"host": "localhost", "port": 8080}
 ```
 
-> **Note:** `Optional` shadows `typing.Optional`. If you use both in the same file, alias it: `from zodify import Optional as Opt` or use `zodify.Optional(...)`.
+`Optional` shadows `typing.Optional`. If you use both in the same file, alias it: `from zodify import Optional as Opt` or use `zodify.Optional(...)`.
 
 ---
 
@@ -477,7 +484,7 @@ validate({"tags": [str]}, {"tags": ["ok", 42]})
 # ValueError: tags[1]: expected str, got int
 ```
 
-List of dicts works too:
+For a list of dictionaries:
 
 ```python
 validate(
@@ -490,7 +497,7 @@ validate(
 
 ## Combined Example
 
-All features compose naturally:
+This example combines nested dictionaries, lists, and optional defaults:
 
 ```python
 from zodify import validate, Optional
@@ -523,19 +530,20 @@ debug  = env("DEBUG", bool, default=False)
 secret = env("SECRET_KEY", str)  # raises ValueError if missing
 ```
 
-**Parameters:**
+Parameters:
 
 | Param     | Type   | Default  | Description                                                                                       |
 | --------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
 | `name`    | `str`  | -        | Environment variable name                                                                         |
 | `cast`    | `type` | -        | Target type (`str`, `int`, `float`, `bool`)                                                       |
-| `default` | any    | _(none)_ | Fallback if the var is unset. **Not type-checked** - ensure your default matches the `cast` type. |
+| `default` | any    | (none) | Fallback if the var is unset. Unchecked. Supply a default that matches the `cast` type. |
 
 ---
 
 ## `.env` File Loading
 
-**Requires 0.8.0:** Use `load_env()` when you want deterministic `.env` parsing with optional schema validation. It is parse-and-return only: it does not mutate `os.environ`.
+Requires 0.8.0. `load_env()` parses an env file and returns its values, with
+optional schema validation. It leaves `os.environ` unchanged.
 
 ```python
 from zodify import load_env
@@ -556,7 +564,7 @@ config = load_env(
 # -> {"PORT": 8080, "DEBUG": True}
 ```
 
-If you prefer explicit composition, instantiate `Validator` first:
+To apply reusable validation options, instantiate `Validator` first:
 
 ```python
 from zodify import Validator, load_env
@@ -574,7 +582,7 @@ config = validator.validate(
 # -> {"PORT": 8080}
 ```
 
-`load_env("app.env", schema=...)` is the canonical one-call convenience path and defaults to `coerce=True`, `max_depth=32`, and `unknown_keys="strip"` in schema mode. `validator.validate(schema, load_env(path), ...)` uses the `Validator` instance defaults unless you pass explicit overrides.
+`load_env("app.env", schema=...)` defaults to `coerce=True`, `max_depth=32`, and `unknown_keys="strip"` in schema mode. `validator.validate(schema, load_env(path), ...)` uses the `Validator` instance defaults unless you pass explicit overrides.
 
 Contract notes:
 
@@ -626,11 +634,11 @@ except ValidationError as exc:
     # }
 ```
 
-Current non-goals for `load_env()`:
+Unsupported `load_env()` features:
 
-- No variable expansion.
-- No multiline values.
-- No `export KEY=value` support.
-- No inline-comment parsing.
-- No environment mutation.
-- No `Validator.load_env()` convenience method.
+- Variable expansion.
+- Multiline values.
+- `export KEY=value` syntax.
+- Inline-comment parsing.
+- Environment mutation.
+- A `Validator.load_env()` method.

@@ -2,7 +2,7 @@
 
 `equivalent.py` is the maintained comparison. It tests matching required fields,
 strict string/boolean acceptance, unknown-key rejection and new dictionary output
-before timing. Pydantic uses a reused TypeAdapter over TypedDict, not a model.
+before timing. Pydantic uses a reused TypeAdapter over TypedDict.
 
 Use an isolated installed-wheel environment, install `pydantic` and
 `typing_extensions` as benchmark-only dependencies, then run:
@@ -16,13 +16,14 @@ package location, source digest, warm call samples, setup and fresh-process impo
 Failure messages, Python subclasses, numeric semantics, parsing and framework
 workloads are not compared. A fresh-process import timer excludes interpreter
 startup; TypeAdapter setup is outside successful hot-call timing and reported
-separately. Synthetic loops are not evidence of actual application reuse.
+separately. These synthetic loops measure the specified benchmark workloads.
 
 Older `comparison_bench.py`, `comp_bench2.py` and prior reports are historical
 experiments with non-equivalent constraints/output obligations. Do not use their
-rankings or ratios as current product claims. The `bench_*` scripts are internal
-regression probes, not cross-library recommendations.
+rankings or ratios as current product claims. The `bench_*` scripts measure
+internal regressions.
 
 TypeAdapter configuration references:
-https://pydantic.dev/docs/validation/latest/api/pydantic/type_adapter/
-https://pydantic.dev/docs/validation/latest/api/pydantic/config/
+
+- [TypeAdapter API](https://pydantic.dev/docs/validation/latest/api/pydantic/type_adapter/)
+- [Configuration API](https://pydantic.dev/docs/validation/latest/api/pydantic/config/)

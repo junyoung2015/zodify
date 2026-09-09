@@ -1,8 +1,8 @@
 # Supported API and compatibility contract
 
-This inventory describes the published **0.8.0 interface** and the intended
-scope for 1.0 stabilization. It does not announce a stable release. PyPI release
-availability is verified separately from source version numbers.
+This inventory describes the published 0.8.0 interface, which is in alpha, and the
+intended scope for 1.0 stabilization. PyPI release availability is verified
+separately from source version numbers.
 
 ## Public entry points
 
@@ -11,9 +11,9 @@ availability is verified separately from source version numbers.
 | `zodify.validate` | Validate a dict against a dict schema or supported `Schema` declaration; return a new dict or the supported dict-compatible class result. |
 | `zodify.Optional` | Mark a missing field optional, with an optional trusted default reference. Nullability is a separate type declaration. |
 | `zodify.Validator` | Reuse validation options with explicit call overrides. Does not compile or cache schemas. |
-| `zodify.Schema` | Optional class syntax for the documented runtime annotation subset; not arbitrary Python typing or a model lifecycle. |
+| `zodify.Schema` | Optional class syntax for the documented runtime annotation subset. Arbitrary Python typing and model lifecycle features are unsupported. |
 | `zodify.env` | Read and convert one environment variable; missing defaults are trusted. |
-| `zodify.load_env` | Parse a bounded-scope env file and optionally delegate validation; never mutate the process environment. |
+| `zodify.load_env` | Parse the documented env-file syntax and optionally delegate validation. The process environment remains unchanged. |
 | `zodify.ValidationError` | Structured validation error, compatible with `ValueError`, legacy construction, and legacy four-key engine issues. |
 | `zodify.ValidationIssue` | Immutable canonical failure record with code, typed location, display path, message, expected and received labels. |
 | `zodify.to_json_schema` | Document-returning facade for the exact export subset. |
@@ -39,7 +39,7 @@ if implementation modules move. No plugin ABI or public intermediate form exists
   repeated results can share mutable defaults. Rebinding an ordinary schema or
   marker is visible on subsequent calls.
 - Shaped dict/list results are rebuilt; values accepted through bare types and
-  trusted defaults can remain shared. Successful validation is not a deep freeze.
+  trusted defaults can remain shared. Results can contain mutable objects.
 - `max_depth` counts shaped dictionary traversals, including the root. It does not bound
   list nesting, parser allocation, callback execution time, or input size.
 - Callbacks execute during the existing traversal, including after earlier
@@ -65,12 +65,12 @@ not mutate the canonical snapshot. Copy, deepcopy and pickle retain both views.
 Current canonical codes: `type_mismatch`, `missing_key`, `unknown_key`,
 `coercion_failed`, `custom_validation_failed`, `union_mismatch`, `depth_exceeded`.
 Existing meanings and promised ordering must remain compatible. New codes can be
-added; consumers must tolerate an unknown code. Human wording is not a machine
-identifier. Preserve established legacy wording unless a migration says otherwise.
+added; consumers must tolerate an unknown code. Use codes as machine identifiers. Preserve established legacy wording unless a
+migration says otherwise.
 
 Canonical messages omit raw input and callback exception text. Keys and type
 labels can still be sensitive; legacy messages and tracebacks can expose data.
-This is not a universal safe-logging or sandbox guarantee.
+Logging safety and sandboxing remain the application's responsibility.
 
 ## JSON boundaries
 
@@ -92,13 +92,13 @@ JSON parser policies. Its optional fields without defaults remain exportable.
 Before 1.0, every intentional change to accepted inputs, outputs, default
 ownership, callback behavior, exception phase, public signatures or serialized
 records requires a named decision, before/after examples, regression fixtures,
-migration notes and independent review. Alpha status does not remove that duty.
+migration notes and independent review. These requirements apply during alpha.
 
 After 1.0, preserve the named stable surface within 1.x. Breaking changes require
 a major release with deprecation/migration guidance. Patch releases fix defects
 without silently broadening acceptance. Adding a machine code is distinct from
-changing an existing code's meaning. Never remove a shipped API to simplify an
-experiment; a new experiment remains private until its own gates pass.
+changing an existing code's meaning. Preserve shipped APIs during
+experiments. New experiments remain private until their own gates pass.
 
 For the inherited unshipped exporter, 0.8.0 intentionally refuses numeric and
 default mappings that earlier local drafts approximated. No earlier published
@@ -108,5 +108,5 @@ admitted separately with evidence.
 
 1.0 additionally requires at least 14 calendar days of recorded candidate use,
 upgrade and rollback evidence, owner release decision, verified published
-artifacts, and matching production documentation. Neither test counts nor elapsed
-time without observations establishes those gates.
+artifacts, and matching production documentation. These gates require recorded
+observations beyond test counts and elapsed time.

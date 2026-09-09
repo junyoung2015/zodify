@@ -18,7 +18,7 @@ export function HomePage({ page }: { page: Page }) {
         <div className="home-demo" aria-label="Install and validate">
           <Command>pip install zodify</Command>
           <Example name="first-validation" />
-          <p className="demo-note">A schema in, a validated dict out. Incorrect types and extra keys raise an error by default.</p>
+          <p className="demo-note">Invalid types and extra keys raise an error by default.</p>
         </div>
       </section>
       <div className="home-details">

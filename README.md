@@ -1,13 +1,13 @@
 # zodify
 
-**Validate Python dictionaries. Keep them dictionaries.**
+Validation for Python dictionaries.
 
-Describe the data you expect with ordinary Python types. Validate configuration
-and script inputs with zero required runtime dependencies. Written in pure Python.
+zodify validates configuration and script inputs using ordinary Python types.
+It is written in pure Python with zero required runtime dependencies.
 
-[Documentation](https://zodify.dev/docs/) ·
-[Choosing a validator](https://zodify.dev/compare/) ·
-[PyPI](https://pypi.org/project/zodify/) ·
+[Documentation](https://zodify.dev/docs/) |
+[Choosing a validator](https://zodify.dev/compare/) |
+[PyPI](https://pypi.org/project/zodify/) |
 [Changelog](https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md)
 
 ## Install
@@ -16,7 +16,7 @@ and script inputs with zero required runtime dependencies. Written in pure Pytho
 pip install zodify
 ```
 
-Supports Python **3.10–3.13**. **Alpha:** these examples describe 0.8.0,
+Supports Python 3.10–3.13. The project is in alpha. These examples describe 0.8.0,
 published and verified September 9, 2026. See the
 [compatibility contract](https://github.com/junyoung2015/zodify/blob/main/API_CONTRACT.md)
 for supported behavior and the path to 1.0.
@@ -39,9 +39,9 @@ A dictionary schema returns a new dictionary. Types are strict by default:
 `"8080"` is a string, so it fails an `int` check. Failures raise `ValueError`
 with a path to the field. Extra keys are rejected.
 
-## Is it a fit?
+## Choosing a validator
 
-| Consider zodify when… | Another approach may fit better when… |
+| Use cases for zodify | Reasons to consider another approach |
 | --- | --- |
 | You already have dictionaries and want reusable checks. | A few direct Python checks already solve the task. |
 | You validate configuration, CLI input, or data in scripts. | Your framework already provides the validation you need. |
@@ -52,7 +52,7 @@ dictionaries. Use a dedicated JSON Schema implementation when a JSON Schema
 document is your validation language. The
 [comparison guide](https://zodify.dev/compare/) explains the tradeoffs.
 
-## Build up a schema
+## Schemas
 
 Use nested dictionaries, single-element lists, unions, and optional keys as needed:
 
@@ -79,19 +79,19 @@ validate({"port": int}, {"port": "8080"}, coerce=True)
 [Schema grammar](https://zodify.dev/docs/schemas/) and
 [conversion rules](https://zodify.dev/docs/types-and-coercion/) cover the details.
 
-## Defaults worth knowing
+## Validation behavior
 
-- **Strict types:** ordinary validation does not coerce values. `bool` and `int`
+- Strict types: ordinary validation does not coerce values. `bool` and `int`
   are distinct. Set `coerce=True` to opt into the documented conversions.
-- **Unknown keys:** rejected by default. `unknown_keys="strip"` drops them.
-- **Missing versus null:** `Optional(type)` permits omission; `type | None`
+- Unknown keys: rejected by default. `unknown_keys="strip"` drops them.
+- Missing versus null: `Optional(type)` permits omission; `type | None`
   permits a null value. These are separate choices.
-- **Default ownership:** defaults are trusted, without validation or copying.
+- Default ownership: defaults are trusted, without validation or copying.
   Mutable defaults can be shared between results. Successful validation does not
   make data deeply immutable.
-- **Errors:** text mode raises `ValueError`. With `error_mode="structured"`,
+- Errors: text mode raises `ValueError`. With `error_mode="structured"`,
   `ValidationError` adds legacy `.issues` and canonical `.details`.
-- **Depth:** `max_depth=32` counts shaped dictionary traversals, including the
+- Depth: `max_depth=32` counts shaped dictionary traversals, including the
   root. It does not limit list nesting, input size, or general resource use.
 
 See [defaults and ownership](https://zodify.dev/docs/optional-and-defaults/) and
@@ -112,11 +112,11 @@ config = validate(Config, {"port": 8080})
 print(config.port)  # 8080
 ```
 
-Classes are optional declarations; use `validate(Config, data)`, not `Config()`.
-They support a documented annotation subset, not arbitrary Python typing.
+Validate class declarations with `validate(Config, data)`. Direct `Config()`
+instantiation is unsupported. Annotations are limited to the documented subset.
 See [class schemas and limitations](https://zodify.dev/docs/class-schemas/).
 
-## Where to go next
+## Guides and reference
 
 | Task | Guide |
 | --- | --- |
@@ -140,12 +140,14 @@ for local checks and the
 for publication. Report problems in
 [GitHub Issues](https://github.com/junyoung2015/zodify/issues).
 
-[Benchmark methodology](https://zodify.dev/benchmarks/) documents measured scope;
-there is no general speed-ranking claim. The
+[Benchmark methodology](https://zodify.dev/benchmarks/) documents the measured
+workloads and comparison limits. The
 [roadmap](https://zodify.dev/roadmap/) distinguishes released features from plans.
-Compilation is not a public API. The
+Compilation remains outside the public API. The
 [implementation issue](https://github.com/junyoung2015/zodify/issues/6) tracks direction.
 
 ## License
 
-[MIT](https://github.com/junyoung2015/zodify/blob/main/LICENSE) — 2026 Jun Young Sohn
+[MIT](https://github.com/junyoung2015/zodify/blob/main/LICENSE)
+
+Copyright 2026 Jun Young Sohn.
