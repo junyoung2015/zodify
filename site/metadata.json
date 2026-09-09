@@ -1,5 +1,5 @@
 {
   "name": "Zodify",
-  "description": "Webpage for Python package 'zodify'",
+  "description": "Validation for Python dictionaries with no required runtime dependencies.",
   "requestFramePermissions": []
 }

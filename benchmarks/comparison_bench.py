@@ -1,4 +1,4 @@
-"""Head-to-head validation benchmark: zodify vs competitors.
+"""Local timing comparison of validation libraries.
 
 Competitor libraries are optional for local benchmarking. If a dependency is
 missing, that competitor is skipped with an install hint.
@@ -105,5 +105,5 @@ results.sort(key=lambda item: item[1])
 fastest = results[0][1]
 for name, us in results:
     ratio = us / fastest
-    tag = " (fastest)" if ratio == 1.0 else ""
+    tag = " (lowest time in this run)" if ratio == 1.0 else ""
     print(f"  {name:15s}  {us:8.2f} us/op  {1_000_000/us:>10,.0f} ops/sec  {ratio:.1f}x{tag}")
