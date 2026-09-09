@@ -6,7 +6,7 @@ Decision: `NO-GO`
 ## Summary
 
 Class-based schema syntax was prototyped and validated against runtime and typing behavior.
-The prototype is technically feasible, but it is not approved for implementation in the current roadmap phase.
+The prototype met the runtime and typing checks. Implementation approval was withheld in this roadmap phase because it exceeded the complexity threshold.
 
 Primary blocker:
 
@@ -14,7 +14,7 @@ Primary blocker:
 
 ## Key Evidence
 
-- Runtime normalization is proven for both entry points:
+- Runtime normalization was verified in the prototype for both entry points:
   - `validate(MySchema, data)` delegates a plain dict schema to `zodify.validate(...)`
   - `Validator().validate(MySchema, data)` delegates a plain dict schema to `zodify.validate(...)`
 - Dict compatibility behavior is preserved for schema-class results:
@@ -38,6 +38,6 @@ This repository keeps planning workflow artifacts local-only. The canonical trac
 
 ## Next Action
 
-Do not start schema-class implementation yet.
+At the time of this decision, schema-class implementation was on hold.
 
-If the team wants to revisit the feature, open a redesign spike focused on extraction into `zodify/schema.py` while preserving the existing public API surface.
+The proposed follow-up was a redesign spike focused on extraction into `zodify/schema.py` while preserving the existing public API surface.

@@ -1,8 +1,10 @@
 import { Layout } from "./components/Layout";
 import { routes, notFound, type Page } from "./routes";
-import { Example } from "./components/Example";
+import { PageHeader } from "./components/PageHeader";
+import { SectionContent } from "./components/SectionContent";
 import { HomePage } from "./pages/HomePage";
-import { release, REPOSITORY } from "./siteMeta";
+import { DocsPage } from "./pages/DocsPage";
+import { REPOSITORY } from "./siteMeta";
 export default function App({
   page = routes.find(
     (p) =>
@@ -15,19 +17,9 @@ export default function App({
   page?: Page;
 }) {
   return (
-    <Layout>
-      {page.path === "/" ? <HomePage page={page} /> : <article className="content" id="main-content">
-        <p className="eyebrow">PLAIN PYTHON · ZERO RUNTIME DEPS</p>
-        <h1>{page.title}</h1>
-        <p className="lede">{page.description}</p>
-        <aside className="release-note">
-          Docs for{" "}
-          <a href={`https://pypi.org/project/zodify/${release.version}/`}>
-            released zodify {release.version}
-          </a>{" "}
-          · Python {release.python} · Verified {release.verified}.{" "}
-          <a href="/roadmap/">Unreleased features</a>
-        </aside>
+    <Layout path={page.path}>
+      {page.path === "/" ? <HomePage page={page} /> : page.path === "/docs/" ? <DocsPage page={page} /> : <article className="content document-content" id="main-content">
+        <PageHeader page={page} />
         {page.sections.length > 1 && (
           <nav className="toc" aria-label="On this page">
             <strong>On this page</strong>
@@ -40,26 +32,9 @@ export default function App({
             </ul>
           </nav>
         )}
-        {page.sections.map((s) => (
-          <section id={s.id} key={s.id}>
-            <h2>{s.title}</h2>
-            {s.paragraphs.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-            {s.example && <Example name={s.example} />}
-            {s.links && (
-              <ul className="related">
-                {s.links.map(([name, href]) => (
-                  <li key={href}>
-                    <a href={href}>{name} →</a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
+        {page.sections.map((s) => <SectionContent key={s.id} section={s} />)}
         <p className="page-meta">
-          Updated {page.updated} ·{" "}
+          Updated {page.updated} /{" "}
           <a href={`${REPOSITORY}/edit/main/site/src/routes.ts`}>
             Edit this page
           </a>

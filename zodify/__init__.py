@@ -1,4 +1,4 @@
-"""zodify - Zod-inspired validation for Python. Zero deps. One engine."""
+"""zodify - Validation for Python dictionaries with no required runtime dependencies."""
 
 import os
 import types
@@ -34,7 +34,7 @@ class ValidationError(ValueError):
     Args:
         issues: List of issue dicts, each with keys
                 ``path``, ``message``, ``expected``, ``got``.
-                Dicts **must** contain at least ``path`` and
+                Dicts must contain at least ``path`` and
                 ``message``; a ``KeyError`` is raised otherwise.
 
     Example:

@@ -23,7 +23,7 @@ const escape = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 for (const page of [...routes, notFound]) {
   const canonical = SITE_ORIGIN + page.path;
-  const title = page.title + " — zodify";
+  const title = page.title + " | zodify";
   const project = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -36,7 +36,7 @@ for (const page of [...routes, notFound]) {
     version: release.version,
     description: routes[0].description,
   };
-  const head = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escape(title)}</title><meta name="description" content="${escape(page.description)}">${page === notFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${canonical}">`}<meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${canonical}"><meta name="twitter:card" content="summary"><link rel="icon" href="/favicon.svg" type="image/svg+xml">${css}<script type="application/ld+json">${JSON.stringify(project).replace(/</g, "\u003c")}</script>`;
+  const head = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escape(title)}</title><meta name="description" content="${escape(page.description)}">${page === notFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${canonical}">`}<meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${canonical}"><meta name="twitter:card" content="summary"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">${css}<script type="application/ld+json">${JSON.stringify(project).replace(/</g, "\u003c")}</script>`;
   const html = `<!doctype html><html lang="en"><head>${head}</head><body>${renderToStaticMarkup(<App page={page} />)}<script src="/enhance.js" defer></script></body></html>`;
   const file = join(
     dist,
@@ -66,7 +66,7 @@ writeFileSync(
 );
 writeFileSync(
   join(dist, "llms.txt"),
-  `# zodify\n\n> Small, predictable validation for plain Python data.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Source versions alone do not establish publication.\n\n` +
+  `# zodify\n\n> Validation for Python dictionaries.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Check PyPI for published versions.\n\n` +
     routes
       .map((p) => `- [${p.title}](${SITE_ORIGIN + p.path}): ${p.description}`)
       .join("\n") +

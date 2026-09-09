@@ -1,7 +1,7 @@
 # Local package release procedure
 
-Package publication is separate from building a candidate. Keep automation disabled
-while its budget is unavailable. This procedure uses the existing PyPI project;
+This procedure covers candidate preparation, publication and verification using
+the existing PyPI project. Keep automation disabled while its budget is unavailable.
 GitHub Pages continues to use locally built static artifacts.
 
 ## Prepare and review
@@ -28,7 +28,7 @@ files; a change requires a fresh candidate.
 
 Review the complete checks log, supported Python matrix, diagnostics cost evidence,
 compatibility notes and production website verification. Preparation checks the
-invoking Python only; it does not establish the full supported-version matrix.
+invoking Python only. Verify the remaining supported Python versions separately.
 The owner makes the release decision against the manifest hash. Credentials must
 remain in local Twine/keyring configuration; never put a token in these commands,
 chat, logs or version control.
@@ -47,8 +47,9 @@ The approval value explicitly binds the decision to the version and reviewed
 manifest. The upload command queries PyPI first and uses a fixed public PyPI
 endpoint. An already complete matching release is verified without uploading.
 A partial, different, unexpected or yanked artifact set stops publication for manual
-inspection. Upload errors are rechecked against PyPI; there is no blind retry or
-`--skip-existing`. Twine output is suppressed to avoid retaining credential details.
+inspection. Upload errors are rechecked against PyPI before another attempt. The
+procedure omits `--skip-existing` so artifact conflicts remain visible. Twine output
+is suppressed to avoid retaining credential details.
 Missing authentication requires the owner to configure project-scoped credentials
 locally. An uncertain network result requires another inspection before any retry.
 
