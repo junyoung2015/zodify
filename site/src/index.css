@@ -183,21 +183,60 @@ section {
   font-size: 0.75rem;
   color: #b6bed1;
 }
-.example-toolbar a {
+.example-actions {
+  display: flex;
+  gap: 4px;
   margin-left: auto;
+}
+.code-action {
+  position: relative;
+  flex-shrink: 0;
+}
+.code-action[hidden] { display: none; }
+.icon-action {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-}
-.example-toolbar button {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #b6bed1;
   cursor: pointer;
+  text-decoration: none;
+}
+.icon-action:hover, .icon-action:focus-visible {
   background: #29193f;
   color: #f5edff;
-  border: 1px solid #b398df;
-  border-radius: 5px;
-  padding: 8px 12px;
-  min-height: 44px;
 }
+.icon-action:focus-visible { outline-offset: -3px; }
+.action-tooltip {
+  position: absolute;
+  z-index: 3;
+  top: 100%;
+  right: 0;
+  width: max-content;
+  max-width: 240px;
+  padding: 6px 10px;
+  border: 1px solid #ad86ec60;
+  border-radius: 5px;
+  background: #21162f;
+  color: #f5edff;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  visibility: hidden;
+}
+.code-action:hover .action-tooltip,
+.code-action:focus-within .action-tooltip,
+.icon-action[data-state="copied"] + .action-tooltip,
+.icon-action[data-state="error"] + .action-tooltip { visibility: visible; }
+.code-action[data-tooltip-dismissed] .action-tooltip { visibility: hidden; }
+.copied-icon, .error-icon { display: none; }
+[data-state="copied"] .copy-icon, [data-state="error"] .copy-icon { display: none; }
+[data-state="copied"] .copied-icon, [data-state="error"] .error-icon { display: inline-flex; }
+[data-state="copied"] { color: #b6dfc7; }
 pre {
   max-width: 100%;
   margin: 0;
@@ -433,16 +472,6 @@ th:last-child, td:last-child {
 .install-command pre {
   padding: 12px 16px;
   min-width: 0;
-}
-.install-command button {
-  flex-shrink: 0;
-  min-height: 44px;
-  padding: 8px;
-  border: 0;
-  background: transparent;
-  color: #c4a5ff;
-  cursor: pointer;
-  font-size: 0.75rem;
 }
 .demo-note {
   margin: 0;

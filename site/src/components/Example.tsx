@@ -1,3 +1,4 @@
+import { CopyButton, DownloadLink } from "./CodeActions";
 import examples from "../examples.json";
 import { PythonCode } from "./PythonCode";
 
@@ -7,8 +8,10 @@ export function Example({ name }: { name: keyof typeof examples }) {
     <div className="example">
       <div className="example-toolbar">
         <span>Python</span>
-        <button hidden data-copy={name} aria-live="polite">Copy example</button>
-        <a href={`/examples/${name}.py`} download>Download .py</a>
+        <div className="example-actions">
+          <CopyButton name={name} label="Copy example" />
+          <DownloadLink name={name} />
+        </div>
       </div>
       <pre tabIndex={0}><code id={`code-${name}`}><PythonCode>{example.code}</PythonCode></code></pre>
       <div className="example-output">
