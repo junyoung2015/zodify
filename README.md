@@ -18,7 +18,8 @@
 
 
 
-**Version reference:** These instructions describe the **0.8.0** distribution.
+**Version reference:** These instructions describe **0.8.0**, published on PyPI
+and independently verified September 9, 2026.
 The quickstart and core APIs also work with 0.6.0; file loading, canonical details
 and the conservative JSON interfaces require 0.8.0. Check the
 [PyPI version history](https://pypi.org/project/zodify/#history) for actual package

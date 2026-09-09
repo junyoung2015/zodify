@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import configparser
 import email
 import hashlib
 import json
@@ -86,9 +87,40 @@ def remote_files(version):
         with urllib.request.urlopen(f'https://pypi.org/pypi/zodify/{version}/json', timeout=30) as response:
             return json.load(response)['urls']
     except urllib.error.HTTPError as exc:
+        if exc.code != 404:
+            raise
+    # PyPI's version and latest endpoints can become consistent at different times.
+    # Never treat another release's files as evidence for this version.
+    try:
+        with urllib.request.urlopen('https://pypi.org/pypi/zodify/json', timeout=30) as response:
+            latest = json.load(response)
+    except urllib.error.HTTPError as exc:
         if exc.code == 404:
             return []
         raise
+    return latest['urls'] if latest.get('info', {}).get('version') == version else []
+
+
+def upload_environment(config_path=None):
+    """Resolve local pypi credentials without putting them in commands or logs."""
+    environment = os.environ.copy()
+    if all(name in environment for name in ('TWINE_USERNAME', 'TWINE_PASSWORD')):
+        return environment
+    path = Path(config_path) if config_path is not None else Path.home() / '.pypirc'
+    configuration = configparser.ConfigParser(interpolation=None)
+    try:
+        with path.open() as stream:
+            configuration.read_file(stream)
+        if configuration.has_section('pypi'):
+            for name, option in [('TWINE_USERNAME', 'username'), ('TWINE_PASSWORD', 'password')]:
+                if name not in environment and configuration.has_option('pypi', option):
+                    environment[name] = configuration.get('pypi', option)
+    except FileNotFoundError:
+        pass  # Twine may still resolve credentials through keyring.
+    except (OSError, configparser.Error):
+        # Parser errors can include credential-bearing source lines.
+        raise ValueError('cannot read local PyPI credential configuration') from None
+    return environment
 
 
 def compare_remote(manifest, files):
@@ -134,11 +166,12 @@ def upload(directory, approval):
     if state == 'complete':
         verify_published(directory)
         return
-    # Fixed public PyPI endpoint; credentials are resolved by Twine/keyring.
+    # Fixed public PyPI endpoint; config credentials enter only the child environment.
     result = subprocess.run([sys.executable, '-m', 'twine', 'upload', '--non-interactive',
                              '--repository-url', 'https://upload.pypi.org/legacy/',
                              *[str(directory / a['name']) for a in manifest['artifacts']]],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                            env=upload_environment())
     if result.returncode:
         # Reinspect before any retry, including failed/uncertain uploads.
         state = compare_remote(manifest, remote_files(manifest['version']))

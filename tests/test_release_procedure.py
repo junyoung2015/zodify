@@ -123,6 +123,7 @@ def test_upload_outcomes(candidate, monkeypatch, outcome):
         return SimpleNamespace(returncode=1 if outcome.startswith('failed_') else 0)
 
     monkeypatch.setattr(release, 'remote_files', remote)
+    monkeypatch.setattr(release, 'upload_environment', lambda: {})
     monkeypatch.setattr(release.subprocess, 'run', run)
     monkeypatch.setattr(release, 'verify_published', lambda path: verifications.append(path))
     approval = f'publish-zodify-0.8.0-{release.digest(candidate / "manifest.json")}'
@@ -135,3 +136,92 @@ def test_upload_outcomes(candidate, monkeypatch, outcome):
         assert verifications == [candidate]
     assert len(uploads) == (0 if outcome == 'already_complete' else 1)
     assert len(inspections) == (2 if outcome.startswith('failed_') else 1)
+
+
+@pytest.mark.parametrize('latest_version', ['0.8.0', '0.6.0', '0.9.0', None])
+def test_version_404_uses_only_matching_latest_metadata(monkeypatch, latest_version):
+    calls = []
+    files = [{'filename': 'sentinel'}]
+
+    def open_url(url, **kwargs):
+        calls.append(url)
+        if len(calls) == 1:
+            raise release.urllib.error.HTTPError(url, 404, 'Not Found', {}, None)
+        return io.BytesIO(json.dumps({'info': {'version': latest_version}, 'urls': files}).encode())
+
+    monkeypatch.setattr(release.urllib.request, 'urlopen', open_url)
+    assert release.remote_files('0.8.0') == (files if latest_version == '0.8.0' else [])
+    assert calls == ['https://pypi.org/pypi/zodify/0.8.0/json', 'https://pypi.org/pypi/zodify/json']
+
+
+def test_existing_version_endpoint_avoids_latest(monkeypatch):
+    calls = []
+
+    def open_url(url, **kwargs):
+        calls.append(url)
+        return io.BytesIO(b'{"urls": [{"filename": "exact"}]}')
+
+    monkeypatch.setattr(release.urllib.request, 'urlopen', open_url)
+    assert release.remote_files('0.8.0') == [{'filename': 'exact'}]
+    assert len(calls) == 1
+
+
+def test_remote_server_error_never_means_absent(monkeypatch):
+    def open_url(url, **kwargs):
+        raise release.urllib.error.HTTPError(url, 503, 'Unavailable', {}, None)
+    monkeypatch.setattr(release.urllib.request, 'urlopen', open_url)
+    with pytest.raises(release.urllib.error.HTTPError):
+        release.remote_files('0.8.0')
+
+
+@pytest.mark.parametrize('override', [False, True])
+def test_local_credentials_environment_precedence_and_literal_percent(tmp_path, monkeypatch, override):
+    config = tmp_path / '.pypirc'
+    config.write_text('[pypi]\nusername = __token__\npassword = dummy%literal\nrepository = https://invalid.example/\n')
+    monkeypatch.delenv('TWINE_USERNAME', raising=False)
+    monkeypatch.delenv('TWINE_PASSWORD', raising=False)
+    if override:
+        monkeypatch.setenv('TWINE_PASSWORD', 'environment-dummy')
+    environment = release.upload_environment(config)
+    assert environment['TWINE_USERNAME'] == '__token__'
+    assert environment['TWINE_PASSWORD'] == ('environment-dummy' if override else 'dummy%literal')
+    assert 'https://invalid.example/' not in environment.values()
+    assert release.os.environ.get('TWINE_USERNAME') is None
+
+
+def test_credential_parser_failure_does_not_expose_source(tmp_path, monkeypatch):
+    monkeypatch.delenv('TWINE_USERNAME', raising=False)
+    monkeypatch.delenv('TWINE_PASSWORD', raising=False)
+    config = tmp_path / '.pypirc'
+    config.write_text('dummy-secret-in-malformed-config\n')
+    with pytest.raises(ValueError) as error:
+        release.upload_environment(config)
+    assert str(error.value) == 'cannot read local PyPI credential configuration'
+
+
+def test_missing_local_credentials_preserves_keyring_resolution(tmp_path, monkeypatch):
+    monkeypatch.delenv('TWINE_USERNAME', raising=False)
+    monkeypatch.delenv('TWINE_PASSWORD', raising=False)
+    result = release.upload_environment(tmp_path / 'missing')
+    assert 'TWINE_USERNAME' not in result and 'TWINE_PASSWORD' not in result
+
+
+def test_upload_credentials_only_enter_child_environment(candidate, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(release, 'remote_files', lambda version: [])
+    monkeypatch.setattr(release, 'verify_published', lambda directory: None)
+    monkeypatch.setattr(release, 'upload_environment', lambda: {'TWINE_PASSWORD': 'dummy-private-value'})
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append((command, kwargs))
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(release.subprocess, 'run', run)
+    approval = f'publish-zodify-0.8.0-{release.digest(candidate / "manifest.json")}'
+    release.upload(candidate, approval)
+    command, options = calls[0]
+    assert command[command.index('--repository-url') + 1] == 'https://upload.pypi.org/legacy/'
+    assert 'dummy-private-value' not in ' '.join(command)
+    assert options['env']['TWINE_PASSWORD'] == 'dummy-private-value'
+    assert options['stdout'] == options['stderr'] == release.subprocess.DEVNULL

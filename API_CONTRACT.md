@@ -1,6 +1,6 @@
 # Supported API and compatibility contract
 
-This inventory describes the **0.8.0 interface** and the intended
+This inventory describes the published **0.8.0 interface** and the intended
 scope for 1.0 stabilization. It does not announce a stable release. PyPI release
 availability is verified separately from source version numbers.
 
