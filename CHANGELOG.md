@@ -7,9 +7,10 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### 0.8.0 candidate — reconciled September 9, 2026
+## [v0.8.0] - 2026-09-09
 
-Not uploaded to PyPI. Earlier 0.7/0.8 drafts were unshipped development states.
+Published artifacts were independently downloaded and verified. Earlier 0.7/0.8
+drafts were unshipped development states.
 
 - Preserve `.env` file loading with optional shared-engine validation; it does not mutate the environment.
 - Add immutable canonical `ValidationIssue` details alongside compatible legacy errors.
@@ -17,7 +18,8 @@ Not uploaded to PyPI. Earlier 0.7/0.8 drafts were unshipped development states.
 - Correct the unshipped exporter: numeric declarations and default insertion are rejected because their semantics cannot be represented exactly. `to_json_schema` remains a document-returning facade.
 - Preserve trusted default references, dictionary-depth counting, callbacks and existing class-schema syntax.
 - Replace stale artifact tests and misleading comparison claims; enforce local lint, typing, installed-artifact and static HTML checks.
-- Publish complete static documentation for the verified 0.6.0 release; candidate APIs are not advertised as released.
+- Provide complete static documentation, released examples and explicit availability metadata.
+- Disclose the measured cost of canonical diagnostics in the release notes; no compiler or application speedup is claimed.
 
 ## [v0.6.0] - 2026-03-10
 

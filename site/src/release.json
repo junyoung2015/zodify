@@ -1,17 +1,17 @@
 {
-  "version": "0.6.0",
+  "version": "0.8.0",
   "python": ">=3.10",
   "verified": "2026-09-09",
-  "published": "2026-03-11",
+  "published": "2026-09-09",
   "source": "https://pypi.org/pypi/zodify/json",
-  "wheel_sha256": "ee6a453d1afcfdbebf0480be1368e982e90a588732aae7887222112991496b38",
+  "wheel_sha256": "1b3b232be3835ad2a6e6f407185bd9a6be28bcdf63da4339a3933a50af23e85b",
   "license": "MIT",
   "features": {
     "compile": false,
-    "canonical_details": false,
+    "canonical_details": true,
     "reports": false,
-    "validate_json": false,
-    "json_schema_export": false,
-    "load_env": false
+    "validate_json": true,
+    "json_schema_export": true,
+    "load_env": true
   }
 }

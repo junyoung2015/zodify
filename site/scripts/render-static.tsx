@@ -66,7 +66,7 @@ writeFileSync(
 );
 writeFileSync(
   join(dist, "llms.txt"),
-  `# zodify\n\n> Small, predictable validation for plain Python data.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nUnreleased source is not an installation promise. Compilation, canonical details, reports, validate_json, JSON Schema export, and load_env are not in this recorded release.\n\n` +
+  `# zodify\n\n> Small, predictable validation for plain Python data.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Source versions alone do not establish publication.\n\n` +
     routes
       .map((p) => `- [${p.title}](${SITE_ORIGIN + p.path}): ${p.description}`)
       .join("\n") +

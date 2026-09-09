@@ -64,7 +64,7 @@ export const routes: Page[] = [
         "Know the semantics before you rely on them",
         [
           "By default, unknown keys fail validation and bool is not accepted as int. Optional keys and nullable values mean different things. Released defaults are inserted without independent validation or copying.",
-          "Compilation, canonical error details, reports, a JSON input adapter, and JSON Schema export are not available in the release documented here.",
+          "Canonical error details, strict JSON object input, conservative exact JSON Schema export, and .env file loading are available in 0.8.0. Compilation and reports remain unavailable.",
         ],
         undefined,
         [
@@ -85,7 +85,7 @@ export const routes: Page[] = [
         "install",
         "Installation",
         [
-          "Install the released package with pip install zodify==0.6.0. Python 3.10 or later is required.",
+          "Install the released package with pip install zodify==0.8.0. Python 3.10 or later is required.",
         ],
         undefined,
         [["Getting started", "/docs/getting-started/"]],
@@ -163,7 +163,7 @@ export const routes: Page[] = [
         "environment-apis",
         "Environment variables",
         [
-          "The released env(name, cast, default) helper reads process environment variables. A .env file loader is not available in 0.6.0; local development code is not proof of a published feature.",
+          "The env(name, cast, default) helper reads process environment variables. The load_env(path, schema=...) helper parses a .env file without mutating os.environ; with a schema it defaults to coercion and stripping unknown keys. Raw mode returns parsed strings.",
         ],
         undefined,
         [
@@ -184,7 +184,7 @@ export const routes: Page[] = [
         "structured-errors",
         "Structured errors",
         [
-          "ValidationError.issues contains path, message, expected, and got fields. Canonical details are not part of this release.",
+          "ValidationError.issues retains path, message, expected, and got fields. Engine structured errors also expose immutable canonical details with machine codes and typed locations; manually constructed legacy errors can have details=None.",
         ],
         undefined,
         [["Structured error example", "/docs/errors/"]],
@@ -215,7 +215,7 @@ export const routes: Page[] = [
         "install",
         "Install the recorded release",
         [
-          "Run python -m pip install zodify==0.6.0 in a virtual environment. Examples on this site require Python 3.10 or later and no optional packages.",
+          "Run python -m pip install zodify==0.8.0 in a virtual environment. Examples on this site require Python 3.10 or later and no optional packages.",
           "Pass the schema first and data second. Returned dicts contain validated values. Invalid input raises ValueError by default.",
         ],
         "quickstart",
@@ -255,7 +255,7 @@ export const routes: Page[] = [
   page(
     "/docs/types-and-coercion/",
     "Exact types, coercion, and unions",
-    "Understand bool versus int, string conversion, and union order in zodify 0.6.0.",
+    "Understand bool versus int, string conversion, and union order in zodify 0.8.0.",
     [
       section(
         "types",
@@ -300,7 +300,7 @@ export const routes: Page[] = [
         "ownership",
         "Defaults in the released version",
         [
-          "In 0.6.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The executable example deliberately demonstrates an invalid default being inserted; this documents behavior, not a recommended configuration.",
+          "In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The executable example deliberately demonstrates an invalid default being inserted; this documents behavior, not a recommended configuration.",
           "Prefer immutable, type-correct defaults and construct fresh mutable values in application code. A future default policy belongs to a separately released migration; do not assume unreleased source changes apply to an installed package.",
         ],
         undefined,
@@ -320,9 +320,10 @@ export const routes: Page[] = [
         "structured",
         "Choose structured errors explicitly",
         [
-          "The default text mode raises ValueError. error_mode='structured' raises ValidationError, a ValueError subclass with an issues list. Each issue carries a string path, message, expected, and got. These are the released fields; canonical token paths and details are not available here.",
+          "The default text mode raises ValueError. error_mode='structured' raises ValidationError, a ValueError subclass with an issues list. Each issue carries a string path, message, expected, and got. These legacy fields are preserved. Engine errors also expose a separate immutable details tuple of ValidationIssue records with machine codes and typed locations; manual legacy errors and unsupported key locations may have details=None. Mutating issues does not change the canonical snapshot.",
         ],
         "errors",
+        [["Measured diagnostics cost", "/benchmarks/#diagnostics-cost"]],
       ),
       section(
         "privacy",
@@ -441,7 +442,7 @@ export const routes: Page[] = [
         "This is a Python object contract",
         [
           "The standard parser keeps the last duplicate object key and accepts non-finite numeric constants by default. This recipe does not promise duplicate-key rejection, strict JSON-number policy, or JSON Schema equivalence. Set input-size limits before parsing untrusted payloads.",
-          "The int schema rejects a parsed 1.0 because it is a Python float. For a JSON Schema contract, use a JSON Schema validator. A validate_json helper and export API are not in the documented release.",
+          "The int schema rejects a parsed 1.0 because it is a Python float. For a general JSON Schema contract, use a JSON Schema validator. The released zodify.json_io.validate_json helper provides a stricter parsing boundary than this standard-library recipe: it rejects duplicate keys, BOMs, nonfinite values and non-object roots before ordinary validation. zodify.json_schema.export_json_schema exports only the exact supported subset; numeric types, defaults, arbitrary predicates and bare containers are refused. The root to_json_schema facade returns only the document.",
         ],
         undefined,
         [
@@ -463,7 +464,7 @@ export const routes: Page[] = [
         "choice",
         "Choose by the boundary you need",
         [
-          "Zodify 0.6.0 is a fit for small plain-Python dict shapes, zero required runtime dependencies, and an explicit exact-type default. Its limited typing and interoperability surface is a tradeoff.",
+          "Zodify 0.8.0 is a fit for small plain-Python dict shapes, zero required runtime dependencies, and an explicit exact-type default. Its limited typing and interoperability surface is a tradeoff.",
           "Pydantic v2 TypeAdapter validates types without requiring a BaseModel subclass and provides serialization and JSON Schema generation. Consider it when those capabilities or Pydantic-compatible types matter. A model class is not required for every Pydantic task.",
           "For standards-based JSON Schema validation, choose an implementation of the required draft. For a tiny CLI, argparse alone may be enough. Compare your own accepted and rejected inputs before comparing timing.",
         ],
@@ -484,7 +485,7 @@ export const routes: Page[] = [
         "evidence",
         "No universal speed ranking",
         [
-          "This is a capability selection guide, not a timed library comparison. Zodify examples are checked against the installed 0.6.0 wheel. Pydantic capability statements refer to its current v2 documentation, checked September 9, 2026; no competitor timing is claimed.",
+          "This is a capability selection guide, not a timed library comparison. Zodify examples are checked against the installed 0.8.0 wheel. Pydantic capability statements refer to its current v2 documentation, checked September 9, 2026; no competitor timing is claimed.",
           "There are no invented adoption figures, maintenance rankings, or framework affiliations here.",
         ],
         undefined,
@@ -513,6 +514,16 @@ export const routes: Page[] = [
           ],
           ["Choose by capability", "/compare/"],
         ],
+      ),
+      section(
+        "diagnostics-cost",
+        "The cost of canonical diagnostics in 0.8.0",
+        [
+          "Versioned Python 3.12 flat and nested synthetic fixtures compared complete 0.8.0 and 0.6.0 versions on one machine. Structured-mode successful calls increased 36–43% and failed calls 61–64%. Default text-mode successes were approximately unchanged; text-mode failures increased 9–11%. Import median rose from about 2.3 ms to 4.3 ms.",
+          "Typed locations require traversal work and failures retain both canonical records and legacy issues. These measurements describe a diagnostic capability cost, not application-level predictions or a cross-library ranking. No compiler is included.",
+        ],
+        undefined,
+        [["0.8.0 release notes", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.0.md"]],
       ),
       section(
         "protocol",
@@ -575,22 +586,22 @@ export const routes: Page[] = [
     [
       section(
         "released",
-        "Released: 0.6.0",
+        "Released: 0.8.0",
         [
-          "The documented PyPI release provides validate, Optional, Validator, Schema, env, and ValidationError. It supports structured issues, explicit coercion, and reject/strip unknown-key policy.",
+          "The verified 0.8.0 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and adds canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.",
         ],
         undefined,
         [
-          ["PyPI release", "https://pypi.org/project/zodify/0.6.0/"],
+          ["PyPI release", "https://pypi.org/project/zodify/0.8.0/"],
           ["Current reference", "/docs/"],
         ],
       ),
       section(
         "future",
-        "Not released in 0.6.0",
+        "Not released in 0.8.0",
         [
-          "Compilation, canonical error details, reports, validate_json, JSON Schema export, and a .env file loader are not installation promises for this release. Development source and the Strategy v2 design contain future work with separate semantic, evidence, and release gates.",
-          "The local 0.8 development version is unreleased. A version string in a checkout does not show availability on PyPI. Feature documentation will change only after an approved release and installed-wheel verification.",
+          "Compilation and rich reports remain unavailable. Approximate export, native execution and source generation remain outside the current scope; future work requires separate semantic, evidence and release gates.",
+          "Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 remains alpha; publication does not establish a stable 1.0 contract.",
         ],
         undefined,
         [
@@ -610,14 +621,14 @@ export const routes: Page[] = [
     [
       section(
         "release",
-        "0.6.0 — March 11, 2026",
+        "0.8.0 — September 9, 2026",
         [
-          "PyPI records the 0.6.0 wheel and source distribution on March 11, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.",
+          "PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.",
           "The repository changelog includes development changes; its presence does not mean those changes are available from PyPI.",
         ],
         undefined,
         [
-          ["Verified 0.6.0 release", "https://pypi.org/project/zodify/0.6.0/"],
+          ["Verified 0.8.0 release", "https://pypi.org/project/zodify/0.8.0/"],
           [
             "Repository changelog",
             "https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md",
@@ -636,7 +647,7 @@ export const routes: Page[] = [
         "question",
         "The same-looking number can have a different contract",
         [
-          "In zodify 0.6.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.",
+          "In zodify 0.8.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.",
         ],
         "exact-types",
       ),
@@ -645,7 +656,7 @@ export const routes: Page[] = [
         "JSON Schema answers a different question",
         [
           "JSON Schema considers a number with zero fractional part an integer, including 1.0. Python runtime type identity and mathematical integrality are distinct contracts. Translating int directly to a JSON Schema integer constraint does not preserve every acceptance decision.",
-          "This is a semantic limitation, not a performance result. A future exporter must state its supported subset and this mismatch; it must not imply complete equivalence. Use a JSON Schema validator when that standard is the authority for your payload.",
+          "This is a semantic limitation, not a performance result. The 0.8.0 exact exporter refuses numeric declarations because of this mismatch; it does not imply complete equivalence. Use a JSON Schema validator when that standard is the authority for your payload.",
         ],
         undefined,
         [
