@@ -4,12 +4,12 @@ about: Report something that isn't working correctly
 labels: bug
 ---
 
-**zodify version:**
+### zodify version
 
-**Python version:**
+### Python version
 
-**What happened?**
+### What happened?
 
-**What did you expect?**
+### What did you expect?
 
-**Reproduction steps:**
+### Reproduction steps

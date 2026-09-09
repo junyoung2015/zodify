@@ -1,6 +1,6 @@
-import { routes } from "../routes";
 import { SITE_VERSION, REPOSITORY } from "../siteMeta";
-export function Navbar() {
+export function Navbar({ path }: { path: string }) {
+  const docsActive = path.startsWith("/docs/") || path.startsWith("/guides/");
   return (
     <header className="site-header">
       <a className="skip-link" href="#main-content">
@@ -11,13 +11,8 @@ export function Navbar() {
         <span>{SITE_VERSION}</span>
       </a>
       <nav aria-label="Main navigation">
-        {routes
-          .filter((p) => p.nav)
-          .map((p) => (
-            <a key={p.path} href={p.path}>
-              {p.nav}
-            </a>
-          ))}
+        <a href="/docs/" aria-current={docsActive ? (path === "/docs/" ? "page" : "location") : undefined}>Docs</a>
+        <a href="/compare/" aria-current={path === "/compare/" ? "page" : undefined}>Choosing a validator</a>
         <a href={REPOSITORY}>GitHub</a>
       </nav>
     </header>

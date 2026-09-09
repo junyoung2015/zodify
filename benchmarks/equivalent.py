@@ -107,7 +107,7 @@ def main():
                      "gc_enabled": gc.isenabled(), "timer": "perf_counter_ns",
                      "power_settings": "not controlled; local macOS machine"},
         "domain": "plain JSON-like dict/list/str/bool values only; strict; unknown keys rejected; new dict output",
-        "limitations": ["Synthetic workloads, not observed customer reuse.",
+        "limitations": ["Synthetic workloads; application reuse has not been measured.",
                         "No model construction, coercion, numeric subclasses, JSON parsing or diagnostics comparison.",
                         "Warm successful calls exclude schema/adapter construction; setup reported separately.",
                         "Laptop run, no universal ranking; inspect variability across separate process runs."],

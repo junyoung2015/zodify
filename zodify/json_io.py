@@ -16,7 +16,7 @@ class JSONInputError(ValueError):
     """Generic source/root error with no source snippet or decoder exception.
 
     Attributes code, line, and column are safe diagnostic metadata. Python
-    tracebacks can still reference caller locals; this is not logging isolation.
+    tracebacks can still reference caller locals and contain caller data.
     """
 
     def __init__(self, code: str, *, line: int | None = None, column: int | None = None) -> None:

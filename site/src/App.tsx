@@ -1,7 +1,10 @@
 import { Layout } from "./components/Layout";
 import { routes, notFound, type Page } from "./routes";
-import examples from "./examples.json";
-import { release, REPOSITORY } from "./siteMeta";
+import { PageHeader } from "./components/PageHeader";
+import { SectionContent } from "./components/SectionContent";
+import { HomePage } from "./pages/HomePage";
+import { DocsPage } from "./pages/DocsPage";
+import { REPOSITORY } from "./siteMeta";
 export default function App({
   page = routes.find(
     (p) =>
@@ -14,19 +17,9 @@ export default function App({
   page?: Page;
 }) {
   return (
-    <Layout>
-      <article className="content" id="main-content">
-        <p className="eyebrow">PLAIN PYTHON · ZERO RUNTIME DEPS</p>
-        <h1>{page.title}</h1>
-        <p className="lede">{page.description}</p>
-        <aside className="release-note">
-          Docs for{" "}
-          <a href={`https://pypi.org/project/zodify/${release.version}/`}>
-            released zodify {release.version}
-          </a>{" "}
-          · Python {release.python} · Verified {release.verified}.{" "}
-          <a href="/roadmap/">Unreleased features</a>
-        </aside>
+    <Layout path={page.path}>
+      {page.path === "/" ? <HomePage page={page} /> : page.path === "/docs/" ? <DocsPage page={page} /> : <article className="content document-content" id="main-content">
+        <PageHeader page={page} />
         {page.sections.length > 1 && (
           <nav className="toc" aria-label="On this page">
             <strong>On this page</strong>
@@ -39,53 +32,14 @@ export default function App({
             </ul>
           </nav>
         )}
-        {page.sections.map((s) => (
-          <section id={s.id} key={s.id}>
-            <h2>{s.title}</h2>
-            {s.paragraphs.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-            {s.example && (
-              <div className="example">
-                <div className="example-toolbar">
-                  <span>
-                    Python · tested on {examples[s.example].releasedVersion}
-                  </span>
-                  <button hidden data-copy={s.example}>
-                    Copy example
-                  </button>
-                  <a href={`/examples/${s.example}.py`} download>
-                    Download .py
-                  </a>
-                </div>
-                <pre tabIndex={0}>
-                  <code id={`code-${s.example}`}>
-                    {examples[s.example].code}
-                  </code>
-                </pre>
-                <p className="expected">
-                  Expected output: <code>{examples[s.example].expected}</code>
-                </p>
-              </div>
-            )}
-            {s.links && (
-              <ul className="related">
-                {s.links.map(([name, href]) => (
-                  <li key={href}>
-                    <a href={href}>{name} →</a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
+        {page.sections.map((s) => <SectionContent key={s.id} section={s} />)}
         <p className="page-meta">
-          Updated {page.updated} ·{" "}
+          Updated {page.updated} /{" "}
           <a href={`${REPOSITORY}/edit/main/site/src/routes.ts`}>
             Edit this page
           </a>
         </p>
-      </article>
+      </article>}
     </Layout>
   );
 }

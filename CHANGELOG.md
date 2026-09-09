@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+This file records changes to the project.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/).
@@ -19,7 +19,7 @@ drafts were unshipped development states.
 - Preserve trusted default references, dictionary-depth counting, callbacks and existing class-schema syntax.
 - Replace stale artifact tests and misleading comparison claims; enforce local lint, typing, installed-artifact and static HTML checks.
 - Provide complete static documentation, released examples and explicit availability metadata.
-- Disclose the measured cost of canonical diagnostics in the release notes; no compiler or application speedup is claimed.
+- Record the measured cost of canonical diagnostics in the release notes. Compilation remains unavailable; the measurements cover synthetic fixtures.
 
 ## [v0.6.0] - 2026-03-10
 
@@ -27,7 +27,7 @@ drafts were unshipped development states.
 
 - Added the public `Schema` base class for class-based schema definitions while keeping validation on the existing dict engine.
 - Added `zodify/schema.py` as the extracted runtime module for class-based schemas while keeping `ValidatedDict` as an internal runtime carrier.
-- Added comprehensive Schema-vs-dict parity coverage, typing-contract checks, package-artifact checks, and release-gate validation for the public class-based schema surface.
+- Added Schema-vs-dict parity coverage, typing-contract checks, package-artifact checks, and release-gate validation for the public class-based schema surface.
 - Added README `Class-Based Schemas` documentation with side-by-side dict/class examples, nested composition, supported boundaries, and intentional non-goals.
 
 ### Changed
@@ -40,7 +40,7 @@ drafts were unshipped development states.
 ### Added
 
 - Added `Validator` class with reusable default configuration (`coerce`, `max_depth`, `unknown_keys`, `error_mode`) and per-call overrides.
-- Added comprehensive `tests/test_validator_class.py` coverage for defaults, override non-mutation, multi-instance isolation, and parity with bare `validate()`.
+- Added `tests/test_validator_class.py` coverage for defaults, override non-mutation, multi-instance isolation, and parity with bare `validate()`.
 - Added README `Configuration` section documenting `Validator` usage and call-level override patterns while retaining bare `validate()` as the recommended starting point.
 
 ### Changed
@@ -97,7 +97,7 @@ drafts were unshipped development states.
 
 ### Known Limitations
 
-- `Optional` default values are **not type-checked**. `Optional(int, "text")` will use the string default without validation. Verify your defaults match the expected type.
+- `Optional` default values are not type-checked. `Optional(int, "text")` will use the string default without validation. Verify your defaults match the expected type.
 - When `coerce=True` with target type `str`, any value is accepted via Python's `str()` builtin (e.g., `str(None)` becomes `"None"`). Non-string targets require string input for coercion.
 
 ## [v0.2.0] - 2026-02-27
