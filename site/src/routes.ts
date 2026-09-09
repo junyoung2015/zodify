@@ -5,6 +5,8 @@ export type Section = {
   title: string;
   paragraphs: string[];
   example?: keyof typeof examples;
+  command?: string;
+  table?: { headers: string[]; rows: string[][] };
   links?: [string, string][];
 };
 export type Page = {
@@ -33,46 +35,50 @@ export const routes: Page[] = [
   page(
     "/",
     "Validate Python dictionaries. Keep them dictionaries.",
-    "Describe the data you expect with ordinary Python types. Validate configuration and script inputs with zero required runtime dependencies.",
+    "Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies.",
     [
       section(
         "start",
-        "Two dicts. One useful boundary.",
-        [
-          "Describe the shape with ordinary Python types, then validate the data you receive. A model framework or builder API is not required. Zodify is Zod-inspired, with its own Python semantics and deliberately limited scope.",
-        ],
+        "Your first validation",
+        [],
         "first-validation",
-        [
-          ["Read the getting-started guide", "/docs/getting-started/"],
-          ["Choose the right validator", "/compare/"],
-        ],
       ),
-      section(
+      { ...section(
         "fit",
-        "A small tool for small data boundaries",
+        "Is zodify a fit?",
         [
-          "Use zodify for configuration dicts, automation scripts, and straightforward Python object validation. Required keys, exact types, nested shapes, and explicit coercion keep decisions visible.",
-          "Choose a broader tool when you need extensive typing support, framework integrations, serialization, recursive models, or a JSON Schema implementation. See the selection guide for the appropriate Pydantic TypeAdapter API.",
+          "Use it when you have a Python dict and want a readable, reusable check. Start with ordinary types; add nested shapes, optional keys, or explicit conversions when you need them.",
         ],
         undefined,
         [
-          ["Validate configuration", "/guides/config-validation/"],
-          ["Validate CLI input", "/guides/cli-input-validation/"],
-          ["Validate a JSON object", "/guides/json-object-validation/"],
+          ["Choosing a validator", "/compare/"],
         ],
+      ), table: {
+        headers: ["Try zodify when…", "Another approach may fit when…"],
+        rows: [
+          ["You want reusable checks for dictionaries.", "A few direct Python checks already solve the task."],
+          ["You validate configuration or script inputs.", "Your framework already handles validation."],
+          ["Zero required runtime dependencies matter.", "You need broader typing, models, or serialization."],
+        ],
+      } },
+      section(
+        "invalid-input",
+        "See what needs fixing",
+        ["An invalid field raises an error with its path. Here, port needs an int, but the input contains a string. Pass an integer, or choose coerce=True when string conversion is intended."],
+        "invalid-input",
+        [["Types and conversion", "/docs/types-and-coercion/"]],
       ),
       section(
         "boundaries",
-        "Know the semantics before you rely on them",
+        "A few defaults to know",
         [
-          "By default, unknown keys fail validation and bool is not accepted as int. Optional keys and nullable values mean different things. Released defaults are inserted without independent validation or copying.",
-          "Canonical error details, strict JSON object input, conservative exact JSON Schema export, and .env file loading are available in 0.8.0. Compilation and reports remain unavailable.",
+          "Types are strict and extra keys are rejected. Optional keys and nullable values are separate choices. Defaults are trusted: they are inserted without validation or copying, so mutable defaults can be shared.",
+          "Plain dict schemas return dicts. Optional class declarations add attribute access when it is useful; you do not need them to get started.",
         ],
         undefined,
         [
-          ["Types and coercion", "/docs/types-and-coercion/"],
           ["Defaults and ownership", "/docs/optional-and-defaults/"],
-          ["Released versus planned", "/roadmap/"],
+          ["Optional class syntax", "/docs/class-schemas/"],
         ],
       ),
     ],
@@ -81,24 +87,24 @@ export const routes: Page[] = [
   page(
     "/docs/",
     "Documentation",
-    "Released API documentation and task guides, with stable links for existing zodify documentation.",
+    "Start with one dict, follow a task guide, or look up a specific validation rule.",
     [
-      section(
+      { ...section(
         "install",
         "Installation",
         [
-          "Install the released package with pip install zodify==0.8.0. Python 3.10 or later is required.",
+          "No extra packages required.",
         ],
         undefined,
-        [["Getting started", "/docs/getting-started/"]],
-      ),
+        [["Follow the getting-started guide", "/docs/getting-started/"]],
+      ), command: "pip install zodify" },
       section(
         "basic-validation",
         "Basic validation",
         [
-          "Pass a schema dict and a data dict to validate(). Exact types and unknown-key rejection are the defaults.",
+          "Pass the schema first, data second. Types are strict; extra keys are rejected.",
         ],
-        "quickstart",
+        "first-validation",
         [["First validation", "/docs/getting-started/"]],
       ),
       section(
@@ -193,16 +199,15 @@ export const routes: Page[] = [
       ),
       section(
         "faq",
-        "Which guide should I read?",
+        "Task guides",
         [
-          "Start from the boundary you need to validate. Every downloadable Python example is checked against the recorded PyPI release.",
+          "Choose the input you are working with. Each guide includes a complete example and explains its limits.",
         ],
         undefined,
         [
           ["Configuration", "/guides/config-validation/"],
           ["Command-line input", "/guides/cli-input-validation/"],
           ["JSON objects", "/guides/json-object-validation/"],
-          ["Choosing a validator", "/compare/"],
         ],
       ),
     ],
@@ -213,13 +218,17 @@ export const routes: Page[] = [
     "Getting started",
     "Install zodify and validate your first Python dict, including a useful failure.",
     [
-      section(
+      { ...section(
         "install",
-        "Install the recorded release",
+        "Install zodify",
         [
-          "Run python -m pip install zodify==0.8.0 in a virtual environment. Examples on this site require Python 3.10 or later and no optional packages.",
-          "Pass the schema first and data second. Returned dicts contain validated values. Invalid input raises ValueError by default.",
+          "Use a virtual environment with Python 3.10 or later. Pin 0.8.0 to run the same release as these examples.",
         ],
+      ), command: "python -m pip install zodify==0.8.0" },
+      section(
+        "validate",
+        "Validate a dict and read the result",
+        ["Pass the schema first and the data second. Valid input returns a dict; invalid input raises ValueError. This example prints both the successful result and the error for a string where an int is expected."],
         "quickstart",
         [
           ["Schema grammar", "/docs/schemas/"],
@@ -462,13 +471,11 @@ export const routes: Page[] = [
     "Choosing a Python validator",
     "A task-based choice between small dict validation and broader validation tools.",
     [
-      section(
+      { ...section(
         "choice",
-        "Choose by the boundary you need",
+        "Start with the task",
         [
-          "Zodify 0.8.0 is a fit for small plain-Python dict shapes, zero required runtime dependencies, and an explicit exact-type default. Its limited typing and interoperability surface is a tradeoff.",
-          "Pydantic v2 TypeAdapter validates types without requiring a BaseModel subclass and provides serialization and JSON Schema generation. Consider it when those capabilities or Pydantic-compatible types matter. A model class is not required for every Pydantic task.",
-          "For standards-based JSON Schema validation, choose an implementation of the required draft. For a tiny CLI, argparse alone may be enough. Compare your own accepted and rejected inputs before comparing timing.",
+          "Choose the smallest approach that covers your data and integration needs. Zodify is deliberately limited; adding a library is not always necessary.",
         ],
         undefined,
         [
@@ -482,13 +489,20 @@ export const routes: Page[] = [
           ],
           ["Benchmark methodology", "/benchmarks/"],
         ],
-      ),
+      ), table: {
+        headers: ["What you need", "A useful starting point"],
+        rows: [
+          ["A handful of checks in one place", "Direct Python checks; argparse type or choices for simple CLI arguments."],
+          ["Reusable plain-dict validation with zero required runtime dependencies", "Zodify: strict types by default, optional conversion, dict-shaped results."],
+          ["Broader typing, serialization, or framework integration", "Pydantic. TypeAdapter validates ordinary types without requiring a BaseModel subclass."],
+          ["Validation against a JSON Schema document", "A JSON Schema validator that supports the required draft. Zodify exports only a narrow exact subset."],
+        ],
+      } },
       section(
         "evidence",
-        "No universal speed ranking",
+        "Try it with your own data",
         [
-          "This is a capability selection guide, not a timed library comparison. Zodify examples are checked against the installed 0.8.0 wheel. Pydantic capability statements refer to its current v2 documentation, checked September 9, 2026; no competitor timing is claimed.",
-          "There are no invented adoption figures, maintenance rankings, or framework affiliations here.",
+          "Check both accepted and rejected inputs, the output shape, and how errors fit your application. If performance matters, measure that workload with equivalent behavior; the benchmark guide explains how.",
         ],
         undefined,
         [["Try a complete example", "/docs/getting-started/"]],
@@ -611,8 +625,8 @@ export const routes: Page[] = [
           ["Changelog", "/changelog/"],
         ],
       ),
-      section("limits", "Directions outside the initial scope", [
-        "No hosted AI assistant, account system, paid documentation service, browser Python runtime, or recursive model framework is part of this website. Static search can be considered when navigation becomes insufficient.",
+      section("limits", "Deliberately small scope", [
+        "Zodify focuses on ordinary Python data. It is not a recursive model framework or a general JSON Schema validator. Choose a broader tool when those are requirements for your application.",
       ]),
     ],
   ),

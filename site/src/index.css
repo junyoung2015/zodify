@@ -16,6 +16,13 @@
 body {
   margin: 0;
 }
+::selection {
+  background: #c4a5ff;
+  color: #170e27;
+}
+* {
+  scrollbar-color: #75628f #0d0b19;
+}
 a {
   color: #c4a5ff;
   text-underline-offset: 4px;
@@ -25,7 +32,8 @@ a:hover {
 }
 a:focus-visible,
 button:focus-visible,
-pre:focus-visible {
+pre:focus-visible,
+.table-scroll:focus-visible {
   outline: 3px solid #d9baff;
   outline-offset: 5px;
 }
@@ -34,13 +42,14 @@ button {
 }
 h1,
 h2,
+h3,
 strong {
   color: #fff;
 }
 h1 {
   font-size: clamp(2.5rem, 6vw, 4.6rem);
   line-height: 1.08;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.03em;
   margin: 20px 0 24px;
   max-width: 950px;
   font-weight: 750;
@@ -52,8 +61,14 @@ h2 {
   margin: 0 0 20px;
   font-weight: 650;
 }
+h3 {
+  font-size: 1.125rem;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  font-weight: 650;
+}
 p {
-  line-height: 1.8;
+  line-height: 1.7;
   margin: 0 0 20px;
 }
 .site-shell {
@@ -67,7 +82,7 @@ p {
 .site-footer {
   max-width: 1180px;
   margin: auto;
-  padding: 26px 32px;
+  padding: 20px 32px;
 }
 .site-header {
   display: flex;
@@ -81,7 +96,7 @@ p {
   font-weight: 800;
   text-decoration: none;
   color: white;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.03em;
 }
 .brand span {
   font-size: 0.7rem;
@@ -97,36 +112,36 @@ p {
   font-size: 0.875rem;
 }
 .site-header nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
+}
+.site-header nav a[aria-current] {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+.site-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .content {
   max-width: 960px;
   margin: auto;
   padding: 64px 32px 80px;
 }
-.eyebrow {
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  color: #c4a5ff;
-}
 .lede {
   font-size: 1.2rem;
   color: #b6bed1;
   max-width: 740px;
 }
-.release-note {
-  padding: 16px 20px;
-  border-left: 3px solid #a855f7;
-  background: #a855f711;
-  font-size: 0.85rem;
-  line-height: 1.8;
-  margin: 30px 0 40px;
-}
 .toc {
-  border: 1px solid #ffffff20;
-  border-radius: 10px;
-  padding: 22px 26px;
-  margin: 0 0 50px;
+  border-bottom: 1px solid #ffffff20;
+  padding: 0 0 20px;
+  margin: 0 0 32px;
 }
 .toc ul {
   display: flex;
@@ -163,13 +178,16 @@ section {
   align-items: center;
   flex-wrap: wrap;
   gap: 18px;
-  padding: 14px 20px;
+  padding: 4px 16px;
   border-bottom: 1px solid #ffffff15;
   font-size: 0.75rem;
   color: #b6bed1;
 }
 .example-toolbar a {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .example-toolbar button {
   cursor: pointer;
@@ -177,7 +195,8 @@ section {
   color: #f5edff;
   border: 1px solid #b398df;
   border-radius: 5px;
-  padding: 4px 9px;
+  padding: 8px 12px;
+  min-height: 44px;
 }
 pre {
   max-width: 100%;
@@ -191,12 +210,139 @@ pre {
 code {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
-.expected {
-  padding: 12px 20px;
-  margin: 0;
+.example-output {
+  padding: 12px 16px;
   border-top: 1px solid #ffffff15;
   font-size: 0.75rem;
   color: #b6bed1;
+}
+.example-output pre {
+  padding: 8px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #e2e8f0;
+}
+.syntax-keyword { color: #d9baff; }
+.syntax-string { color: #b6dfc7; }
+.syntax-function { color: #a9d5ff; }
+.syntax-comment { color: #a9b2c9; }
+.document-content {
+  max-width: calc(72ch + 64px);
+  padding-top: 40px;
+}
+.page-header {
+  margin-bottom: 32px;
+}
+.page-header h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.page-header .lede {
+  font-size: 1.0625rem;
+  max-width: 70ch;
+  margin-bottom: 12px;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8125rem;
+  color: #b6bed1;
+  margin: 0 0 16px;
+}
+.breadcrumb a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.docs-index {
+  max-width: 1180px;
+  padding-top: 40px;
+}
+.docs-index .page-header {
+  margin-bottom: 20px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.docs-paths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ffffff20;
+}
+.docs-paths a {
+  padding: 12px 0;
+}
+.docs-start {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 40px;
+}
+.docs-start section {
+  margin: 0;
+  min-width: 0;
+}
+.docs-start .example {
+  margin-bottom: 0;
+}
+.docs-start .related {
+  margin: 12px 0;
+}
+.reference-index {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 48px;
+  margin-top: 32px;
+}
+.reference-index section {
+  border-top: 1px solid #ffffff20;
+  padding-top: 20px;
+  margin: 0;
+}
+.reference-index p {
+  font-size: 0.9375rem;
+  margin-bottom: 12px;
+}
+.reference-index .related {
+  margin: 12px 0 0;
+}
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 24px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 16px;
+  border-bottom: 1px solid #ffffff20;
+}
+thead th {
+  color: #fff;
+  font-weight: 650;
+}
+tbody th {
+  font-weight: 400;
+}
+th:first-child, td:first-child {
+  padding-left: 0;
+}
+th:last-child, td:last-child {
+  padding-right: 0;
 }
 .page-meta,
 .site-footer {
@@ -271,6 +417,9 @@ code {
 .home-demo .example {
   margin: 16px 0 12px;
 }
+.home-demo pre {
+  line-height: 1.65;
+}
 .install-command {
   display: flex;
   align-items: center;
@@ -307,6 +456,10 @@ code {
     gap: 32px;
     margin-bottom: 56px;
   }
+  .docs-start {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
   .home-intro h1 {
     max-width: 20ch;
   }
@@ -318,7 +471,7 @@ code {
   .site-header {
     align-items: flex-start;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
   }
   .site-header,
   .site-footer {
@@ -331,6 +484,9 @@ code {
   .home-content {
     padding-top: 32px;
   }
+  .docs-index {
+    padding-top: 24px;
+  }
   .home-hero {
     gap: 24px;
   }
@@ -338,7 +494,10 @@ code {
     margin-bottom: 16px;
   }
   .site-header nav {
-    gap: 12px 18px;
+    gap: 4px 18px;
+  }
+  .reference-index {
+    grid-template-columns: minmax(0, 1fr);
   }
   pre {
     padding: 16px;
