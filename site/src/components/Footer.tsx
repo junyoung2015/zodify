@@ -4,6 +4,9 @@ export function Footer() {
       <p>zodify: validation for Python dictionaries.</p>
       <nav aria-label="Footer">
         <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/llms.txt">Agent guide</a>
         <a href="/benchmarks/">Benchmarks</a>
         <a href="/roadmap/">Roadmap</a>
         <a href="/changelog/">Changelog</a>

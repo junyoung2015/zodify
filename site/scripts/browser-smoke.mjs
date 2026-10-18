@@ -16,6 +16,8 @@ for (const path of [
   "/guides/json-object-validation/",
   "/benchmarks/",
   "/about/",
+  "/contact/",
+  "/privacy/",
 ]) {
   const response = await page.goto(origin + path);
   assert.equal(response.status(), 200);

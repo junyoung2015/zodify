@@ -595,6 +595,39 @@ export const routes: Page[] = [
     ],
     "About",
   ),
+  { ...page(
+    "/contact/",
+    "Contact zodify",
+    "Project questions, bug reports, documentation corrections, and private security reporting.",
+    [
+      section("questions", "Questions and ordinary bugs", [
+        "Use the project's GitHub Issues for usage questions, reproducible bugs, and documentation corrections. Search existing issues first. Include the installed zodify version, Python version, the API you called, a minimal example with synthetic data, the result you expected, and what happened. GitHub sign-in is required to create an issue.",
+        "The project is maintained by Jun Young Sohn. Reports are reviewed as maintainer time allows; no response deadline or guaranteed fix is promised. This documentation site has no contact form or support account system. Public GitHub issues are visible to other people, so remove credentials, API keys, personal data, and sensitive error messages before posting.",
+      ], undefined, [["Search or create a GitHub issue", "https://github.com/junyoung2015/zodify/issues"]]),
+      section("security", "Report suspected vulnerabilities privately", [
+        "Use the repository's private vulnerability report form for suspected security problems. Do not disclose exploit details or secrets in public issues. The security policy describes what to include and the maintained release boundary. GitHub sign-in is required for private reports.",
+      ], undefined, [
+        ["Private vulnerability report", "https://github.com/junyoung2015/zodify/security/advisories/new"],
+        ["Security policy", "https://github.com/junyoung2015/zodify/blob/main/SECURITY.md"],
+        ["About the project", "/about/"],
+      ]),
+    ],
+  ), updated: "2026-10-18" },
+  { ...page(
+    "/privacy/",
+    "Privacy and local validation",
+    "What the static documentation frontend does, where hosting policies apply, and how to handle sensitive validation errors.",
+    [
+      section("website", "Documentation frontend", [
+        "This website serves static documentation from GitHub Pages. Its shipped frontend contains no analytics scripts, advertising pixels, contact forms, account sign-in, or code that stores data in cookies or browser storage. Pages and examples are readable without JavaScript. The optional local enhancement copies the displayed command or example to your clipboard when you press its copy button; it does not send clipboard contents to a validation service.",
+        "Hosting requests still go to GitHub Pages. GitHub documents that Pages logs and stores visitor IP addresses for security, whether or not visitors are signed in. GitHub's own privacy statement governs its processing of hosting requests and any GitHub pages you choose to visit. This description of the frontend is not a promise that a hosting provider keeps no access logs. PyPI, GitHub Issues, and other linked websites have their own policies and may require accounts.",
+      ], undefined, [["GitHub Pages hosting and IP logging", "https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages"], ["GitHub privacy statement", "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"]]),
+      section("library", "Your Python application controls its data", [
+        "The examples call the installed zodify Python library in your own process; this website does not provide a hosted validation endpoint or upload form. Your application decides where its input, results, and logs are stored or sent. Review that application and any callbacks before processing sensitive data.",
+        "Validation errors may contain original strings from coercion failures or messages from custom callbacks. Avoid posting or logging secrets and personal data in full errors. Use synthetic values when reporting bugs, and use the private reporting route for suspected vulnerabilities.",
+      ], undefined, [["Error handling and privacy", "/docs/errors/"], ["Contact and security reporting", "/contact/"]]),
+    ],
+  ), updated: "2026-10-18" },
   page(
     "/roadmap/",
     "Released, planned, and experimental",
