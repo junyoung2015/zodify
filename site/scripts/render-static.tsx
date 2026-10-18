@@ -4,7 +4,6 @@ import {
   readFileSync,
   writeFileSync,
   mkdirSync,
-  existsSync,
   readdirSync,
   rmSync,
 } from "node:fs";
@@ -13,6 +12,7 @@ import App from "../src/App";
 import { routes, notFound } from "../src/routes";
 import { release, SITE_ORIGIN, REPOSITORY } from "../src/siteMeta";
 import examples from "../src/examples.json";
+import { markdownPath, renderMarkdown, renderAgentGuide } from "./content-resources";
 const dist = join(process.cwd(), "dist");
 const base = readFileSync(join(dist, "index.html"), "utf8");
 const css = [...base.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)]
@@ -24,8 +24,23 @@ const escape = (s: string) =>
 for (const page of [...routes, notFound]) {
   const canonical = SITE_ORIGIN + page.path;
   const title = page.title + " | zodify";
-  const project = {
+  const identity = {
     "@context": "https://schema.org",
+    "@graph": [{
+    "@type": "SoftwareApplication",
+    "@id": SITE_ORIGIN + "/#software",
+    name: "zodify",
+    description: routes[0].description,
+    url: SITE_ORIGIN + "/",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "OS Independent",
+    softwareVersion: release.version,
+    runtimePlatform: "Python " + release.python,
+    license: "https://opensource.org/licenses/MIT",
+    downloadUrl: `https://pypi.org/project/zodify/${release.version}/`,
+    sameAs: [REPOSITORY, "https://pypi.org/project/zodify/"],
+    author: { "@type": "Person", name: "Jun Young Sohn" },
+  }, {
     "@type": "SoftwareSourceCode",
     "@id": SITE_ORIGIN + "/#project",
     name: "zodify",
@@ -35,8 +50,10 @@ for (const page of [...routes, notFound]) {
     license: "https://opensource.org/licenses/MIT",
     version: release.version,
     description: routes[0].description,
+    targetProduct: { "@id": SITE_ORIGIN + "/#software" },
+  }],
   };
-  const head = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escape(title)}</title><meta name="description" content="${escape(page.description)}">${page === notFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${canonical}">`}<meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${canonical}"><meta name="twitter:card" content="summary"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">${css}<script type="application/ld+json">${JSON.stringify(project).replace(/</g, "\u003c")}</script>`;
+  const head = `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escape(title)}</title><meta name="description" content="${escape(page.description)}">${page === notFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${canonical}">`}<meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(page.description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${SITE_ORIGIN}/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="zodify: validation for Python dictionaries"><link rel="describedby" href="/llms.txt" type="text/plain"><link rel="alternate" type="text/markdown" href="${SITE_ORIGIN + markdownPath(page)}"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">${css}<script type="application/ld+json">${JSON.stringify(identity).replace(/</g, "\u003c")}</script>`;
   const html = `<!doctype html><html lang="en"><head>${head}</head><body>${renderToStaticMarkup(<App page={page} />)}<script src="/enhance.js" defer></script></body></html>`;
   const file = join(
     dist,
@@ -45,6 +62,7 @@ for (const page of [...routes, notFound]) {
   );
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
+  writeFileSync(join(dist, markdownPath(page).slice(1)), renderMarkdown(page));
 }
 mkdirSync(join(dist, "examples"), { recursive: true });
 for (const [name, example] of Object.entries(examples))
@@ -64,17 +82,9 @@ writeFileSync(
       .join("") +
     "</urlset>\n",
 );
-writeFileSync(
-  join(dist, "llms.txt"),
-  `# zodify\n\n> Validation for Python dictionaries.\n\nReleased version: ${release.version}; Python ${release.python}; verified ${release.verified}. Zero required runtime dependencies. MIT license.\n\nVersion 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Check PyPI for published versions.\n\n` +
-    routes
-      .map((p) => `- [${p.title}](${SITE_ORIGIN + p.path}): ${p.description}`)
-      .join("\n") +
-    "\n",
-);
-// Do not ship the retired marketing images or unused app bundle.
-for (const file of ["og-image.png", "og-image.svg"])
-  if (existsSync(join(dist, file))) rmSync(join(dist, file));
+writeFileSync(join(dist, "llms.txt"), renderAgentGuide(routes));
+writeFileSync(join(dist, "llms-full.txt"), renderAgentGuide(routes) + "\n---\n\n" + routes.map(renderMarkdown).join("\n---\n\n"));
+// Do not ship the unused app bundle.
 for (const file of readdirSync(join(dist, "assets")))
   if (file.endsWith(".js")) rmSync(join(dist, "assets", file));
 writeFileSync(join(dist, ".nojekyll"), "");
