@@ -35,7 +35,8 @@ for (const page of routes) {
   const source = structured["@graph"].find((entity: Record<string, unknown>) => entity["@type"] === "SoftwareSourceCode");
   assert.equal(application.name, "zodify");
   assert.equal(application.softwareVersion, release.version);
-  assert.equal(application.downloadUrl, `https://pypi.org/project/zodify/${release.version}/`);
+  assert.equal(application.installUrl, `https://pypi.org/project/zodify/${release.version}/`);
+  assert(!("downloadUrl" in application));
   assert.equal(source.targetProduct["@id"], application["@id"]);
   assert(!structured["@graph"].some((entity: Record<string, unknown>) => entity["@type"] === "Organization"));
   assert(html.includes(`<meta property="og:image" content="${SITE_ORIGIN}/og-image.png">`));

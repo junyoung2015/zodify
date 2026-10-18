@@ -38,7 +38,7 @@ for (const page of [...routes, notFound]) {
         softwareVersion: release.version,
         runtimePlatform: "Python " + release.python,
         license: "https://opensource.org/licenses/MIT",
-        downloadUrl: `https://pypi.org/project/zodify/${release.version}/`,
+        installUrl: `https://pypi.org/project/zodify/${release.version}/`,
         sameAs: [REPOSITORY, "https://pypi.org/project/zodify/"],
         author: { "@type": "Person", name: "Jun Young Sohn" },
       },
