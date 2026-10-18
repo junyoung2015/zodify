@@ -18,6 +18,7 @@ for (const path of [
   "/about/",
   "/contact/",
   "/privacy/",
+  "/articles/python-314-class-annotations/",
 ]) {
   const response = await page.goto(origin + path);
   assert.equal(response.status(), 200);
@@ -54,6 +55,21 @@ assert.equal(
 );
 await page.screenshot({
   path: "output/playwright/site-json-mobile.png",
+  fullPage: true,
+});
+await page.goto(origin + "/articles/python-314-class-annotations/#execution");
+assert(await page.locator("#execution").isVisible());
+assert.equal(await page.locator(".example").count(), 3);
+assert.equal(
+  await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  true,
+);
+for (const id of ["annotation-namespace", "annotation-release-comparison", "annotation-execution"]) {
+  assert(await page.locator(`#code-${id}`).isVisible());
+  assert(await page.locator(`a[href="/examples/${id}.py"]`).isVisible());
+}
+await page.screenshot({
+  path: "output/playwright/site-annotations-mobile.png",
   fullPage: true,
 });
 const missing = await page.goto(origin + "/this-route-should-not-exist/");
