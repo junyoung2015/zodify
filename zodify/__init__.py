@@ -6,7 +6,7 @@ from typing import Any, Literal, TypeVar, cast as typing_cast, overload
 
 from ._issues import ValidationIssue, _IssueList, _Location, _child_loc, _record_issue
 
-__version__: str = "0.8.0"
+__version__: str = "0.8.1"
 __all__ = ["__version__", "validate", "env", "load_env", "Validator", "Optional", "ValidationError", "ValidationIssue", "Schema", "to_json_schema"]
 
 _MISSING: object = object()
