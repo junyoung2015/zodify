@@ -4,7 +4,7 @@ Parse JSON with the standard library, enforce an object root, then validate Pyth
 
 HTML: https://zodify.dev/guides/json-object-validation/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Parsing and validation are separate steps
 

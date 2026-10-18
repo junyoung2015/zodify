@@ -1,10 +1,10 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "python": ">=3.10",
-  "verified": "2026-09-09",
-  "published": "2026-09-09",
+  "verified": "2026-10-18",
+  "published": "2026-10-18",
   "source": "https://pypi.org/pypi/zodify/json",
-  "wheel_sha256": "1b3b232be3835ad2a6e6f407185bd9a6be28bcdf63da4339a3933a50af23e85b",
+  "wheel_sha256": "4e118c65b2dd144b745530795853307098c4f57002c6e57dc57fa6734c3c58a6",
   "license": "MIT",
   "features": {
     "compile": false,

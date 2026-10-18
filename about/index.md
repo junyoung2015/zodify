@@ -4,7 +4,7 @@ The project's origin, author, and scope.
 
 HTML: https://zodify.dev/about/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## A validator for a small script
 

@@ -4,7 +4,7 @@ The released dict, list, union, and callable schema grammar.
 
 HTML: https://zodify.dev/docs/schemas/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Describe a shape with Python values
 

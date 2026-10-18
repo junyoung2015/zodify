@@ -4,14 +4,14 @@ Install zodify, validate a dict, and handle a validation error.
 
 HTML: https://zodify.dev/docs/getting-started/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Install zodify
 
-Use a virtual environment with Python 3.10 or later. Pin 0.8.0 to run the same release as these examples.
+Use a virtual environment with supported Python 3.10–3.13. Pin 0.8.1 to run the same release as these examples.
 
 ```sh
-python -m pip install zodify==0.8.0
+python -m pip install zodify==0.8.1
 ```
 
 ## Validate a dict and read the result
@@ -42,4 +42,4 @@ ValueError: age: expected int, got str
 - [Schema grammar](https://zodify.dev/docs/schemas/)
 - [Structured errors](https://zodify.dev/docs/errors/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).

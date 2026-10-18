@@ -4,7 +4,7 @@ Distinguish optional keys from nullable values and understand released default o
 
 HTML: https://zodify.dev/docs/optional-and-defaults/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Missing and None are different inputs
 
@@ -44,11 +44,11 @@ ValueError: name: missing required key
 
 ## Defaults in the released version
 
-In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.
+In 0.8.1, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.
 
 Prefer immutable, type-correct defaults and construct fresh mutable values in application code. Check the compatibility notes for the installed release before changing a default policy.
 
 - [Roadmap](https://zodify.dev/roadmap/)
 - [Schema containers](https://zodify.dev/docs/schemas/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).

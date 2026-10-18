@@ -4,7 +4,7 @@ Use Schema for attribute access while keeping the released syntax limits visible
 
 HTML: https://zodify.dev/docs/class-schemas/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Declare fields with Schema
 
@@ -37,7 +37,9 @@ Do not assume arbitrary postponed annotations, forward references, recursive mod
 
 Validator stores reusable validation options. Schema compilation and caching are unavailable in this release.
 
+Version 0.8.1 fixes field discovery under Python 3.14 deferred annotations and evaluates supported annotation expressions at class definition. Fresh PyPI wheel checks passed on macOS CPython 3.14.6. The declared support range remains Python 3.10–3.13; this specific check does not establish broader Python 3.14 support. Unresolved names and unsupported string or postponed annotations still fail at class definition.
+
 - [Dict schema reference](https://zodify.dev/docs/schemas/)
 - [Choosing a broader model tool](https://zodify.dev/compare/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).

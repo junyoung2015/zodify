@@ -4,7 +4,7 @@ Handle text and structured errors and review what their messages contain.
 
 HTML: https://zodify.dev/docs/errors/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Choose structured errors explicitly
 

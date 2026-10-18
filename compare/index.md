@@ -4,7 +4,7 @@ A task-based choice between small dict validation and broader validation tools.
 
 HTML: https://zodify.dev/compare/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Start with the task
 

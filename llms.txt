@@ -2,7 +2,7 @@
 
 > Validation for Python dictionaries using ordinary Python types.
 
-Released version: 0.8.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
+Released version: 0.8.1; Python >=3.10; verified 2026-10-18. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
 
 **When to use zodify.**
 
@@ -10,7 +10,7 @@ Use zodify inside Python scripts to validate configuration dictionaries, parsed 
 
 **How to call zodify.**
 
-Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.0`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
+Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.1`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
 
 `validate` returns a validated dict for dict schemas. Invalid data raises ValueError by default; `error_mode="structured"` raises ValidationError. Types are exact by default, unknown keys are rejected, and `coerce=True` opts into conversion. Defaults are trusted, inserted without validation or copying, and can be shared. The default max_depth is 32. Review error text before logging it because coercion and callback messages can include sensitive input.
 
@@ -28,7 +28,7 @@ except ValueError as error:
     print(f"ValueError: {error}")
 ```
 
-Version 0.8.0 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
+Version 0.8.1 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
 
 The HTML pages work without JavaScript. Each page has an explicit static Markdown counterpart at its path plus `index.md`, for example /docs/index.md. These downloads do not provide Accept-header negotiation. A consolidated snapshot is available at [llms-full.txt](https://zodify.dev/llms-full.txt).
 
@@ -38,7 +38,7 @@ The HTML pages work without JavaScript. Each page has an explicit static Markdow
 - [Documentation](https://zodify.dev/docs/): Start with one dict, follow a task guide, or look up a specific validation rule. [Markdown](https://zodify.dev/docs/index.md)
 - [Getting started](https://zodify.dev/docs/getting-started/): Install zodify, validate a dict, and handle a validation error. [Markdown](https://zodify.dev/docs/getting-started/index.md)
 - [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar. [Markdown](https://zodify.dev/docs/schemas/index.md)
-- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.0. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
+- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.1. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
 - [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership. [Markdown](https://zodify.dev/docs/optional-and-defaults/index.md)
 - [Errors and privacy](https://zodify.dev/docs/errors/): Handle text and structured errors and review what their messages contain. [Markdown](https://zodify.dev/docs/errors/index.md)
 - [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible. [Markdown](https://zodify.dev/docs/class-schemas/index.md)
@@ -56,7 +56,7 @@ The HTML pages work without JavaScript. Each page has an explicit static Markdow
 
 ## Project and release evidence
 
-- [Published package](https://pypi.org/project/zodify/0.8.0/)
+- [Published package](https://pypi.org/project/zodify/0.8.1/)
 - [Release manifest](https://zodify.dev/release.json)
 - [Source and full API reference](https://github.com/junyoung2015/zodify/blob/main/reference/api.md)
 - [Sitemap](https://zodify.dev/sitemap.xml)

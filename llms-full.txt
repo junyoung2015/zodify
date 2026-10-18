@@ -2,7 +2,7 @@
 
 > Validation for Python dictionaries using ordinary Python types.
 
-Released version: 0.8.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
+Released version: 0.8.1; Python >=3.10; verified 2026-10-18. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
 
 **When to use zodify.**
 
@@ -10,7 +10,7 @@ Use zodify inside Python scripts to validate configuration dictionaries, parsed 
 
 **How to call zodify.**
 
-Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.0`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
+Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.1`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
 
 `validate` returns a validated dict for dict schemas. Invalid data raises ValueError by default; `error_mode="structured"` raises ValidationError. Types are exact by default, unknown keys are rejected, and `coerce=True` opts into conversion. Defaults are trusted, inserted without validation or copying, and can be shared. The default max_depth is 32. Review error text before logging it because coercion and callback messages can include sensitive input.
 
@@ -28,7 +28,7 @@ except ValueError as error:
     print(f"ValueError: {error}")
 ```
 
-Version 0.8.0 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
+Version 0.8.1 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
 
 The HTML pages work without JavaScript. Each page has an explicit static Markdown counterpart at its path plus `index.md`, for example /docs/index.md. These downloads do not provide Accept-header negotiation. A consolidated snapshot is available at [llms-full.txt](https://zodify.dev/llms-full.txt).
 
@@ -38,7 +38,7 @@ The HTML pages work without JavaScript. Each page has an explicit static Markdow
 - [Documentation](https://zodify.dev/docs/): Start with one dict, follow a task guide, or look up a specific validation rule. [Markdown](https://zodify.dev/docs/index.md)
 - [Getting started](https://zodify.dev/docs/getting-started/): Install zodify, validate a dict, and handle a validation error. [Markdown](https://zodify.dev/docs/getting-started/index.md)
 - [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar. [Markdown](https://zodify.dev/docs/schemas/index.md)
-- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.0. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
+- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.1. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
 - [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership. [Markdown](https://zodify.dev/docs/optional-and-defaults/index.md)
 - [Errors and privacy](https://zodify.dev/docs/errors/): Handle text and structured errors and review what their messages contain. [Markdown](https://zodify.dev/docs/errors/index.md)
 - [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible. [Markdown](https://zodify.dev/docs/class-schemas/index.md)
@@ -56,7 +56,7 @@ The HTML pages work without JavaScript. Each page has an explicit static Markdow
 
 ## Project and release evidence
 
-- [Published package](https://pypi.org/project/zodify/0.8.0/)
+- [Published package](https://pypi.org/project/zodify/0.8.1/)
 - [Release manifest](https://zodify.dev/release.json)
 - [Source and full API reference](https://github.com/junyoung2015/zodify/blob/main/reference/api.md)
 - [Sitemap](https://zodify.dev/sitemap.xml)
@@ -71,7 +71,7 @@ Validate configuration and script inputs using ordinary Python types. Zero requi
 
 HTML: https://zodify.dev/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Your first validation
 
@@ -146,7 +146,7 @@ Start with one dict, follow a task guide, or look up a specific validation rule.
 
 HTML: https://zodify.dev/docs/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Installation
 
@@ -256,14 +256,14 @@ Install zodify, validate a dict, and handle a validation error.
 
 HTML: https://zodify.dev/docs/getting-started/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Install zodify
 
-Use a virtual environment with Python 3.10 or later. Pin 0.8.0 to run the same release as these examples.
+Use a virtual environment with supported Python 3.10–3.13. Pin 0.8.1 to run the same release as these examples.
 
 ```sh
-python -m pip install zodify==0.8.0
+python -m pip install zodify==0.8.1
 ```
 
 ## Validate a dict and read the result
@@ -294,7 +294,7 @@ ValueError: age: expected int, got str
 - [Schema grammar](https://zodify.dev/docs/schemas/)
 - [Structured errors](https://zodify.dev/docs/errors/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -304,7 +304,7 @@ The released dict, list, union, and callable schema grammar.
 
 HTML: https://zodify.dev/docs/schemas/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Describe a shape with Python values
 
@@ -347,11 +347,11 @@ Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
 
 # Exact types, coercion, and unions
 
-Understand bool versus int, string conversion, and union order in zodify 0.8.0.
+Understand bool versus int, string conversion, and union order in zodify 0.8.1.
 
 HTML: https://zodify.dev/docs/types-and-coercion/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Exact Python types by default
 
@@ -397,7 +397,7 @@ In coercing unions, exact non-string matches win first. String input then tries 
 - [JSON integer semantics explained](https://zodify.dev/articles/python-integers-and-json/)
 - [CLI recipe](https://zodify.dev/guides/cli-input-validation/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -407,7 +407,7 @@ Distinguish optional keys from nullable values and understand released default o
 
 HTML: https://zodify.dev/docs/optional-and-defaults/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Missing and None are different inputs
 
@@ -447,14 +447,14 @@ ValueError: name: missing required key
 
 ## Defaults in the released version
 
-In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.
+In 0.8.1, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.
 
 Prefer immutable, type-correct defaults and construct fresh mutable values in application code. Check the compatibility notes for the installed release before changing a default policy.
 
 - [Roadmap](https://zodify.dev/roadmap/)
 - [Schema containers](https://zodify.dev/docs/schemas/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -464,7 +464,7 @@ Handle text and structured errors and review what their messages contain.
 
 HTML: https://zodify.dev/docs/errors/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Choose structured errors explicitly
 
@@ -508,7 +508,7 @@ Use Schema for attribute access while keeping the released syntax limits visible
 
 HTML: https://zodify.dev/docs/class-schemas/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Declare fields with Schema
 
@@ -541,10 +541,12 @@ Do not assume arbitrary postponed annotations, forward references, recursive mod
 
 Validator stores reusable validation options. Schema compilation and caching are unavailable in this release.
 
+Version 0.8.1 fixes field discovery under Python 3.14 deferred annotations and evaluates supported annotation expressions at class definition. Fresh PyPI wheel checks passed on macOS CPython 3.14.6. The declared support range remains Python 3.10–3.13; this specific check does not establish broader Python 3.14 support. Unresolved names and unsupported string or postponed annotations still fail at class definition.
+
 - [Dict schema reference](https://zodify.dev/docs/schemas/)
 - [Choosing a broader model tool](https://zodify.dev/compare/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -554,7 +556,7 @@ Catch missing keys and misspelled configuration, with an explicit strip alternat
 
 HTML: https://zodify.dev/guides/config-validation/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Validate configuration values
 
@@ -608,7 +610,7 @@ Convert argparse strings deliberately and handle invalid command-line values.
 
 HTML: https://zodify.dev/guides/cli-input-validation/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Convert at the input boundary
 
@@ -659,7 +661,7 @@ Parse JSON with the standard library, enforce an object root, then validate Pyth
 
 HTML: https://zodify.dev/guides/json-object-validation/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Parsing and validation are separate steps
 
@@ -715,7 +717,7 @@ A task-based choice between small dict validation and broader validation tools.
 
 HTML: https://zodify.dev/compare/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Start with the task
 
@@ -748,7 +750,7 @@ Reproducible measurement requirements and the limits of current performance clai
 
 HTML: https://zodify.dev/benchmarks/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Available measurements
 
@@ -788,7 +790,7 @@ The project's origin, author, and scope.
 
 HTML: https://zodify.dev/about/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## A validator for a small script
 
@@ -818,7 +820,7 @@ Project questions, bug reports, documentation corrections, and private security 
 
 HTML: https://zodify.dev/contact/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Questions and ordinary bugs
 
@@ -846,7 +848,7 @@ What the static documentation frontend does, where hosting policies apply, and h
 
 HTML: https://zodify.dev/privacy/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Documentation frontend
 
@@ -876,20 +878,23 @@ Feature availability separated from unreleased source work and proposed designs.
 
 HTML: https://zodify.dev/roadmap/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
-## Released: 0.8.0
+## Released: 0.8.1
 
-The verified 0.8.0 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and adds canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.
+The verified 0.8.1 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and the 0.8.0 canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.
 
-- [PyPI release](https://pypi.org/project/zodify/0.8.0/)
+Version 0.8.1 fixes class-schema field discovery under Python 3.14 deferred annotations. Fresh PyPI wheel installs passed the installed contract and examples on macOS CPython 3.10.19 and 3.14.6. The declared support range remains Python 3.10–3.13; these checks do not claim broader Python 3.14, operating-system, free-threaded, or JIT support.
+
+- [0.8.1 release notes](https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md)
+- [PyPI release](https://pypi.org/project/zodify/0.8.1/)
 - [Current reference](https://zodify.dev/docs/)
 
 ## Proposed features
 
 Compilation and rich reports remain unavailable. Approximate export, native execution and source generation remain outside the current scope; future work requires separate semantic, evidence and release gates.
 
-Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 is an alpha release. API stability is still being evaluated.
+Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.1 is an alpha release. API stability is still being evaluated.
 
 - [Development repository](https://github.com/junyoung2015/zodify)
 - [Changelog](https://zodify.dev/changelog/)
@@ -898,7 +903,7 @@ Compilation requires an actual repeated-use workload and measured preparation ec
 
 Zodify validates ordinary Python data. Use a recursive model framework or general JSON Schema validator when your application needs those capabilities.
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -908,11 +913,20 @@ Verified released package identity and the development changelog.
 
 HTML: https://zodify.dev/changelog/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
+
+## 0.8.1, October 18, 2026
+
+PyPI records the 0.8.1 wheel and source distribution on October 18, 2026. Downloaded artifact hashes match the retained release artifacts. This site’s release manifest records the verified wheel SHA-256 and Python requirement independently from the working tree version.
+
+The patch fixes class-schema annotation discovery on Python 3.14. Fresh PyPI wheel installs passed installed-contract checks and all maintained package and public documentation examples on macOS CPython 3.10.19 and 3.14.6. The declared support range remains Python 3.10–3.13; broader Python 3.14, operating-system, free-threaded, and JIT support is not claimed.
+
+- [Verified 0.8.1 release](https://pypi.org/project/zodify/0.8.1/)
+- [0.8.1 release notes](https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md)
 
 ## 0.8.0, September 9, 2026
 
-PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.
+PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This release introduced canonical details and the conservative JSON interfaces. Its diagnostics measurements remain historical evidence for that release.
 
 The repository changelog includes development changes. Use the PyPI version list to check which changes have been released.
 
@@ -920,7 +934,7 @@ The repository changelog includes development changes. Use the PyPI version list
 - [Repository changelog](https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md)
 - [Feature availability](https://zodify.dev/roadmap/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
 
 ---
 
@@ -930,11 +944,11 @@ An executable explanation of exact Python types and JSON numeric semantics.
 
 HTML: https://zodify.dev/articles/python-integers-and-json/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Parsing integers and floats
 
-In zodify 0.8.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.
+In zodify 0.8.1, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.
 
 ```python
 import json
@@ -971,10 +985,10 @@ true: count: expected int, got bool
 
 JSON Schema considers a number with zero fractional part an integer, including 1.0. Python runtime type identity and mathematical integrality are distinct contracts. Translating int directly to a JSON Schema integer constraint does not preserve every acceptance decision.
 
-The 0.8.0 exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.
+The released exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.
 
 - [JSON Schema numeric reference (checked 2026-09-09)](https://json-schema.org/understanding-json-schema/reference/numeric)
 - [Download and run the JSON recipe](https://zodify.dev/guides/json-object-validation/)
 - [Exact-type reference](https://zodify.dev/docs/types-and-coercion/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).

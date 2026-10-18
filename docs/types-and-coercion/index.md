@@ -1,10 +1,10 @@
 # Exact types, coercion, and unions
 
-Understand bool versus int, string conversion, and union order in zodify 0.8.0.
+Understand bool versus int, string conversion, and union order in zodify 0.8.1.
 
 HTML: https://zodify.dev/docs/types-and-coercion/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Exact Python types by default
 
@@ -50,4 +50,4 @@ In coercing unions, exact non-string matches win first. String input then tries 
 - [JSON integer semantics explained](https://zodify.dev/articles/python-integers-and-json/)
 - [CLI recipe](https://zodify.dev/guides/cli-input-validation/)
 
-Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).

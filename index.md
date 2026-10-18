@@ -4,7 +4,7 @@ Validate configuration and script inputs using ordinary Python types. Zero requi
 
 HTML: https://zodify.dev/
 
-Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+Released zodify 0.8.1; Python >=3.10; alpha. Release manifest verified 2026-10-18.
 
 ## Your first validation
 
