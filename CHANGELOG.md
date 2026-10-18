@@ -7,14 +7,17 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [v0.8.1] - Candidate
+## [v0.8.1] - 2026-10-18
 
-Prepared for review; not published. Current published availability remains 0.8.0.
+Published wheel and source distribution were independently downloaded and their
+hashes matched the retained release artifacts. Fresh PyPI installs passed the
+installed contract and examples on macOS CPython 3.10.19 and 3.14.6. The declared
+support range remains Python 3.10–3.13.
 
 - Fix class schema annotation discovery on Python 3.14 so required fields are
   validated instead of silently compiling an empty schema. Annotation expressions
   are evaluated at class definition; unresolved names and unsupported string
-  annotations still fail then. This fix is not in the published 0.8.0 artifacts.
+  annotations still fail then. The earlier 0.8.0 artifacts do not contain this fix.
 
 ## [v0.8.0] - 2026-09-09
 

@@ -17,7 +17,7 @@ and usage questions that do not disclose a vulnerability.
 
 ## Maintained versions
 
-Security fixes target the latest published release, currently **0.8.0**.
+Security fixes target the latest published release, currently **0.8.1**.
 Older release lines are not maintained separately; automatic backports are not
 promised. See [PyPI](https://pypi.org/project/zodify/) for released versions and
 the [API compatibility contract](API_CONTRACT.md) for the supported behavior

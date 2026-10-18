@@ -23,8 +23,10 @@ It is written in pure Python with zero required runtime dependencies.
 pip install zodify
 ```
 
-Supports Python 3.10–3.13. The project is in alpha. These examples describe 0.8.0,
-published and verified September 9, 2026. See the
+Supports Python 3.10–3.13. The project is in alpha. These examples describe 0.8.1,
+published and verified October 18, 2026. This patch fixes class annotation
+discovery on Python 3.14; installed-artifact checks on macOS CPython 3.14.6 do
+not expand the declared support range. See the
 [compatibility contract](https://github.com/junyoung2015/zodify/blob/main/API_CONTRACT.md)
 for supported behavior and the path to 1.0.
 

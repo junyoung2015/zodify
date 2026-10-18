@@ -35,6 +35,7 @@ for (const page of routes) {
   const source = structured["@graph"].find((entity: Record<string, unknown>) => entity["@type"] === "SoftwareSourceCode");
   assert.equal(application.name, "zodify");
   assert.equal(application.softwareVersion, release.version);
+  assert.equal(source.version, release.version);
   assert.equal(application.installUrl, `https://pypi.org/project/zodify/${release.version}/`);
   assert(!("downloadUrl" in application));
   assert.equal(source.targetProduct["@id"], application["@id"]);
@@ -61,6 +62,7 @@ for (const page of routes) {
     if (section.table) for (const row of section.table.rows) for (const cell of row) assert(markdown.includes(cell.replace(/\|/g, "\\|")));
     if (section.example) {
       assert(examples[section.example]);
+      assert.equal(examples[section.example].releasedVersion, release.version);
       assert(html.includes(`<code id="code-${section.example}">`));
       assert(existsSync(join(dist, "examples", section.example + ".py")));
       assert(markdown.includes(examples[section.example].code.trimEnd()));
@@ -90,6 +92,8 @@ const missingMarkdown = readFileSync(join(dist, "404.md"), "utf8");
 assert(missingMarkdown.includes("Page not found"));
 assert(missingMarkdown.includes(SITE_ORIGIN + "/docs/"));
 const agentGuide = readFileSync(join(dist, "llms.txt"), "utf8");
+assert(agentGuide.includes(`Released version: ${release.version}`));
+assert(agentGuide.includes(`python -m pip install zodify==${release.version}`));
 assert(agentGuide.includes("**When to use zodify.**"));
 assert(agentGuide.includes("**How to call zodify.**"));
 assert(agentGuide.includes(examples.quickstart.code.trimEnd()));
@@ -118,6 +122,13 @@ assert.equal(social.readUInt32BE(16), 1200);
 assert.equal(social.readUInt32BE(20), 630);
 assert(existsSync(join(dist, ".nojekyll")));
 assert.equal(readFileSync(join(dist, "CNAME"), "utf8").trim(), "zodify.dev");
+assert.deepEqual(JSON.parse(readFileSync(join(dist, "release.json"), "utf8")), release);
+const gettingStarted = routes.find((page) => page.path === "/docs/getting-started/")!;
+assert.equal(gettingStarted.sections.find((section) => section.id === "install")!.command, `python -m pip install zodify==${release.version}`);
+assert(routes.find((page) => page.path === "/roadmap/")!.sections.some((section) => section.title === `Released: ${release.version}`));
+assert(routes.find((page) => page.path === "/changelog/")!.sections[0].title.startsWith(release.version + ","));
+// Keep measured diagnostics evidence attached to the release actually measured.
+assert(routes.find((page) => page.path === "/benchmarks/")!.sections.some((section) => section.title === "The cost of canonical diagnostics in 0.8.0"));
 const sitemap = readFileSync(join(dist, "sitemap.xml"), "utf8");
 assert.equal((sitemap.match(/<loc>/g) || []).length, routes.length);
 for (const canonical of canonicals)
