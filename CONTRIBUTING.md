@@ -1,5 +1,8 @@
 # Contributing to zodify
 
+For suspected vulnerabilities, follow the [security policy](SECURITY.md) and use
+the private reporting channel before sharing details publicly.
+
 ## Setup and local validation
 
 Use Python 3.10–3.13 and Node 22.12 or later for the documentation build.
@@ -10,8 +13,8 @@ python3 -m venv .venv
 ./scripts/local_checks.sh
 ```
 
-GitHub Actions is disabled through October 1, 2026, 09:00 Asia/Seoul. Record local
-commands, interpreter versions and outcomes in the PR. A maintainer may publish
+GitHub Actions is currently disabled. Run the local validation gates and record
+commands, interpreter versions, source commit and outcomes in the PR. A maintainer may publish
 an accurate commit status from those checks. Resolve failing checks before merging.
 Validate web changes by deploying the tested static artifact and checking the
 production pages, missing-route HTTP status and no-JavaScript navigation.
@@ -28,8 +31,9 @@ For publication, follow the [local release procedure](release-notes/RELEASING.md
 Obtain the owner's release decision before uploading the retained artifacts with
 Twine, then verify downloaded PyPI hashes and an independent install before the
 matching tag, final GitHub Release, or availability changes. Recheck budget and
-reconcile publishing workflows before enabling Actions. Publication requires
-a separate decision after the disabled period ends. Production Pages uses locally verified static files and
+reconcile publishing workflows before enabling Actions. Package publication
+requires the owner's separate release decision regardless of whether Actions is
+enabled. Production Pages uses locally verified static files and
 `.nojekyll` on the Pages source branch.
 
 ## Compatibility and scope
