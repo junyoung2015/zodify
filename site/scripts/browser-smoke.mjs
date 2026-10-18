@@ -45,7 +45,9 @@ assert.equal(
   true,
 );
 assert.equal(
-  await page.locator("pre").evaluate((el) => el.scrollWidth > el.clientWidth),
+  await page
+    .locator(".example > pre")
+    .evaluate((el) => el.scrollWidth > el.clientWidth),
   true,
 );
 await page.screenshot({
@@ -65,12 +67,21 @@ await interactive
   .getByRole("button", { name: "Copy example", exact: true })
   .click();
 await interactive
-  .getByRole("button", { name: "Copied", exact: true })
+  .locator('button[data-copy][data-state="copied"]')
   .waitFor({ state: "visible" });
-assert(
-  (await interactive.evaluate(() => navigator.clipboard.readText())).startsWith(
-    "from zodify import validate",
-  ),
+assert.equal(
+  await interactive
+    .getByRole("button", { name: "Copy example", exact: true })
+    .getAttribute("data-state"),
+  "copied",
+);
+assert.equal(
+  await interactive.locator(".example [role='status']").innerText(),
+  "Example copied to clipboard.",
+);
+assert.equal(
+  await interactive.evaluate(() => navigator.clipboard.readText()),
+  await interactive.locator(".example > pre code").textContent(),
 );
 await browser.close();
 console.log(
