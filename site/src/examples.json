@@ -53,5 +53,20 @@
     "code": "from zodify import validate\n\ntry:\n    validate({\"port\": int}, {\"port\": \"8080\"})\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n",
     "releasedVersion": "0.8.1",
     "expected": "ValueError: port: expected int, got str"
+  },
+  "annotation-namespace": {
+    "code": "import inspect\nimport sys\n\nclass Port:\n    port: int\n\n# Capture the raw namespace before any annotation introspection.\ndirect = dict(Port.__dict__.get(\"__annotations__\", {}))\nresolved = inspect.get_annotations(Port, eval_str=False)\n\nif sys.version_info >= (3, 14):\n    assert direct == {}\nelse:\n    assert direct == {\"port\": int}\nassert resolved == {\"port\": int}\nprint(\"Raw namespace matches the interpreter's annotation behavior\")\nprint(\"get_annotations discovers port: int\")\n",
+    "releasedVersion": "0.8.1",
+    "expected": "Raw namespace matches the interpreter's annotation behavior\nget_annotations discovers port: int"
+  },
+  "annotation-release-comparison": {
+    "code": "import sys\nfrom importlib.metadata import version\nfrom zodify import Schema, validate\n\nrelease = version(\"zodify\")\nassert release in {\"0.8.0\", \"0.8.1\"}\n\nclass Port(Schema):\n    port: int\n\ndef outcome(data):\n    try:\n        return dict(validate(Port, data))\n    except ValueError as error:\n        return str(error)\n\nmissing = outcome({})\nvalid = outcome({\"port\": 8080})\nold_deferred = release == \"0.8.0\" and sys.version_info >= (3, 14)\nassert missing == ({} if old_deferred else \"port: missing required key\")\nassert valid == (\"port: unknown key\" if old_deferred else {\"port\": 8080})\nprint(\"Missing-field and valid-input checks match the published version\")\n",
+    "releasedVersion": "0.8.1",
+    "expected": "Missing-field and valid-input checks match the published version"
+  },
+  "annotation-execution": {
+    "code": "import inspect\nimport sys\n\nevents = []\n\ndef field_type():\n    events.append(\"evaluated\")\n    return int\n\nclass Port:\n    port: field_type()\n    label: \"str\"\n\nbefore = list(events)\nresolved = inspect.get_annotations(Port, eval_str=False)\nassert before == ([] if sys.version_info >= (3, 14) else [\"evaluated\"])\nassert events == [\"evaluated\"]\nassert resolved == {\"port\": int, \"label\": \"str\"}\nprint(\"The annotation expression executed\")\nprint(\"The quoted annotation stayed a string\")\n",
+    "releasedVersion": "0.8.1",
+    "expected": "The annotation expression executed\nThe quoted annotation stayed a string"
   }
 }

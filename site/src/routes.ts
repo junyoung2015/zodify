@@ -382,6 +382,7 @@ export const routes: Page[] = [
         undefined,
         [
           ["Dict schema reference", "/docs/schemas/"],
+          ["Python 3.14 annotation discovery explained", "/articles/python-314-class-annotations/"],
           ["Choosing a broader model tool", "/compare/"],
         ],
       ),
@@ -693,6 +694,7 @@ export const routes: Page[] = [
         [
           ["Verified 0.8.1 release", "https://pypi.org/project/zodify/0.8.1/"],
           ["0.8.1 release notes", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md"],
+          ["Why annotation discovery changed", "/articles/python-314-class-annotations/"],
         ],
       ),
       section(
@@ -711,6 +713,71 @@ export const routes: Page[] = [
           ],
           ["Feature availability", "/roadmap/"],
         ],
+      ),
+    ],
+    undefined,
+    "2026-10-18",
+  ),
+  page(
+    "/articles/python-314-class-annotations/",
+    "Python 3.14 class annotations and the empty-schema bug",
+    "A standard-library reproduction of deferred annotation discovery, the fix in zodify 0.8.1, and its execution boundary.",
+    [
+      { ...section(
+        "namespace",
+        "An annotated field can be absent from the raw namespace",
+        [
+          "A runtime annotation consumer cannot assume that a class namespace already contains an __annotations__ mapping. Python 3.14 defers annotation evaluation by default. Zodify 0.8.0 read that mapping directly, so an ordinary annotated class could become an empty schema. Version 0.8.1 uses inspect.get_annotations(cls, eval_str=False) to discover the fields.",
+          "This standard-library-only reproduction captures the direct lookup before introspection. Reading annotations first can materialize them and hide the difference. Run the file without 'from __future__ import annotations'; that opt-in string behavior is a separate case. The assertions check the version difference and print a stable confirmation. The table records the observed values of direct and resolved on macOS, not additional stdout.",
+        ],
+        "annotation-namespace",
+        [["Python 3.14: deferred annotation evaluation", "https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-and-pep-749-deferred-evaluation-of-annotations"]],
+      ), table: {
+        headers: ["Observed CPython", "direct before introspection", "resolved"],
+        rows: [
+          ["3.10.19", "{'port': <class 'int'>}", "{'port': <class 'int'>}"],
+          ["3.13.11", "{'port': <class 'int'>}", "{'port': <class 'int'>}"],
+          ["3.14.6", "{}", "{'port': <class 'int'>}"],
+        ],
+      } },
+      { ...section(
+        "published-behavior",
+        "The empty schema changed both acceptance decisions",
+        [
+          "On macOS CPython 3.14.6, isolated installs of the published releases produced the outcomes below. An empty input incorrectly passed in 0.8.0 because no required field was discovered. Valid input failed because port looked like an unknown key. The comparison fixture asserts both outcomes, including the historical defect when run with 0.8.0. With 0.8.1 it checks required-field rejection and valid-input acceptance.",
+        ],
+        "annotation-release-comparison",
+        [["Published 0.8.1 and artifact verification", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md"]],
+      ), table: {
+        headers: ["Published release on CPython 3.14.6", "missing: outcome({})", "valid: outcome({'port': 8080})"],
+        rows: [
+          ["0.8.0", "{}", "port: unknown key (ValueError)"],
+          ["0.8.1", "port: missing required key (ValueError)", "{'port': 8080}"],
+        ],
+      } },
+      section(
+        "execution",
+        "eval_str=False still permits annotation-expression execution",
+        [
+          "inspect.get_annotations is a standard-library entry point available on the declared supported interpreters. In Python 3.14 it aliases annotationlib.get_annotations. Its default VALUE format retrieves runtime values and can execute deferred annotation expressions. eval_str=False leaves string values such as the quoted 'str' annotation unchanged; it does not suppress execution of field_type(). Annotation introspection is not a sandbox.",
+          "In this ordinary class, before is ['evaluated'] on CPython 3.10.19 and 3.13.11, and [] on 3.14.6. After introspection, events is ['evaluated'] on all three, and the quoted label annotation remains a string. Zodify calls introspection during Schema subclass construction, so supported annotation expressions execute at class definition rather than waiting for validate(). Inspect only code you trust to execute.",
+        ],
+        "annotation-execution",
+        [
+          ["annotationlib.get_annotations: formats, eval_str, and execution", "https://docs.python.org/3.14/library/annotationlib.html#annotationlib.get_annotations"],
+          ["Security implications of introspecting annotations", "https://docs.python.org/3.14/library/annotationlib.html#security-implications-of-introspecting-annotations"],
+          ["inspect.get_annotations compatibility entry point", "https://docs.python.org/3.14/library/inspect.html#inspect.get_annotations"],
+        ],
+      ),
+      section(
+        "scope",
+        "The patch preserves the class-schema boundaries",
+        [
+          "Zodify still requires direct Schema subclasses and concrete supported annotations. Quoted or postponed string annotations, unresolved names, and inheritance beyond a direct subclass fail during class definition. The introspection helper ignores inherited class annotations; using it does not add inherited-schema support. Defaults, unknown-key policy, and the single validation engine retain their existing behavior. Compilation remains unavailable.",
+          "These observations use macOS CPython 3.10.19, 3.13.11, and 3.14.6. The linked current Python 3.14 documentation identifies itself as 3.14.8; that is a documentation version, not the tested runtime. Zodify's declared support remains Python 3.10–3.13. This reproduction does not establish a broader Python 3.14, operating-system, free-threaded, or JIT support matrix.",
+        ],
+        undefined,
+        [["Supported class schemas", "/docs/class-schemas/"], ["Released feature availability", "/roadmap/"]],
       ),
     ],
     undefined,
