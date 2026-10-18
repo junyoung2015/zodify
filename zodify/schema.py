@@ -108,7 +108,9 @@ class Schema:
         if cls.__bases__ != (Schema,):
             raise TypeError(f"{cls.__name__}: inheritance beyond direct Schema subclassing is unsupported")
 
-        raw_annotations = dict(cls.__dict__.get("__annotations__", {}))
+        from inspect import get_annotations
+
+        raw_annotations = get_annotations(cls, eval_str=False)
         compiled_schema: dict[str, Any] = {}
         nested_schema_fields: dict[str, type[Schema]] = {}
         list_nested_schema_fields: dict[str, type[Schema]] = {}

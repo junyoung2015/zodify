@@ -7,6 +7,11 @@ and this project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Fix class schema annotation discovery on Python 3.14 so required fields are
+  validated instead of silently compiling an empty schema. Annotation expressions
+  are evaluated at class definition; unresolved names and unsupported string
+  annotations still fail then. This fix is not in the published 0.8.0 artifacts.
+
 ## [v0.8.0] - 2026-09-09
 
 Published artifacts were independently downloaded and verified. Earlier 0.7/0.8
