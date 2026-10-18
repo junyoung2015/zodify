@@ -14,6 +14,60 @@ def test_schema_public_surface_uses_the_approved_extracted_module_boundary() -> 
     assert not hasattr(zodify, "ValidatedDict")
 
 
+def test_class_required_field_rejects_empty_input_and_accepts_valid_input() -> None:
+    class Config(Schema):
+        port: int
+
+    with pytest.raises(ValueError, match="port: missing required key"):
+        validate(Config, {})
+    assert validate(Config, {"port": 8080}).port == 8080
+
+
+def test_empty_schema_does_not_inherit_annotation_fields() -> None:
+    class Empty(Schema):
+        pass
+
+    assert Empty.__zodify_schema__ == {}
+    assert validate(Empty, {}) == {}
+    with pytest.raises(ValueError, match="__schema_fields__: unknown key"):
+        validate(Empty, {"__schema_fields__": []})
+    with pytest.raises(TypeError, match="inheritance beyond direct Schema subclassing"):
+        class Child(Empty):
+            pass
+
+
+def test_annotation_expression_runs_once_during_schema_definition() -> None:
+    calls: list[str] = []
+
+    def field_type() -> type[int]:
+        calls.append("evaluated")
+        return int
+
+    class Config(Schema):
+        port: field_type()
+
+    assert calls == ["evaluated"]
+    assert validate(Config, {"port": 8080}).port == 8080
+    with pytest.raises(ValueError, match="port: missing required key"):
+        validate(Config, {})
+    assert calls == ["evaluated"]
+
+
+def test_unresolved_and_postponed_annotations_fail_at_definition() -> None:
+    namespace: dict[str, object] = {"Schema": Schema}
+    with pytest.raises(NameError, match="UndefinedType"):
+        exec("class Missing(Schema):\n    value: UndefinedType\n", namespace)
+    assert "Missing" not in namespace
+
+    with pytest.raises(TypeError, match="Postponed.port: forward references are unsupported"):
+        exec(
+            "from __future__ import annotations\n"
+            "class Postponed(Schema):\n    port: int\n",
+            namespace,
+        )
+    assert "Postponed" not in namespace
+
+
 def test_schema_subclass_compiles_plain_dict_schema_at_definition_time() -> None:
     class Credentials(Schema):
         username: str
