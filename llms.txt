@@ -1,25 +1,64 @@
 # zodify
 
-> Validation for Python dictionaries.
+> Validation for Python dictionaries using ordinary Python types.
 
-Released version: 0.8.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license.
+Released version: 0.8.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
 
-Version 0.8.0 includes canonical details, zodify.json_io.validate_json, conservative exact JSON Schema export, and load_env. Compilation and rich reports remain unavailable. Check PyPI for published versions.
+**When to use zodify.**
 
-- [Validation for Python dictionaries](https://zodify.dev/): Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies.
-- [Documentation](https://zodify.dev/docs/): Start with one dict, follow a task guide, or look up a specific validation rule.
-- [Getting started](https://zodify.dev/docs/getting-started/): Install zodify, validate a dict, and handle a validation error.
-- [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar.
-- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.0.
-- [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership.
-- [Errors and privacy](https://zodify.dev/docs/errors/): Handle text and structured errors and review what their messages contain.
-- [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible.
-- [Validate a configuration dict](https://zodify.dev/guides/config-validation/): Catch missing keys and misspelled configuration, with an explicit strip alternative.
-- [Validate command-line inputs](https://zodify.dev/guides/cli-input-validation/): Convert argparse strings deliberately and handle invalid command-line values.
-- [Validate a JSON object](https://zodify.dev/guides/json-object-validation/): Parse JSON with the standard library, enforce an object root, then validate Python fields.
-- [Choosing a Python validator](https://zodify.dev/compare/): A task-based choice between small dict validation and broader validation tools.
-- [Benchmarks and measurement](https://zodify.dev/benchmarks/): Reproducible measurement requirements and the limits of current performance claims.
-- [About zodify](https://zodify.dev/about/): The project's origin, author, and scope.
-- [Released, planned, and experimental](https://zodify.dev/roadmap/): Feature availability separated from unreleased source work and proposed designs.
-- [Release history](https://zodify.dev/changelog/): Verified released package identity and the development changelog.
-- [Python int and JSON Schema integer](https://zodify.dev/articles/python-integers-and-json/): An executable explanation of exact Python types and JSON numeric semantics.
+Use zodify inside Python scripts to validate configuration dictionaries, parsed command-line arguments, and JSON objects at an application boundary. Choose it when reusable plain-dict checks and zero required runtime dependencies fit the task. Direct Python checks may suffice for a small one-off check. Use a broader model framework or JSON Schema validator when those contracts are required.
+
+**How to call zodify.**
+
+Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.0`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
+
+`validate` returns a validated dict for dict schemas. Invalid data raises ValueError by default; `error_mode="structured"` raises ValidationError. Types are exact by default, unknown keys are rejected, and `coerce=True` opts into conversion. Defaults are trusted, inserted without validation or copying, and can be shared. The default max_depth is 32. Review error text before logging it because coercion and callback messages can include sensitive input.
+
+The following example is the same released-version fixture used by the getting-started guide:
+
+```python
+from zodify import validate
+
+schema = {"name": str, "age": int}
+print(validate(schema, {"name": "Ada", "age": 36}))
+
+try:
+    validate(schema, {"name": "Ada", "age": "36"})
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Version 0.8.0 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
+
+The HTML pages work without JavaScript. Each page has an explicit static Markdown counterpart at its path plus `index.md`, for example /docs/index.md. These downloads do not provide Accept-header negotiation. A consolidated snapshot is available at [llms-full.txt](https://zodify.dev/llms-full.txt).
+
+## Documentation
+
+- [Validation for Python dictionaries](https://zodify.dev/): Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies. [Markdown](https://zodify.dev/index.md)
+- [Documentation](https://zodify.dev/docs/): Start with one dict, follow a task guide, or look up a specific validation rule. [Markdown](https://zodify.dev/docs/index.md)
+- [Getting started](https://zodify.dev/docs/getting-started/): Install zodify, validate a dict, and handle a validation error. [Markdown](https://zodify.dev/docs/getting-started/index.md)
+- [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar. [Markdown](https://zodify.dev/docs/schemas/index.md)
+- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.0. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
+- [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership. [Markdown](https://zodify.dev/docs/optional-and-defaults/index.md)
+- [Errors and privacy](https://zodify.dev/docs/errors/): Handle text and structured errors and review what their messages contain. [Markdown](https://zodify.dev/docs/errors/index.md)
+- [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible. [Markdown](https://zodify.dev/docs/class-schemas/index.md)
+- [Validate a configuration dict](https://zodify.dev/guides/config-validation/): Catch missing keys and misspelled configuration, with an explicit strip alternative. [Markdown](https://zodify.dev/guides/config-validation/index.md)
+- [Validate command-line inputs](https://zodify.dev/guides/cli-input-validation/): Convert argparse strings deliberately and handle invalid command-line values. [Markdown](https://zodify.dev/guides/cli-input-validation/index.md)
+- [Validate a JSON object](https://zodify.dev/guides/json-object-validation/): Parse JSON with the standard library, enforce an object root, then validate Python fields. [Markdown](https://zodify.dev/guides/json-object-validation/index.md)
+- [Choosing a Python validator](https://zodify.dev/compare/): A task-based choice between small dict validation and broader validation tools. [Markdown](https://zodify.dev/compare/index.md)
+- [Benchmarks and measurement](https://zodify.dev/benchmarks/): Reproducible measurement requirements and the limits of current performance claims. [Markdown](https://zodify.dev/benchmarks/index.md)
+- [About zodify](https://zodify.dev/about/): The project's origin, author, and scope. [Markdown](https://zodify.dev/about/index.md)
+- [Contact zodify](https://zodify.dev/contact/): Project questions, bug reports, documentation corrections, and private security reporting. [Markdown](https://zodify.dev/contact/index.md)
+- [Privacy and local validation](https://zodify.dev/privacy/): What the static documentation frontend does, where hosting policies apply, and how to handle sensitive validation errors. [Markdown](https://zodify.dev/privacy/index.md)
+- [Released, planned, and experimental](https://zodify.dev/roadmap/): Feature availability separated from unreleased source work and proposed designs. [Markdown](https://zodify.dev/roadmap/index.md)
+- [Release history](https://zodify.dev/changelog/): Verified released package identity and the development changelog. [Markdown](https://zodify.dev/changelog/index.md)
+- [Python int and JSON Schema integer](https://zodify.dev/articles/python-integers-and-json/): An executable explanation of exact Python types and JSON numeric semantics. [Markdown](https://zodify.dev/articles/python-integers-and-json/index.md)
+
+## Project and release evidence
+
+- [Published package](https://pypi.org/project/zodify/0.8.0/)
+- [Release manifest](https://zodify.dev/release.json)
+- [Source and full API reference](https://github.com/junyoung2015/zodify/blob/main/reference/api.md)
+- [Sitemap](https://zodify.dev/sitemap.xml)
+- [Contact](https://zodify.dev/contact/)
+- [Privacy](https://zodify.dev/privacy/)

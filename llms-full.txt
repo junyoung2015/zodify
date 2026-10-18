@@ -1,0 +1,980 @@
+# zodify
+
+> Validation for Python dictionaries using ordinary Python types.
+
+Released version: 0.8.0; Python >=3.10; verified 2026-09-09. Zero required runtime dependencies. MIT license. This manifest is a dated release check; check PyPI for published versions.
+
+**When to use zodify.**
+
+Use zodify inside Python scripts to validate configuration dictionaries, parsed command-line arguments, and JSON objects at an application boundary. Choose it when reusable plain-dict checks and zero required runtime dependencies fit the task. Direct Python checks may suffice for a small one-off check. Use a broader model framework or JSON Schema validator when those contracts are required.
+
+**How to call zodify.**
+
+Install the documented release in the caller's Python environment with `python -m pip install zodify==0.8.0`. Import `validate` from `zodify` and call `validate(schema, data)`: schema first, dictionary data second. This is a local Python library; this documentation site provides no hosted validation HTTP API, OpenAPI service, MCP server, or official CLI executable. Shell installation commands and the argparse guide do not imply a zodify CLI.
+
+`validate` returns a validated dict for dict schemas. Invalid data raises ValueError by default; `error_mode="structured"` raises ValidationError. Types are exact by default, unknown keys are rejected, and `coerce=True` opts into conversion. Defaults are trusted, inserted without validation or copying, and can be shared. The default max_depth is 32. Review error text before logging it because coercion and callback messages can include sensitive input.
+
+The following example is the same released-version fixture used by the getting-started guide:
+
+```python
+from zodify import validate
+
+schema = {"name": str, "age": int}
+print(validate(schema, {"name": "Ada", "age": 36}))
+
+try:
+    validate(schema, {"name": "Ada", "age": "36"})
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Version 0.8.0 also includes canonical error details, `zodify.json_io.validate_json`, conservative exact JSON Schema export, and `load_env`. Compilation and rich reports remain unavailable. Follow the versioned reference rather than inventing APIs from proposed work.
+
+The HTML pages work without JavaScript. Each page has an explicit static Markdown counterpart at its path plus `index.md`, for example /docs/index.md. These downloads do not provide Accept-header negotiation. A consolidated snapshot is available at [llms-full.txt](https://zodify.dev/llms-full.txt).
+
+## Documentation
+
+- [Validation for Python dictionaries](https://zodify.dev/): Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies. [Markdown](https://zodify.dev/index.md)
+- [Documentation](https://zodify.dev/docs/): Start with one dict, follow a task guide, or look up a specific validation rule. [Markdown](https://zodify.dev/docs/index.md)
+- [Getting started](https://zodify.dev/docs/getting-started/): Install zodify, validate a dict, and handle a validation error. [Markdown](https://zodify.dev/docs/getting-started/index.md)
+- [Schemas and predicates](https://zodify.dev/docs/schemas/): The released dict, list, union, and callable schema grammar. [Markdown](https://zodify.dev/docs/schemas/index.md)
+- [Exact types, coercion, and unions](https://zodify.dev/docs/types-and-coercion/): Understand bool versus int, string conversion, and union order in zodify 0.8.0. [Markdown](https://zodify.dev/docs/types-and-coercion/index.md)
+- [Missing keys, None, and defaults](https://zodify.dev/docs/optional-and-defaults/): Distinguish optional keys from nullable values and understand released default ownership. [Markdown](https://zodify.dev/docs/optional-and-defaults/index.md)
+- [Errors and privacy](https://zodify.dev/docs/errors/): Handle text and structured errors and review what their messages contain. [Markdown](https://zodify.dev/docs/errors/index.md)
+- [Optional class schemas](https://zodify.dev/docs/class-schemas/): Use Schema for attribute access while keeping the released syntax limits visible. [Markdown](https://zodify.dev/docs/class-schemas/index.md)
+- [Validate a configuration dict](https://zodify.dev/guides/config-validation/): Catch missing keys and misspelled configuration, with an explicit strip alternative. [Markdown](https://zodify.dev/guides/config-validation/index.md)
+- [Validate command-line inputs](https://zodify.dev/guides/cli-input-validation/): Convert argparse strings deliberately and handle invalid command-line values. [Markdown](https://zodify.dev/guides/cli-input-validation/index.md)
+- [Validate a JSON object](https://zodify.dev/guides/json-object-validation/): Parse JSON with the standard library, enforce an object root, then validate Python fields. [Markdown](https://zodify.dev/guides/json-object-validation/index.md)
+- [Choosing a Python validator](https://zodify.dev/compare/): A task-based choice between small dict validation and broader validation tools. [Markdown](https://zodify.dev/compare/index.md)
+- [Benchmarks and measurement](https://zodify.dev/benchmarks/): Reproducible measurement requirements and the limits of current performance claims. [Markdown](https://zodify.dev/benchmarks/index.md)
+- [About zodify](https://zodify.dev/about/): The project's origin, author, and scope. [Markdown](https://zodify.dev/about/index.md)
+- [Contact zodify](https://zodify.dev/contact/): Project questions, bug reports, documentation corrections, and private security reporting. [Markdown](https://zodify.dev/contact/index.md)
+- [Privacy and local validation](https://zodify.dev/privacy/): What the static documentation frontend does, where hosting policies apply, and how to handle sensitive validation errors. [Markdown](https://zodify.dev/privacy/index.md)
+- [Released, planned, and experimental](https://zodify.dev/roadmap/): Feature availability separated from unreleased source work and proposed designs. [Markdown](https://zodify.dev/roadmap/index.md)
+- [Release history](https://zodify.dev/changelog/): Verified released package identity and the development changelog. [Markdown](https://zodify.dev/changelog/index.md)
+- [Python int and JSON Schema integer](https://zodify.dev/articles/python-integers-and-json/): An executable explanation of exact Python types and JSON numeric semantics. [Markdown](https://zodify.dev/articles/python-integers-and-json/index.md)
+
+## Project and release evidence
+
+- [Published package](https://pypi.org/project/zodify/0.8.0/)
+- [Release manifest](https://zodify.dev/release.json)
+- [Source and full API reference](https://github.com/junyoung2015/zodify/blob/main/reference/api.md)
+- [Sitemap](https://zodify.dev/sitemap.xml)
+- [Contact](https://zodify.dev/contact/)
+- [Privacy](https://zodify.dev/privacy/)
+
+---
+
+# Validation for Python dictionaries
+
+Validate configuration and script inputs using ordinary Python types. Zero required runtime dependencies.
+
+HTML: https://zodify.dev/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Your first validation
+
+```python
+from zodify import validate
+
+schema = {"port": int, "debug": bool}
+data = {"port": 8080, "debug": False}
+
+print(validate(schema, data))
+```
+
+Expected output:
+
+```text
+{'port': 8080, 'debug': False}
+```
+
+[Download Python example](https://zodify.dev/examples/first-validation.py)
+
+## When to use zodify
+
+Use it when you have a Python dict and want a readable, reusable check. Start with ordinary types; add nested shapes, optional keys, or explicit conversions when you need them.
+
+| Try zodify when… | Another approach may fit when… |
+| --- | --- |
+| You want reusable checks for dictionaries. | A few direct Python checks already solve the task. |
+| You validate configuration or script inputs. | Your framework already handles validation. |
+| Zero required runtime dependencies matter. | You need broader typing, models, or serialization. |
+
+- [Choosing a validator](https://zodify.dev/compare/)
+
+## Validation errors
+
+An invalid field raises an error with its path. Here, port needs an int, but the input contains a string. Pass an integer, or choose coerce=True when string conversion is intended.
+
+```python
+from zodify import validate
+
+try:
+    validate({"port": int}, {"port": "8080"})
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Expected output:
+
+```text
+ValueError: port: expected int, got str
+```
+
+[Download Python example](https://zodify.dev/examples/invalid-input.py)
+
+- [Types and conversion](https://zodify.dev/docs/types-and-coercion/)
+
+## Default behavior
+
+Types are strict and extra keys are rejected. Optional keys and nullable values are separate choices. Defaults are trusted: they are inserted without validation or copying, so mutable defaults can be shared.
+
+Plain dict schemas return dicts. Optional class declarations provide attribute access.
+
+- [Defaults and ownership](https://zodify.dev/docs/optional-and-defaults/)
+- [Optional class syntax](https://zodify.dev/docs/class-schemas/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Documentation
+
+Start with one dict, follow a task guide, or look up a specific validation rule.
+
+HTML: https://zodify.dev/docs/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Installation
+
+No extra packages required.
+
+```sh
+pip install zodify
+```
+
+- [Follow the getting-started guide](https://zodify.dev/docs/getting-started/)
+
+## Basic validation
+
+Pass the schema first, data second. Types are strict; extra keys are rejected.
+
+```python
+from zodify import validate
+
+schema = {"port": int, "debug": bool}
+data = {"port": 8080, "debug": False}
+
+print(validate(schema, data))
+```
+
+Expected output:
+
+```text
+{'port': 8080, 'debug': False}
+```
+
+[Download Python example](https://zodify.dev/examples/first-validation.py)
+
+- [First validation](https://zodify.dev/docs/getting-started/)
+
+## Supported types
+
+Use exact Python types, nested dict schemas, one-element list schemas, unions, and predicates.
+
+- [Schema grammar](https://zodify.dev/docs/schemas/)
+- [Types and coercion](https://zodify.dev/docs/types-and-coercion/)
+
+## Optional keys and defaults
+
+Optional controls missing keys; a union with None controls nullable values. Defaults are inserted as supplied, without copying or validation.
+
+- [Optional and defaults](https://zodify.dev/docs/optional-and-defaults/)
+
+## Unions
+
+With coercion enabled, string input follows declared union order; non-string exact matches take precedence.
+
+- [Conversion rules](https://zodify.dev/docs/types-and-coercion/)
+
+## Nested schemas
+
+Dict shapes and one-element list schemas validate nested containers. The default maximum depth is 32.
+
+- [Schemas](https://zodify.dev/docs/schemas/)
+
+## Optional class syntax
+
+Schema declarations offer attribute access using the same validation engine.
+
+- [Class schemas and limitations](https://zodify.dev/docs/class-schemas/)
+
+## Custom validators
+
+Predicates return truthy for acceptance; they receive and preserve the original value. Callback errors may expose their own messages.
+
+- [Predicates](https://zodify.dev/docs/schemas/)
+- [Error privacy](https://zodify.dev/docs/errors/)
+
+## Environment variables
+
+The env(name, cast, default) helper reads process environment variables. The load_env(path, schema=...) helper parses a .env file without mutating os.environ; with a schema it defaults to coercion and stripping unknown keys. Raw mode returns parsed strings.
+
+- [Configuration recipe](https://zodify.dev/guides/config-validation/)
+- [Feature availability](https://zodify.dev/roadmap/)
+
+## Error handling
+
+Text mode raises ValueError. Choose error_mode="structured" for ValidationError. Review error contents before logging them.
+
+- [Errors](https://zodify.dev/docs/errors/)
+
+## Structured errors
+
+ValidationError.issues retains path, message, expected, and got fields. Engine structured errors also expose immutable canonical details with machine codes and typed locations; manually constructed legacy errors can have details=None.
+
+- [Structured error example](https://zodify.dev/docs/errors/)
+
+## Task guides
+
+Choose the input you are working with. Each guide includes a complete example and explains its limits.
+
+- [Configuration](https://zodify.dev/guides/config-validation/)
+- [Command-line input](https://zodify.dev/guides/cli-input-validation/)
+- [JSON objects](https://zodify.dev/guides/json-object-validation/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Getting started
+
+Install zodify, validate a dict, and handle a validation error.
+
+HTML: https://zodify.dev/docs/getting-started/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Install zodify
+
+Use a virtual environment with Python 3.10 or later. Pin 0.8.0 to run the same release as these examples.
+
+```sh
+python -m pip install zodify==0.8.0
+```
+
+## Validate a dict and read the result
+
+Pass the schema first and the data second. Valid input returns a dict; invalid input raises ValueError. This example prints both the successful result and the error for a string where an int is expected.
+
+```python
+from zodify import validate
+
+schema = {"name": str, "age": int}
+print(validate(schema, {"name": "Ada", "age": 36}))
+
+try:
+    validate(schema, {"name": "Ada", "age": "36"})
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Expected output:
+
+```text
+{'name': 'Ada', 'age': 36}
+ValueError: age: expected int, got str
+```
+
+[Download Python example](https://zodify.dev/examples/quickstart.py)
+
+- [Schema grammar](https://zodify.dev/docs/schemas/)
+- [Structured errors](https://zodify.dev/docs/errors/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Schemas and predicates
+
+The released dict, list, union, and callable schema grammar.
+
+HTML: https://zodify.dev/docs/schemas/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Describe a shape with Python values
+
+A dict maps field names to schemas. A one-element list describes each item in a list. A Python type requires that exact type. PEP 604 unions combine types. Optional wraps an optional field.
+
+Predicates receive the original value and accept it when they return a truthy result. Accepted values are returned unchanged. A predicate should check its own input type before comparing or indexing it.
+
+```python
+from zodify import validate
+
+schema = {"users": [{"name": str}], "enabled": bool}
+data = {"users": [{"name": "Ada"}], "enabled": True}
+print(validate(schema, data))
+
+# A truthy predicate accepts and preserves the original value.
+port_schema = {"port": lambda value: type(value) is int and 1 <= value <= 65535}
+print(validate(port_schema, {"port": 8080}))
+```
+
+Expected output:
+
+```text
+{'users': [{'name': 'Ada'}], 'enabled': True}
+{'port': 8080}
+```
+
+[Download Python example](https://zodify.dev/examples/schemas.py)
+
+## Supported schema shapes
+
+Pass a dict as data and either a dict schema or supported Schema declaration as the schema. Lists with zero or multiple schema items are invalid. Malformed schemas may raise TypeError. Validation has a max_depth option, defaulting to 32; cyclic models and arbitrary typing expressions are not promised.
+
+Dict-shaped and list-shaped validation creates result containers, but leaf objects and defaults can remain shared.
+
+- [Ownership and defaults](https://zodify.dev/docs/optional-and-defaults/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Exact types, coercion, and unions
+
+Understand bool versus int, string conversion, and union order in zodify 0.8.0.
+
+HTML: https://zodify.dev/docs/types-and-coercion/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Exact Python types by default
+
+The int schema accepts an actual int. It rejects bool, float, and string values, even when they look numerically equivalent. Coercion is an explicit option.
+
+With coerce=True, string input can convert to int or float. Boolean strings are case-insensitive true/1/yes and false/0/no. Strings are not trimmed by the boolean rule. Conversion to str uses str(value); numeric schemas do not accept arbitrary constructor casting from non-string input.
+
+```python
+import json
+from zodify import validate
+
+for token in ["1", "1.0", "true", '"1"']:
+    try:
+        result = validate({"count": int}, {"count": json.loads(token)})
+        print(f"{token}: {result}")
+    except ValueError as error:
+        print(f"{token}: {error}")
+
+print(validate({"port": int}, {"port": "8080"}, coerce=True))
+# Union order controls conversion of string inputs.
+print(validate({"value": int | str}, {"value": "1"}, coerce=True))
+print(validate({"value": str | int}, {"value": "1"}, coerce=True))
+```
+
+Expected output:
+
+```text
+1: {'count': 1}
+1.0: count: expected int, got float
+true: count: expected int, got bool
+"1": count: expected int, got str
+{'port': 8080}
+{'value': 1}
+{'value': '1'}
+```
+
+[Download Python example](https://zodify.dev/examples/exact-types.py)
+
+## Union order can change string results
+
+In coercing unions, exact non-string matches win first. String input then tries union members in their declared order: int | str can turn '1' into 1, while str | int preserves '1'. Without coercion, exact membership determines acceptance. Keep union order consistent when relying on string conversion.
+
+- [JSON integer semantics explained](https://zodify.dev/articles/python-integers-and-json/)
+- [CLI recipe](https://zodify.dev/guides/cli-input-validation/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Missing keys, None, and defaults
+
+Distinguish optional keys from nullable values and understand released default ownership.
+
+HTML: https://zodify.dev/docs/optional-and-defaults/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Missing and None are different inputs
+
+Optional(str) permits an absent key, which is omitted from the result. str | None accepts a present null value but still requires the key. Optional(str, 'Ada') inserts a default only when the key is absent.
+
+```python
+from zodify import Optional, validate
+
+print(validate({"name": Optional(str)}, {}))
+print(validate({"name": str | None}, {"name": None}))
+print(validate({"name": Optional(str, "Ada")}, {}))
+
+# Defaults are trusted: neither copied nor validated.
+default = []
+result = validate({"items": Optional([str], default)}, {})
+print("Shares default:", result["items"] is default)
+print(validate({"count": Optional(int, "unchecked")}, {}))
+
+try:
+    validate({"name": str | None}, {})
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Expected output:
+
+```text
+{}
+{'name': None}
+{'name': 'Ada'}
+Shares default: True
+{'count': 'unchecked'}
+ValueError: name: missing required key
+```
+
+[Download Python example](https://zodify.dev/examples/optional-defaults.py)
+
+## Defaults in the released version
+
+In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.
+
+Prefer immutable, type-correct defaults and construct fresh mutable values in application code. Check the compatibility notes for the installed release before changing a default policy.
+
+- [Roadmap](https://zodify.dev/roadmap/)
+- [Schema containers](https://zodify.dev/docs/schemas/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Errors and privacy
+
+Handle text and structured errors and review what their messages contain.
+
+HTML: https://zodify.dev/docs/errors/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Choose structured errors explicitly
+
+The default text mode raises ValueError. error_mode='structured' raises ValidationError, a ValueError subclass with an issues list. Each issue carries a string path, message, expected, and got. These legacy fields are preserved. Engine errors also expose a separate immutable details tuple of ValidationIssue records with machine codes and typed locations; manual legacy errors and unsupported key locations may have details=None. The canonical snapshot stays unchanged when issues is mutated.
+
+```python
+from zodify import ValidationError, validate
+
+try:
+    validate({"port": int}, {"port": "wrong"}, error_mode="structured")
+except ValidationError as error:
+    print(error.issues[0])
+```
+
+Expected output:
+
+```text
+{'path': 'port', 'message': 'expected int, got str', 'expected': 'int', 'got': 'str'}
+```
+
+[Download Python example](https://zodify.dev/examples/errors.py)
+
+- [Measured diagnostics cost](https://zodify.dev/benchmarks/#diagnostics-cost)
+
+## Treat error text as potentially sensitive
+
+Coercion failures can include the original string, and custom callback exceptions can include callback messages. Avoid logging entire errors for credentials or user secrets; prefer an application-controlled message and a reviewed field identifier.
+
+Legacy paths use dots and brackets. Literal field names containing punctuation can be ambiguous. Use each ValidationIssue record’s loc field in details for structural locations when available.
+
+- [Schema predicates](https://zodify.dev/docs/schemas/)
+- [Roadmap](https://zodify.dev/roadmap/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Optional class schemas
+
+Use Schema for attribute access while keeping the released syntax limits visible.
+
+HTML: https://zodify.dev/docs/class-schemas/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Declare fields with Schema
+
+Subclass Schema with concrete field annotations, then call validate(User, data) to get an instance with attributes. Dict schemas use the same validation engine.
+
+```python
+from zodify import Schema, validate
+
+class User(Schema):
+    name: str
+    age: int
+
+user = validate(User, {"name": "Ada", "age": 36})
+print(user.name)
+print(user.age)
+```
+
+Expected output:
+
+```text
+Ada
+36
+```
+
+[Download Python example](https://zodify.dev/examples/class-schemas.py)
+
+## Use the supported subset
+
+Do not assume arbitrary postponed annotations, forward references, recursive models, general inheritance, generics, or every typing construct are supported. The example uses concrete annotations without 'from __future__ import annotations'.
+
+Validator stores reusable validation options. Schema compilation and caching are unavailable in this release.
+
+- [Dict schema reference](https://zodify.dev/docs/schemas/)
+- [Choosing a broader model tool](https://zodify.dev/compare/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Validate a configuration dict
+
+Catch missing keys and misspelled configuration, with an explicit strip alternative.
+
+HTML: https://zodify.dev/guides/config-validation/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Validate configuration values
+
+Keep strict validation for configuration that already has Python values. Reject unknown keys to catch misspellings. Insert a simple immutable default only for an intentionally optional setting.
+
+```python
+from zodify import Optional, validate
+
+schema = {"host": str, "port": int, "debug": Optional(bool, False)}
+config = {"host": "localhost", "port": 8080}
+print(validate(schema, config))
+
+with_typo = dict(config, debgu=True)
+try:
+    validate(schema, with_typo)
+except ValueError as error:
+    print(f"ValueError: {error}")
+
+# Stripping drops the unknown field from the result.
+print(validate(schema, with_typo, unknown_keys="strip"))
+print("Original input:", with_typo)
+```
+
+Expected output:
+
+```text
+{'host': 'localhost', 'port': 8080, 'debug': False}
+ValueError: debgu: unknown key
+{'host': 'localhost', 'port': 8080, 'debug': False}
+Original input: {'host': 'localhost', 'port': 8080, 'debgu': True}
+```
+
+[Download Python example](https://zodify.dev/examples/config-validation.py)
+
+## Unknown fields and range checks
+
+unknown_keys='strip' drops unknown fields. Correct misspelled keys in the input to retain their values. Add a predicate to enforce a network-port range; int checks the Python type.
+
+This recipe starts from an existing dict. Handle env-file loading, secrets, and configuration precedence separately.
+
+- [Schema predicates](https://zodify.dev/docs/schemas/)
+- [Defaults](https://zodify.dev/docs/optional-and-defaults/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Validate command-line inputs
+
+Convert argparse strings deliberately and handle invalid command-line values.
+
+HTML: https://zodify.dev/guides/cli-input-validation/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Convert at the input boundary
+
+argparse can produce strings; coerce=True lets the validation step explicitly convert supported values. The example supplies an argument list so it runs reproducibly; use parser.parse_args() for real command-line arguments.
+
+```python
+import argparse
+from zodify import validate
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--port", required=True)
+parser.add_argument("--debug", default="false")
+schema = {"port": int, "debug": bool}
+args = vars(parser.parse_args(["--port", "8080", "--debug", "yes"]))
+print(validate(schema, args, coerce=True))
+
+try:
+    validate(schema, {"port": "not-a-port", "debug": "false"}, coerce=True)
+except ValueError as error:
+    print(f"ValueError: {error}")
+```
+
+Expected output:
+
+```text
+{'port': 8080, 'debug': True}
+ValueError: port: cannot coerce 'not-a-port' to int
+```
+
+[Download Python example](https://zodify.dev/examples/cli-input-validation.py)
+
+## Conversion limits
+
+Add a predicate if a port must fall within a specific range. Boolean conversion recognizes a small vocabulary. Handle errors with an application-controlled message if arguments may contain secrets.
+
+For a single argument, argparse's built-in type or choices may be enough. Use a shared validation schema when the same shape also comes from another boundary.
+
+- [Conversion and union rules](https://zodify.dev/docs/types-and-coercion/)
+- [Error privacy](https://zodify.dev/docs/errors/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Validate a JSON object
+
+Parse JSON with the standard library, enforce an object root, then validate Python fields.
+
+HTML: https://zodify.dev/guides/json-object-validation/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Parsing and validation are separate steps
+
+Use json.loads() to parse the text, check for an object root, then validate its fields. Invalid JSON and a valid JSON object with incorrect fields fail at different boundaries.
+
+```python
+import json
+from zodify import validate
+
+def read_user(text):
+    data = json.loads(text)
+    if type(data) is not dict:
+        raise ValueError("Expected a JSON object")
+    return validate({"name": str, "age": int}, data)
+
+print(read_user('{"name":"Ada","age":36}'))
+for text in ['[]', '{"name":"Ada","age":"36"}', '{"name":']:
+    try:
+        read_user(text)
+    except json.JSONDecodeError as error:
+        print(f"JSONDecodeError: {error.msg}")
+    except ValueError as error:
+        print(f"ValueError: {error}")
+```
+
+Expected output:
+
+```text
+{'name': 'Ada', 'age': 36}
+ValueError: Expected a JSON object
+ValueError: age: expected int, got str
+JSONDecodeError: Expecting value
+```
+
+[Download Python example](https://zodify.dev/examples/json-object-validation.py)
+
+## Parser behavior
+
+The standard parser keeps the last duplicate object key and accepts non-finite numeric constants by default. Set input-size limits before parsing untrusted payloads.
+
+The int schema rejects a parsed 1.0 because it is a Python float. For a general JSON Schema contract, use a JSON Schema validator. The released zodify.json_io.validate_json helper provides a stricter parsing boundary than this standard-library recipe: it rejects duplicate keys, BOMs, nonfinite values and non-object roots before ordinary validation. zodify.json_schema.export_json_schema exports only the exact supported subset; numeric types, defaults, arbitrary predicates and bare containers are refused. The root to_json_schema facade returns only the document.
+
+- [Exact integers and JSON Schema](https://zodify.dev/articles/python-integers-and-json/)
+- [Selection guide](https://zodify.dev/compare/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Choosing a Python validator
+
+A task-based choice between small dict validation and broader validation tools.
+
+HTML: https://zodify.dev/compare/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Start with the task
+
+Compare the data shapes, type support, and integrations your application needs. Direct Python checks may be enough for a small task.
+
+| What you need | A useful starting point |
+| --- | --- |
+| A handful of checks in one place | Direct Python checks; argparse type or choices for simple CLI arguments. |
+| Reusable plain-dict validation with zero required runtime dependencies | Zodify: strict types by default, optional conversion, dict-shaped results. |
+| Broader typing, serialization, or framework integration | Pydantic. TypeAdapter validates ordinary types without requiring a BaseModel subclass. |
+| Validation against a JSON Schema document | A JSON Schema validator that supports the required draft. Zodify exports only a narrow exact subset. |
+
+- [Pydantic TypeAdapter documentation (checked 2026-09-09)](https://pydantic.dev/docs/validation/latest/concepts/type_adapter/)
+- [JSON Schema implementations](https://json-schema.org/tools?query=&tooling_type=validator)
+- [Benchmark methodology](https://zodify.dev/benchmarks/)
+
+## Try it with your own data
+
+Check both accepted and rejected inputs, the output shape, and how errors fit your application. If performance matters, measure that workload with equivalent behavior; the benchmark guide explains how.
+
+- [Try a complete example](https://zodify.dev/docs/getting-started/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Benchmarks and measurement
+
+Reproducible measurement requirements and the limits of current performance claims.
+
+HTML: https://zodify.dev/benchmarks/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Available measurements
+
+Earlier speed rankings and multipliers have been withdrawn. A comparison needs equivalent behavior and separate setup measurements.
+
+No replacement cross-library ranking is published here. Repository experiments are development evidence and must identify their exact commit and environment before supporting a released-product claim.
+
+- [Benchmark source and artifacts](https://github.com/junyoung2015/zodify/tree/main/benchmarks)
+- [Choose by capability](https://zodify.dev/compare/)
+
+## The cost of canonical diagnostics in 0.8.0
+
+Versioned Python 3.12 flat and nested synthetic fixtures compared complete 0.8.0 and 0.6.0 versions on one machine. Structured-mode successful calls increased 36–43% and failed calls 61–64%. Default text-mode successes were approximately unchanged; text-mode failures increased 9–11%. Import median rose from about 2.3 ms to 4.3 ms.
+
+Typed locations require traversal work and failures retain both canonical records and legacy issues. These timings cover the diagnostic implementation and synthetic fixtures on the recorded machine. Application performance and cross-library comparisons need separate measurement. This release uses the ordinary validation engine.
+
+- [0.8.0 release notes](https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.0.md)
+
+## A reproducible comparison must include
+
+Record the commit, installed-wheel version and hash, interpreter, platform, dependency versions, repeated raw samples, and the exact success/failure fixtures. Check output equivalence before timing. Include TypeAdapter for the appropriate Pydantic task.
+
+Measure setup separately from repeated validation. Report invalid input, strictness, unknown-key policy, nested shapes, import time, and installed footprint with named metric definitions. Avoid attributing a single scenario's result to every validation workload.
+
+Compilation experiments must report preparation cost, ordinary and prepared call costs, and a measured break-even point. Published APIs are listed with their PyPI release.
+
+- [Released feature availability](https://zodify.dev/roadmap/)
+- [An executable semantic comparison](https://zodify.dev/articles/python-integers-and-json/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# About zodify
+
+The project's origin, author, and scope.
+
+HTML: https://zodify.dev/about/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## A validator for a small script
+
+Jun Young Sohn (jusohn) created zodify while working on a small automation script involving environment variables and API keys. The original project account describes a roughly 20-line script and the wish for validation that fit its scale.
+
+That led to a dict-first interface: describe expected values with Python types and validate the dict at the boundary. Optional Schema declarations later added attribute access over the same engine.
+
+- [Project repository](https://github.com/junyoung2015/zodify)
+- [Try it](https://zodify.dev/docs/getting-started/)
+
+## Project scope
+
+Zodify has zero required runtime dependencies and uses ordinary Python data shapes with optional coercion. Zod inspired the original interface. Zodify has its own Python API and is maintained independently. The project uses the MIT license.
+
+Other tools solve broader problems. The selection guide explains where TypeAdapter or a JSON Schema implementation may serve your application better.
+
+- [Selection guide](https://zodify.dev/compare/)
+- [Roadmap](https://zodify.dev/roadmap/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Contact zodify
+
+Project questions, bug reports, documentation corrections, and private security reporting.
+
+HTML: https://zodify.dev/contact/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Questions and ordinary bugs
+
+Use the project's GitHub Issues for usage questions, reproducible bugs, and documentation corrections. Search existing issues first. Include the installed zodify version, Python version, the API you called, a minimal example with synthetic data, the result you expected, and what happened. GitHub sign-in is required to create an issue.
+
+The project is maintained by Jun Young Sohn. Reports are reviewed as maintainer time allows; no response deadline or guaranteed fix is promised. This documentation site has no contact form or support account system. Public GitHub issues are visible to other people, so remove credentials, API keys, personal data, and sensitive error messages before posting.
+
+- [Search or create a GitHub issue](https://github.com/junyoung2015/zodify/issues)
+
+## Report suspected vulnerabilities privately
+
+Use the repository's private vulnerability report form for suspected security problems. Do not disclose exploit details or secrets in public issues. The security policy describes what to include and the maintained release boundary. GitHub sign-in is required for private reports.
+
+- [Private vulnerability report](https://github.com/junyoung2015/zodify/security/advisories/new)
+- [Security policy](https://github.com/junyoung2015/zodify/blob/main/SECURITY.md)
+- [About the project](https://zodify.dev/about/)
+
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Privacy and local validation
+
+What the static documentation frontend does, where hosting policies apply, and how to handle sensitive validation errors.
+
+HTML: https://zodify.dev/privacy/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Documentation frontend
+
+This website serves static documentation from GitHub Pages. Its shipped frontend contains no analytics scripts, advertising pixels, contact forms, account sign-in, or code that stores data in cookies or browser storage. Pages and examples are readable without JavaScript. The optional local enhancement copies the displayed command or example to your clipboard when you press its copy button; it does not send clipboard contents to a validation service.
+
+Hosting requests still go to GitHub Pages. GitHub documents that Pages logs and stores visitor IP addresses for security, whether or not visitors are signed in. GitHub's own privacy statement governs its processing of hosting requests and any GitHub pages you choose to visit. This description of the frontend is not a promise that a hosting provider keeps no access logs. PyPI, GitHub Issues, and other linked websites have their own policies and may require accounts.
+
+- [GitHub Pages hosting and IP logging](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+- [GitHub privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)
+
+## Your Python application controls its data
+
+The examples call the installed zodify Python library in your own process; this website does not provide a hosted validation endpoint or upload form. Your application decides where its input, results, and logs are stored or sent. Review that application and any callbacks before processing sensitive data.
+
+Validation errors may contain original strings from coercion failures or messages from custom callbacks. Avoid posting or logging secrets and personal data in full errors. Use synthetic values when reporting bugs, and use the private reporting route for suspected vulnerabilities.
+
+- [Error handling and privacy](https://zodify.dev/docs/errors/)
+- [Contact and security reporting](https://zodify.dev/contact/)
+
+Updated 2026-10-18. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Released, planned, and experimental
+
+Feature availability separated from unreleased source work and proposed designs.
+
+HTML: https://zodify.dev/roadmap/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Released: 0.8.0
+
+The verified 0.8.0 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and adds canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.
+
+- [PyPI release](https://pypi.org/project/zodify/0.8.0/)
+- [Current reference](https://zodify.dev/docs/)
+
+## Proposed features
+
+Compilation and rich reports remain unavailable. Approximate export, native execution and source generation remain outside the current scope; future work requires separate semantic, evidence and release gates.
+
+Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 is an alpha release. API stability is still being evaluated.
+
+- [Development repository](https://github.com/junyoung2015/zodify)
+- [Changelog](https://zodify.dev/changelog/)
+
+## Scope
+
+Zodify validates ordinary Python data. Use a recursive model framework or general JSON Schema validator when your application needs those capabilities.
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Release history
+
+Verified released package identity and the development changelog.
+
+HTML: https://zodify.dev/changelog/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## 0.8.0, September 9, 2026
+
+PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.
+
+The repository changelog includes development changes. Use the PyPI version list to check which changes have been released.
+
+- [Verified 0.8.0 release](https://pypi.org/project/zodify/0.8.0/)
+- [Repository changelog](https://github.com/junyoung2015/zodify/blob/main/CHANGELOG.md)
+- [Feature availability](https://zodify.dev/roadmap/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
+
+---
+
+# Python int and JSON Schema integer
+
+An executable explanation of exact Python types and JSON numeric semantics.
+
+HTML: https://zodify.dev/articles/python-integers-and-json/
+
+Released zodify 0.8.0; Python >=3.10; alpha. Release manifest verified 2026-09-09.
+
+## Parsing integers and floats
+
+In zodify 0.8.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.
+
+```python
+import json
+from zodify import validate
+
+for token in ["1", "1.0", "true", '"1"']:
+    try:
+        result = validate({"count": int}, {"count": json.loads(token)})
+        print(f"{token}: {result}")
+    except ValueError as error:
+        print(f"{token}: {error}")
+
+print(validate({"port": int}, {"port": "8080"}, coerce=True))
+# Union order controls conversion of string inputs.
+print(validate({"value": int | str}, {"value": "1"}, coerce=True))
+print(validate({"value": str | int}, {"value": "1"}, coerce=True))
+```
+
+Expected output:
+
+```text
+1: {'count': 1}
+1.0: count: expected int, got float
+true: count: expected int, got bool
+"1": count: expected int, got str
+{'port': 8080}
+{'value': 1}
+{'value': '1'}
+```
+
+[Download Python example](https://zodify.dev/examples/exact-types.py)
+
+## JSON Schema integer rules
+
+JSON Schema considers a number with zero fractional part an integer, including 1.0. Python runtime type identity and mathematical integrality are distinct contracts. Translating int directly to a JSON Schema integer constraint does not preserve every acceptance decision.
+
+The 0.8.0 exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.
+
+- [JSON Schema numeric reference (checked 2026-09-09)](https://json-schema.org/understanding-json-schema/reference/numeric)
+- [Download and run the JSON recipe](https://zodify.dev/guides/json-object-validation/)
+- [Exact-type reference](https://zodify.dev/docs/types-and-coercion/)
+
+Updated 2026-09-09. [Project source](https://github.com/junyoung2015/zodify).
