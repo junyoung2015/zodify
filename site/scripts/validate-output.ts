@@ -28,6 +28,8 @@ for (const page of routes) {
   assert(!canonicals.has(canonical[0][1]));
   canonicals.add(canonical[0][1]);
   assert.equal((html.match(/<title>/g) || []).length, 1);
+  assert(!html.includes("<form"), `Unexpected data collection form: ${page.path}`);
+  assert.deepEqual([...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]), ["/enhance.js"]);
   const structured = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)![1]);
   const application = structured["@graph"].find((entity: Record<string, unknown>) => entity["@type"] === "SoftwareApplication");
   const source = structured["@graph"].find((entity: Record<string, unknown>) => entity["@type"] === "SoftwareSourceCode");
@@ -93,6 +95,10 @@ assert(agentGuide.includes(examples.quickstart.code.trimEnd()));
 assert(agentGuide.includes("validate(schema, data)"));
 assert(agentGuide.includes("no hosted validation HTTP API"));
 assert(agentGuide.includes("do not provide Accept-header negotiation"));
+assert.equal((agentGuide.match(/^# /gm) || []).length, 1);
+// llms.txt keeps detailed guidance before its H2 sections of resource lists.
+for (const list of agentGuide.split(/^## .+\n/gm).slice(1))
+  assert(list.trim().split("\n").every((line) => !line.trim() || /^- \[[^\]]+\]\(https:\/\//.test(line)));
 const fullGuide = readFileSync(join(dist, "llms-full.txt"), "utf8");
 for (const page of routes) {
   assert(agentGuide.includes(SITE_ORIGIN + markdownPath(page)));
