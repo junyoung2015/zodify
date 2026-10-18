@@ -1,6 +1,6 @@
 # Supported API and compatibility contract
 
-This inventory describes the published 0.8.0 interface, which is in alpha, and the
+This inventory describes the published 0.8.1 interface, which is in alpha, and the
 intended scope for 1.0 stabilization. PyPI release availability is verified
 separately from source version numbers.
 
@@ -50,6 +50,15 @@ if implementation modules move. No plugin ABI or public intermediate form exists
   validation eagerly as an internal refactor.
 - The supported interpreter matrix is Python 3.10–3.13. Add advertised support
   only after the runtime, typing and installed-artifact checks pass.
+
+Version 0.8.1 fixes class-schema field discovery under Python 3.14's deferred
+annotation evaluation. Supported annotation expressions are evaluated once at
+class definition; unresolved names and unsupported string or postponed
+annotations still fail at definition time. A fresh PyPI wheel install was checked on
+macOS CPython 3.14.6, including required-field rejection and the released examples.
+These checks do not expand the declared Python 3.10–3.13 support matrix or claim
+broader operating-system, free-threaded, or JIT compatibility. The
+[0.8.1 release notes](release-notes/v0.8.1.md) describe the published patch.
 
 ## Diagnostic contract
 

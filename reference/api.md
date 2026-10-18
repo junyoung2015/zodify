@@ -1,6 +1,6 @@
 # API reference
 
-Detailed usage for zodify 0.8.0. Start with the [quickstart](../README.md#quick-start)
+Detailed usage for zodify 0.8.1. Start with the [quickstart](../README.md#quick-start)
 or the [getting-started guide](https://zodify.dev/docs/getting-started/).
 The [API and compatibility contract](../API_CONTRACT.md) defines the supported
 surface and compatibility commitments. This release is alpha.

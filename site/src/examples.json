@@ -1,57 +1,57 @@
 {
   "quickstart": {
     "code": "from zodify import validate\n\nschema = {\"name\": str, \"age\": int}\nprint(validate(schema, {\"name\": \"Ada\", \"age\": 36}))\n\ntry:\n    validate(schema, {\"name\": \"Ada\", \"age\": \"36\"})\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'name': 'Ada', 'age': 36}\nValueError: age: expected int, got str"
   },
   "schemas": {
     "code": "from zodify import validate\n\nschema = {\"users\": [{\"name\": str}], \"enabled\": bool}\ndata = {\"users\": [{\"name\": \"Ada\"}], \"enabled\": True}\nprint(validate(schema, data))\n\n# A truthy predicate accepts and preserves the original value.\nport_schema = {\"port\": lambda value: type(value) is int and 1 <= value <= 65535}\nprint(validate(port_schema, {\"port\": 8080}))\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'users': [{'name': 'Ada'}], 'enabled': True}\n{'port': 8080}"
   },
   "exact-types": {
     "code": "import json\nfrom zodify import validate\n\nfor token in [\"1\", \"1.0\", \"true\", '\"1\"']:\n    try:\n        result = validate({\"count\": int}, {\"count\": json.loads(token)})\n        print(f\"{token}: {result}\")\n    except ValueError as error:\n        print(f\"{token}: {error}\")\n\nprint(validate({\"port\": int}, {\"port\": \"8080\"}, coerce=True))\n# Union order controls conversion of string inputs.\nprint(validate({\"value\": int | str}, {\"value\": \"1\"}, coerce=True))\nprint(validate({\"value\": str | int}, {\"value\": \"1\"}, coerce=True))\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "1: {'count': 1}\n1.0: count: expected int, got float\ntrue: count: expected int, got bool\n\"1\": count: expected int, got str\n{'port': 8080}\n{'value': 1}\n{'value': '1'}"
   },
   "optional-defaults": {
     "code": "from zodify import Optional, validate\n\nprint(validate({\"name\": Optional(str)}, {}))\nprint(validate({\"name\": str | None}, {\"name\": None}))\nprint(validate({\"name\": Optional(str, \"Ada\")}, {}))\n\n# Defaults are trusted: neither copied nor validated.\ndefault = []\nresult = validate({\"items\": Optional([str], default)}, {})\nprint(\"Shares default:\", result[\"items\"] is default)\nprint(validate({\"count\": Optional(int, \"unchecked\")}, {}))\n\ntry:\n    validate({\"name\": str | None}, {})\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{}\n{'name': None}\n{'name': 'Ada'}\nShares default: True\n{'count': 'unchecked'}\nValueError: name: missing required key"
   },
   "errors": {
     "code": "from zodify import ValidationError, validate\n\ntry:\n    validate({\"port\": int}, {\"port\": \"wrong\"}, error_mode=\"structured\")\nexcept ValidationError as error:\n    print(error.issues[0])\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'path': 'port', 'message': 'expected int, got str', 'expected': 'int', 'got': 'str'}"
   },
   "class-schemas": {
     "code": "from zodify import Schema, validate\n\nclass User(Schema):\n    name: str\n    age: int\n\nuser = validate(User, {\"name\": \"Ada\", \"age\": 36})\nprint(user.name)\nprint(user.age)\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "Ada\n36"
   },
   "config-validation": {
     "code": "from zodify import Optional, validate\n\nschema = {\"host\": str, \"port\": int, \"debug\": Optional(bool, False)}\nconfig = {\"host\": \"localhost\", \"port\": 8080}\nprint(validate(schema, config))\n\nwith_typo = dict(config, debgu=True)\ntry:\n    validate(schema, with_typo)\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n\n# Stripping drops the unknown field from the result.\nprint(validate(schema, with_typo, unknown_keys=\"strip\"))\nprint(\"Original input:\", with_typo)\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'host': 'localhost', 'port': 8080, 'debug': False}\nValueError: debgu: unknown key\n{'host': 'localhost', 'port': 8080, 'debug': False}\nOriginal input: {'host': 'localhost', 'port': 8080, 'debgu': True}"
   },
   "cli-input-validation": {
     "code": "import argparse\nfrom zodify import validate\n\nparser = argparse.ArgumentParser()\nparser.add_argument(\"--port\", required=True)\nparser.add_argument(\"--debug\", default=\"false\")\nschema = {\"port\": int, \"debug\": bool}\nargs = vars(parser.parse_args([\"--port\", \"8080\", \"--debug\", \"yes\"]))\nprint(validate(schema, args, coerce=True))\n\ntry:\n    validate(schema, {\"port\": \"not-a-port\", \"debug\": \"false\"}, coerce=True)\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'port': 8080, 'debug': True}\nValueError: port: cannot coerce 'not-a-port' to int"
   },
   "json-object-validation": {
     "code": "import json\nfrom zodify import validate\n\ndef read_user(text):\n    data = json.loads(text)\n    if type(data) is not dict:\n        raise ValueError(\"Expected a JSON object\")\n    return validate({\"name\": str, \"age\": int}, data)\n\nprint(read_user('{\"name\":\"Ada\",\"age\":36}'))\nfor text in ['[]', '{\"name\":\"Ada\",\"age\":\"36\"}', '{\"name\":']:\n    try:\n        read_user(text)\n    except json.JSONDecodeError as error:\n        print(f\"JSONDecodeError: {error.msg}\")\n    except ValueError as error:\n        print(f\"ValueError: {error}\")\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'name': 'Ada', 'age': 36}\nValueError: Expected a JSON object\nValueError: age: expected int, got str\nJSONDecodeError: Expecting value"
   },
   "first-validation": {
     "code": "from zodify import validate\n\nschema = {\"port\": int, \"debug\": bool}\ndata = {\"port\": 8080, \"debug\": False}\n\nprint(validate(schema, data))\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "{'port': 8080, 'debug': False}"
   },
   "invalid-input": {
     "code": "from zodify import validate\n\ntry:\n    validate({\"port\": int}, {\"port\": \"8080\"})\nexcept ValueError as error:\n    print(f\"ValueError: {error}\")\n",
-    "releasedVersion": "0.8.0",
+    "releasedVersion": "0.8.1",
     "expected": "ValueError: port: expected int, got str"
   }
 }

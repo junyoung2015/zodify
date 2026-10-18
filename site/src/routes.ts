@@ -23,7 +23,8 @@ const page = (
   description: string,
   sections: Section[],
   nav?: string,
-): Page => ({ path, title, description, sections, nav, updated: "2026-09-09" });
+  updated = "2026-09-09",
+): Page => ({ path, title, description, sections, nav, updated });
 const section = (
   id: string,
   title: string,
@@ -222,9 +223,9 @@ export const routes: Page[] = [
         "install",
         "Install zodify",
         [
-          "Use a virtual environment with Python 3.10 or later. Pin 0.8.0 to run the same release as these examples.",
+          "Use a virtual environment with supported Python 3.10–3.13. Pin 0.8.1 to run the same release as these examples.",
         ],
-      ), command: "python -m pip install zodify==0.8.0" },
+      ), command: "python -m pip install zodify==0.8.1" },
       section(
         "validate",
         "Validate a dict and read the result",
@@ -236,6 +237,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/docs/schemas/",
@@ -266,7 +269,7 @@ export const routes: Page[] = [
   page(
     "/docs/types-and-coercion/",
     "Exact types, coercion, and unions",
-    "Understand bool versus int, string conversion, and union order in zodify 0.8.0.",
+    "Understand bool versus int, string conversion, and union order in zodify 0.8.1.",
     [
       section(
         "types",
@@ -293,6 +296,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/docs/optional-and-defaults/",
@@ -311,7 +316,7 @@ export const routes: Page[] = [
         "ownership",
         "Defaults in the released version",
         [
-          "In 0.8.0, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.",
+          "In 0.8.1, a default is inserted as supplied. It is not independently validated or copied. Mutable defaults may be shared between calls. The example shows how an incorrectly typed default is still inserted. Use type-correct defaults in application code.",
           "Prefer immutable, type-correct defaults and construct fresh mutable values in application code. Check the compatibility notes for the installed release before changing a default policy.",
         ],
         undefined,
@@ -321,6 +326,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/docs/errors/",
@@ -370,6 +377,7 @@ export const routes: Page[] = [
         [
           "Do not assume arbitrary postponed annotations, forward references, recursive models, general inheritance, generics, or every typing construct are supported. The example uses concrete annotations without 'from __future__ import annotations'.",
           "Validator stores reusable validation options. Schema compilation and caching are unavailable in this release.",
+          "Version 0.8.1 fixes field discovery under Python 3.14 deferred annotations and evaluates supported annotation expressions at class definition. Fresh PyPI wheel checks passed on macOS CPython 3.14.6. The declared support range remains Python 3.10–3.13; this specific check does not establish broader Python 3.14 support. Unresolved names and unsupported string or postponed annotations still fail at class definition.",
         ],
         undefined,
         [
@@ -378,6 +386,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/guides/config-validation/",
@@ -635,13 +645,15 @@ export const routes: Page[] = [
     [
       section(
         "released",
-        "Released: 0.8.0",
+        "Released: 0.8.1",
         [
-          "The verified 0.8.0 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and adds canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.",
+          "The verified 0.8.1 release provides validate, Optional, Validator, Schema, env, load_env, ValidationError and ValidationIssue. It preserves legacy structured issues and the 0.8.0 canonical details, strict JSON object input via zodify.json_io.validate_json, and conservative exact export via zodify.json_schema.export_json_schema and the root to_json_schema facade.",
+          "Version 0.8.1 fixes class-schema field discovery under Python 3.14 deferred annotations. Fresh PyPI wheel installs passed the installed contract and examples on macOS CPython 3.10.19 and 3.14.6. The declared support range remains Python 3.10–3.13; these checks do not claim broader Python 3.14, operating-system, free-threaded, or JIT support.",
         ],
         undefined,
         [
-          ["PyPI release", "https://pypi.org/project/zodify/0.8.0/"],
+          ["0.8.1 release notes", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md"],
+          ["PyPI release", "https://pypi.org/project/zodify/0.8.1/"],
           ["Current reference", "/docs/"],
         ],
       ),
@@ -650,7 +662,7 @@ export const routes: Page[] = [
         "Proposed features",
         [
           "Compilation and rich reports remain unavailable. Approximate export, native execution and source generation remain outside the current scope; future work requires separate semantic, evidence and release gates.",
-          "Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.0 is an alpha release. API stability is still being evaluated.",
+          "Compilation requires an actual repeated-use workload and measured preparation economics before any public API is admitted. Version 0.8.1 is an alpha release. API stability is still being evaluated.",
         ],
         undefined,
         [
@@ -662,6 +674,8 @@ export const routes: Page[] = [
         "Zodify validates ordinary Python data. Use a recursive model framework or general JSON Schema validator when your application needs those capabilities.",
       ]),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/changelog/",
@@ -670,9 +684,22 @@ export const routes: Page[] = [
     [
       section(
         "release",
+        "0.8.1, October 18, 2026",
+        [
+          "PyPI records the 0.8.1 wheel and source distribution on October 18, 2026. Downloaded artifact hashes match the retained release artifacts. This site’s release manifest records the verified wheel SHA-256 and Python requirement independently from the working tree version.",
+          "The patch fixes class-schema annotation discovery on Python 3.14. Fresh PyPI wheel installs passed installed-contract checks and all maintained package and public documentation examples on macOS CPython 3.10.19 and 3.14.6. The declared support range remains Python 3.10–3.13; broader Python 3.14, operating-system, free-threaded, and JIT support is not claimed.",
+        ],
+        undefined,
+        [
+          ["Verified 0.8.1 release", "https://pypi.org/project/zodify/0.8.1/"],
+          ["0.8.1 release notes", "https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md"],
+        ],
+      ),
+      section(
+        "release-080",
         "0.8.0, September 9, 2026",
         [
-          "PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This site's release manifest was checked on September 9, 2026. It records the wheel SHA-256 and Python requirement independently from the working tree version.",
+          "PyPI records the 0.8.0 wheel and source distribution on September 9, 2026. This release introduced canonical details and the conservative JSON interfaces. Its diagnostics measurements remain historical evidence for that release.",
           "The repository changelog includes development changes. Use the PyPI version list to check which changes have been released.",
         ],
         undefined,
@@ -686,6 +713,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
   page(
     "/articles/python-integers-and-json/",
@@ -696,7 +725,7 @@ export const routes: Page[] = [
         "question",
         "Parsing integers and floats",
         [
-          "In zodify 0.8.0, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.",
+          "In zodify 0.8.1, int means exact Python int. After standard-library JSON parsing, 1 becomes int and 1.0 becomes float. Python bool is also rejected by the int schema. The following example tests all four cases and the opt-in conversion alternative.",
         ],
         "exact-types",
       ),
@@ -705,7 +734,7 @@ export const routes: Page[] = [
         "JSON Schema integer rules",
         [
           "JSON Schema considers a number with zero fractional part an integer, including 1.0. Python runtime type identity and mathematical integrality are distinct contracts. Translating int directly to a JSON Schema integer constraint does not preserve every acceptance decision.",
-          "The 0.8.0 exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.",
+          "The released exact exporter refuses numeric declarations because these acceptance rules differ. Use a JSON Schema validator when that standard is the authority for your payload.",
         ],
         undefined,
         [
@@ -721,6 +750,8 @@ export const routes: Page[] = [
         ],
       ),
     ],
+    undefined,
+    "2026-10-18",
   ),
 ];
 export const notFound = page(
