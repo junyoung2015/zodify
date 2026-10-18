@@ -52,6 +52,7 @@ The HTML pages work without JavaScript. Each page has an explicit static Markdow
 - [Privacy and local validation](https://zodify.dev/privacy/): What the static documentation frontend does, where hosting policies apply, and how to handle sensitive validation errors. [Markdown](https://zodify.dev/privacy/index.md)
 - [Released, planned, and experimental](https://zodify.dev/roadmap/): Feature availability separated from unreleased source work and proposed designs. [Markdown](https://zodify.dev/roadmap/index.md)
 - [Release history](https://zodify.dev/changelog/): Verified released package identity and the development changelog. [Markdown](https://zodify.dev/changelog/index.md)
+- [Python 3.14 class annotations and the empty-schema bug](https://zodify.dev/articles/python-314-class-annotations/): A standard-library reproduction of deferred annotation discovery, the fix in zodify 0.8.1, and its execution boundary. [Markdown](https://zodify.dev/articles/python-314-class-annotations/index.md)
 - [Python int and JSON Schema integer](https://zodify.dev/articles/python-integers-and-json/): An executable explanation of exact Python types and JSON numeric semantics. [Markdown](https://zodify.dev/articles/python-integers-and-json/index.md)
 
 ## Project and release evidence

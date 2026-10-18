@@ -14,6 +14,7 @@ The patch fixes class-schema annotation discovery on Python 3.14. Fresh PyPI whe
 
 - [Verified 0.8.1 release](https://pypi.org/project/zodify/0.8.1/)
 - [0.8.1 release notes](https://github.com/junyoung2015/zodify/blob/main/release-notes/v0.8.1.md)
+- [Why annotation discovery changed](https://zodify.dev/articles/python-314-class-annotations/)
 
 ## 0.8.0, September 9, 2026
 
