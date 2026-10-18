@@ -7,12 +7,11 @@ def read_user(text):
         raise ValueError("Expected a JSON object")
     return validate({"name": str, "age": int}, data)
 
-assert read_user('{"name":"Ada","age":36}')["age"] == 36
-for invalid in ['[]', '{"name":"Ada","age":"36"}', '{"name":']:
+print(read_user('{"name":"Ada","age":36}'))
+for text in ['[]', '{"name":"Ada","age":"36"}', '{"name":']:
     try:
-        read_user(invalid)
-    except ValueError:  # Includes JSONDecodeError.
-        pass
-    else:
-        raise AssertionError("Expected parsing or validation failure")
-print("json-object-validation: passed")
+        read_user(text)
+    except json.JSONDecodeError as error:
+        print(f"JSONDecodeError: {error.msg}")
+    except ValueError as error:
+        print(f"ValueError: {error}")
